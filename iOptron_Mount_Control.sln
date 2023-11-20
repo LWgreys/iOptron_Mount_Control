@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34031.279
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iOptron_Mount_Control", "iOptron_Mount_Control.csproj", "{2A342770-9F7A-422E-BF4C-536B05EA1657}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2A342770-9F7A-422E-BF4C-536B05EA1657}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A342770-9F7A-422E-BF4C-536B05EA1657}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A342770-9F7A-422E-BF4C-536B05EA1657}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A342770-9F7A-422E-BF4C-536B05EA1657}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2E9C2A03-8CA0-46FC-BFF0-0327CAA13321}
+	EndGlobalSection
+EndGlobal
