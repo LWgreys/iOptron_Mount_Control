@@ -1,0 +1,29 @@
+753989462000 mount
+2460271.7298611 UTC Current 5:31
+2460271.4798611 Local 23:31
+2451545.00 J2000
+2451544.75 J2000 -6 hours or -360 minutes for Central Time
+
+(current-J2000) * 8.64e+7  (8.64e+7 = 86400000ms or 86400 seconds
+(mount / 8.64e+7) + J2000 =   to convert mount time to current UTC
+
+2460271.7298842592592592592592593 UTC
+2460271.4798842592592592592592593 convert to Local
+
+
+to get Local time from the value
+the adjusted time subtract the INT part from the hole number to get the decimal value   (.7298842592592592592592593)
+for hours decimal >0.5 subtract .5 then times 24                                        (.7298842592592592592592593 - .5) * 24 = 5.5172222222222222222222232
+for hours decimal <0.5 add .5 then times 24
+for minutes take the decimal part from hours then multiply by 60						(5.5172222222222222222222232 - 5) * 60 = 31.033333333333333333333392
+for seconds take the decimal part from minutes then multiply by 60						(31.033333333333333333333392 - 31) * 60 = 2.00000000000000000000352
+																					= 5:31:02.00
+min_day = 1440 = (24 * 60)
+
+double localJ2000 = J2000 - (1.0 - ((1440.0 + ((DLST == 1) ? (cemUTCoffset - -60.0) : cemUTCoffset)) / 1440.0));
+cemLocalTime = cemLocalTime + localJ2000 - 12.0; // must subtract 12 hours t convert to local time
+
+
+     J2000 = 2451545.0
+localJ2000 = 2451544.75
+
