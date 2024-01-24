@@ -56,6 +56,7 @@
             this.labelAltitude = new System.Windows.Forms.Label();
             this.labelRA = new System.Windows.Forms.Label();
             this.groupBoxSettings_Limits = new System.Windows.Forms.GroupBox();
+            this.buttonResetPEC = new System.Windows.Forms.Button();
             this.labelDEC_GuidingRate = new System.Windows.Forms.Label();
             this.labelRA_GuidingRate = new System.Windows.Forms.Label();
             this.labelCustomeTrackingRate = new System.Windows.Forms.Label();
@@ -425,6 +426,7 @@
             // groupBoxSettings_Limits
             // 
             this.groupBoxSettings_Limits.BackColor = System.Drawing.Color.Black;
+            this.groupBoxSettings_Limits.Controls.Add(this.buttonResetPEC);
             this.groupBoxSettings_Limits.Controls.Add(this.labelDEC_GuidingRate);
             this.groupBoxSettings_Limits.Controls.Add(this.labelRA_GuidingRate);
             this.groupBoxSettings_Limits.Controls.Add(this.labelCustomeTrackingRate);
@@ -448,6 +450,20 @@
             this.groupBoxSettings_Limits.TabIndex = 11;
             this.groupBoxSettings_Limits.TabStop = false;
             this.groupBoxSettings_Limits.Text = "Mount Settings and Limits";
+            // 
+            // buttonResetPEC
+            // 
+            this.buttonResetPEC.BackColor = System.Drawing.Color.Maroon;
+            this.buttonResetPEC.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.buttonResetPEC.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Red;
+            this.buttonResetPEC.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonResetPEC.Location = new System.Drawing.Point(253, 130);
+            this.buttonResetPEC.Name = "buttonResetPEC";
+            this.buttonResetPEC.Size = new System.Drawing.Size(88, 25);
+            this.buttonResetPEC.TabIndex = 22;
+            this.buttonResetPEC.Text = "Reset PEC";
+            this.buttonResetPEC.UseVisualStyleBackColor = false;
+            this.buttonResetPEC.Click += new System.EventHandler(this.buttonResetPECrecording_Click);
             // 
             // labelDEC_GuidingRate
             // 
@@ -573,7 +589,7 @@
             this.comboBoxTrackingRate.Name = "comboBoxTrackingRate";
             this.comboBoxTrackingRate.Size = new System.Drawing.Size(89, 23);
             this.comboBoxTrackingRate.TabIndex = 9;
-            this.comboBoxTrackingRate.DropDown += new System.EventHandler(this.comboBoxTrackingRate_DropDown);
+            this.comboBoxTrackingRate.DropDown += new System.EventHandler(this.comboBox_StopTimer_DropDown);
             this.comboBoxTrackingRate.SelectedIndexChanged += new System.EventHandler(this.comboBoxTrackingRate_SelectedIndexChanged);
             // 
             // label12
@@ -613,7 +629,7 @@
             this.comboBoxMaxSlewingRate.Name = "comboBoxMaxSlewingRate";
             this.comboBoxMaxSlewingRate.Size = new System.Drawing.Size(63, 23);
             this.comboBoxMaxSlewingRate.TabIndex = 6;
-            this.comboBoxMaxSlewingRate.DropDown += new System.EventHandler(this.comboBoxMaxSlewingRate_DropDown);
+            this.comboBoxMaxSlewingRate.DropDown += new System.EventHandler(this.comboBox_StopTimer_DropDown);
             this.comboBoxMaxSlewingRate.SelectedIndexChanged += new System.EventHandler(this.comboBoxMaxSlewingRate_SelectedIndexChanged);
             // 
             // label11
@@ -873,7 +889,7 @@
             this.comboBoxManualMovingRate.Name = "comboBoxManualMovingRate";
             this.comboBoxManualMovingRate.Size = new System.Drawing.Size(73, 23);
             this.comboBoxManualMovingRate.TabIndex = 13;
-            this.comboBoxManualMovingRate.DropDown += new System.EventHandler(this.comboBoxManualMovingRate_DropDown);
+            this.comboBoxManualMovingRate.DropDown += new System.EventHandler(this.comboBox_StopTimer_DropDown);
             this.comboBoxManualMovingRate.SelectedIndexChanged += new System.EventHandler(this.comboBoxManualMovingRate_SelectedIndexChanged);
             // 
             // buttonAllStop
@@ -1240,6 +1256,7 @@
         private System.Windows.Forms.Label labelLongitude;
         private System.Windows.Forms.Label labelTimeSource;
         private System.Windows.Forms.Button buttonPeriodicErrorCorrection;
+        private System.Windows.Forms.Button buttonResetPEC;
     }
 }
 

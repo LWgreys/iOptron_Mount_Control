@@ -164,7 +164,7 @@ namespace Optron_Mount_Control
 
         const string NO_PORTS_MESSAGE = "No COM ports found";
         static byte _OtherData_;
-        const double miliSecondsInDay = 86400000.0;     // Number of seconds in a day
+        const double miliSecondsInDay = 86400000.0;     // Number of miliseconds in a day
         const double J2000 = 2451545.0;                 // Julian date time 2000-01-01 12:00.00 noon
         static readonly bool ON = true;
         static readonly bool OFF = false;
@@ -179,8 +179,9 @@ namespace Optron_Mount_Control
         {
             InitializeComponent();
 
-            // Disable Connect Button
+            // Disable Button
             ButtonCOMPortConnect.Enabled = OFF;
+            buttonResetPEC.Enabled = OFF;
 
             // Get a list of COM ports
             ComboBoxComPort.Items.Clear(); // Clear any existing entries
@@ -560,8 +561,12 @@ namespace Optron_Mount_Control
             // periodic error correction
             if (cemPECenabled == ON) // && (cemTrackingOnOff == ON))
             {
-                lock (InOut)
-                    GetPeriodicErrorStatus();
+                GetPeriodicErrorStatus();
+                if (cemPECdataComplete == ON)
+                    buttonResetPEC.Enabled = ON;
+                else
+                    buttonResetPEC.Enabled = OFF;
+
                 if (cemPECplaybackOnOff == OFF)
                 {
                     if ((cemPECdataComplete == OFF) && (cemPECrecording == OFF))
@@ -616,15 +621,21 @@ namespace Optron_Mount_Control
         {
             string inData;
 
-            SendMountCommand(get_Periodic_Error_Data);
-            inData = GetMountResponce(1);
+            lock (InOut)
+            {
+                SendMountCommand(get_Periodic_Error_Data);
+                inData = GetMountResponce(1);
+            }
             if (inData == "1")
                 cemPECdataComplete = ON;  // periodic error recording complete
             else
                 cemPECdataComplete = OFF; // recording incomplete
 
-            SendMountCommand(get_Periodic_Error_Stat);
-            inData = GetMountResponce(1);
+            lock (InOut)
+            {
+                SendMountCommand(get_Periodic_Error_Stat);
+                inData = GetMountResponce(1);
+            }
             if (inData == "1")
                 cemPECrecording = ON;   // periodic erreo being recorded
             else
@@ -639,11 +650,14 @@ namespace Optron_Mount_Control
 
             cemPECenabled = OFF;
             cemPECrecording = OFF;
-            SendMountCommand(set_PE_Record_Stop);                       // periodic error recording OFF
-            inData = GetMountResponce(1);
             cemPECplaybackOnOff = OFF;
-            SendMountCommand(set_Playback_PR_OFF);                      // periodic error playback OFF
-            inData = GetMountResponce(1);
+            lock (InOut)
+            {
+                SendMountCommand(set_PE_Record_Stop);                       // periodic error recording OFF
+                inData = GetMountResponce(1);
+                SendMountCommand(set_Playback_PR_OFF);                      // periodic error playback OFF
+                inData = GetMountResponce(1);
+            }
         }
 
 
@@ -709,8 +723,11 @@ namespace Optron_Mount_Control
             DateTime utcdatetime = DateTime.UtcNow;
             double jUTC = JD(utcdatetime);                                      // convert UTC DateTime to Julian date.time
             ulong mountUTCtime = (ulong)((jUTC - J2000) * miliSecondsInDay);    // convert Julian date.time to mount time
-            SendMountCommand(string.Format("{0}{1:0000000000000}#", set_UTC_Time, mountUTCtime));
-            inData = GetMountResponce(1);
+            lock (InOut)
+            {
+                SendMountCommand(string.Format("{0}{1:0000000000000}#", set_UTC_Time, mountUTCtime));
+                inData = GetMountResponce(1);
+            }
         }
 
 
@@ -774,8 +791,11 @@ namespace Optron_Mount_Control
         {
             string inData;
 
-            SendMountCommand(get_Tracking_Rate);
-            inData = GetMountResponce(6);
+            lock (InOut)
+            {
+                SendMountCommand(get_Tracking_Rate);
+                inData = GetMountResponce(6);
+            }
             cemCustomTrackRate = labelCustomeTrackingRate.Text = inData.Substring(0, 1) + "." + inData.Substring(1, 4);
         }
 
@@ -784,8 +804,11 @@ namespace Optron_Mount_Control
         {
             string inData;
 
-            SendMountCommand(get_Park_Pos);
-            inData = GetMountResponce(18);
+            lock (InOut)
+            {
+                SendMountCommand(get_Park_Pos);
+                inData = GetMountResponce(18);
+            }
             cemParkingAltitude = inData.Substring(0, 8);
             cemParkingAzimuth = inData.Substring(8, 9);
             cemParkingAltitude = labelMountParkingAltitude.Text = RetPostionString(Convert.ToDouble(cemParkingAltitude), 4);
@@ -797,8 +820,11 @@ namespace Optron_Mount_Control
         {
             string inData;
 
-            SendMountCommand(get_MAX_Slew_Rate);
-            inData = GetMountResponce(2);
+            lock (InOut)
+            {
+                SendMountCommand(get_MAX_Slew_Rate);
+                inData = GetMountResponce(2);
+            }
             cemMAXSlewingRate = Convert.ToByte(inData.Substring(0, 1));
             cemMAXSlewingRate -= 7;
             comboBoxMaxSlewingRate.SelectedIndex = cemMAXSlewingRate;
@@ -809,8 +835,11 @@ namespace Optron_Mount_Control
         {
             string inData;
 
-            SendMountCommand(get_Alt_Limit);
-            inData = GetMountResponce(4);
+            lock (InOut)
+            {
+                SendMountCommand(get_Alt_Limit);
+                inData = GetMountResponce(4);
+            }
             labelAltitudeLimitMIN.Text = inData.Substring(0, 3);
             cemAltitudeLimit = Convert.ToSByte(inData.Substring(0, 3));
         }
@@ -820,8 +849,11 @@ namespace Optron_Mount_Control
         {
             string inData;
 
-            SendMountCommand(get_RA_DEC_Guide_Rate);
-            inData = GetMountResponce(5);
+            lock (InOut)
+            {
+                SendMountCommand(get_RA_DEC_Guide_Rate);
+                inData = GetMountResponce(5);
+            }
             cemRAguidingRate = inData.Substring(0, 2);
             cemDECguidingRate = inData.Substring(2, 2);
             labelRA_GuidingRate.Text = string.Format("0.{0}", cemRAguidingRate);
@@ -833,8 +865,11 @@ namespace Optron_Mount_Control
         {
             string inData;
 
-            SendMountCommand(get_Meridian_Treatment);
-            inData = GetMountResponce(4);
+            lock (InOut)
+            {
+                SendMountCommand(get_Meridian_Treatment);
+                inData = GetMountResponce(4);
+            }
             cemMeridianFlipStatus = checkBoxMeridianFlipOnOff.Checked = (inData.Substring(0, 1) == "1") ? ON : OFF;
             cemMeridianFlipDegrees = Convert.ToByte(inData.Substring(1, 2));
             labelMeridianFlipDegrees.Text = string.Format("{0}", cemMeridianFlipDegrees);
@@ -846,12 +881,14 @@ namespace Optron_Mount_Control
             string inData;
 
             if (cemMountModel.Contains("EC") == true)
-            {
-                SendMountCommand(get_Guiding_Filter_RA);
-                inData = GetMountResponce(1);
-                // ADD CODE FOR AUTO-GUIDING FILTER HERE
+                lock(InOut)
 
-            }
+                {
+                    SendMountCommand(get_Guiding_Filter_RA);
+                    inData = GetMountResponce(1);
+                    // ADD CODE FOR AUTO-GUIDING FILTER HERE
+
+                }
         }
 
 
@@ -879,16 +916,20 @@ namespace Optron_Mount_Control
         // set meridian treatment, s=0 for OnOff treatment
         public void SetMeridianTreatment(byte s)
         {
-            if (s == 0)
-                SendMountCommand(string.Format((cemMeridianFlipStatus ? "{0}0{1:00}#" : "{0}1{1:00}#"), set_Meridian_Treatment, cemMeridianFlipDegrees));
-            else
-                SendMountCommand(string.Format((cemMeridianFlipStatus ? "{0}1{1:00}#" : "{0}0{1:00}#"), set_Meridian_Treatment, cemMeridianFlipDegrees));
-            string inData = GetMountResponce(1);
+            lock (InOut)
+            {
+                if (s == 0)
+                    SendMountCommand(string.Format((cemMeridianFlipStatus ? "{0}0{1:00}#" : "{0}1{1:00}#"), set_Meridian_Treatment, cemMeridianFlipDegrees));
+                else
+                    SendMountCommand(string.Format((cemMeridianFlipStatus ? "{0}1{1:00}#" : "{0}0{1:00}#"), set_Meridian_Treatment, cemMeridianFlipDegrees));
+                string inData = GetMountResponce(1);
+            }
         }
 
 
 
         // ********** Combo Boxes ************************************************************************ Combo Boxes ***************
+        // ***** tracking rates
         private void comboBoxTrackingRate_SelectedIndexChanged(object sender, EventArgs e)
         {
             string inData;
@@ -900,13 +941,7 @@ namespace Optron_Mount_Control
             this.ActiveControl = null;
         }
 
-
-        private void comboBoxTrackingRate_DropDown(object sender, EventArgs e)
-        {
-            timer1.Stop();
-        }
-
-
+        // ***** max slewing rates
         private void comboBoxMaxSlewingRate_SelectedIndexChanged(object sender, EventArgs e)
         {
             string inData;
@@ -919,13 +954,7 @@ namespace Optron_Mount_Control
             this.ActiveControl = null;
         }
 
-
-        private void comboBoxMaxSlewingRate_DropDown(object sender, EventArgs e)
-        {
-            timer1.Stop();
-        }
-
-
+        // ***** moving rates
         private void comboBoxManualMovingRate_SelectedIndexChanged(object sender, EventArgs e)
         {
             string inData;
@@ -938,32 +967,31 @@ namespace Optron_Mount_Control
             this.ActiveControl = null;
         }
 
-
-        private void comboBoxManualMovingRate_DropDown(object sender, EventArgs e)
+        private void comboBox_StopTimer_DropDown(object sender, EventArgs e)
         {
             timer1.Stop();
         }
+
 
 
         //********************* CHECK BOXES ******************************************************************* CHECK BOXES ******************/
         private void checkBoxDayLightSavingsOnOff_MouseDown(object sender, MouseEventArgs e)
         {
-            timer1.Stop();
-            if (checkBoxDayLightSavingsOnOff.Checked == true)
-                SendMountCommand(set_DayLightSavings_OFF);
-            else
-                SendMountCommand(set_DayLightSavings_ON);
-            string inData = GetMountResponce(1);
-            timer1.Start();
+            lock (InOut)
+            {
+                if (checkBoxDayLightSavingsOnOff.Checked == true)
+                    SendMountCommand(set_DayLightSavings_OFF);
+                else
+                    SendMountCommand(set_DayLightSavings_ON);
+                string inData = GetMountResponce(1);
+            }
         }
 
 
         private void checkBoxMeridianFlipOnOff_MouseDown(object sender, MouseEventArgs e)
         {
-            timer1.Stop();
             GetMeridainTreatment();
             SetMeridianTreatment(0);
-            timer1.Start();
         }
 
 
@@ -972,7 +1000,6 @@ namespace Optron_Mount_Control
         // ***** turn tracking on - off
         private void buttonTrackingOnOff_MouseClick(object sender, MouseEventArgs e)
         {
-            timer1.Stop();
             string inData;
 
             if (cemMountParked == ON)
@@ -980,41 +1007,61 @@ namespace Optron_Mount_Control
             if (cemTrackingOnOff == ON)
             {
                 cemTrackingOnOff = OFF;
-                SendMountCommand(set_Tracking_OFF); // tracking OFF
-                inData = GetMountResponce(1);
+                lock (InOut)
+                {
+                    SendMountCommand(set_Tracking_OFF); // tracking OFF
+                    inData = GetMountResponce(1);
+                }
             }
             else
             {
                 cemTrackingOnOff = ON;
-                SendMountCommand(set_Tracking_ON);  // tracking ON
-                inData = GetMountResponce(1);
+                lock (InOut)
+                {
+                    SendMountCommand(set_Tracking_ON);  // tracking ON
+                    inData = GetMountResponce(1);
+                }
             }
-            timer1.Start();
         }
 
 
         // ***** Periodic Error Correction
         private void buttonPeriodicErrorCorrection_Click(object sender, EventArgs e)
         {
-            timer1.Stop();
             if (cemMountParked == ON)
                 return;
             if (cemPECenabled == ON)
-                StopPlaybackRecord();
+                lock (InOut)
+                {
+                    StopPlaybackRecord();
+                }
             else
                 cemPECenabled = ON;
-            timer1.Start();
         }
 
+
+        // ***** 
+        private void buttonResetPECrecording_Click(object sender, EventArgs e)
+        {
+            // do a PEC record then stop to reset PEC recording
+            lock (InOut)
+            {
+                SendMountCommand(set_PE_Record_Start);
+                GetMountResponce(1);
+                SendMountCommand(set_PE_Record_Stop);
+                GetMountResponce(1);
+            }
+        }
 
 
         // ***** go immediately to mount zero
         private void buttonGotoZeroPosition_Click(object sender, EventArgs e)
         {
-            timer1.Stop();
-            SendMountCommand(slew_Zero_Position);
-            string inData = GetMountResponce(1);
-            timer1.Start();
+            lock (InOut)
+            {
+                SendMountCommand(slew_Zero_Position);
+                string inData = GetMountResponce(1);
+            }
         }
 
 
@@ -1032,98 +1079,108 @@ namespace Optron_Mount_Control
             if (_answer == DialogResult.No)
                 return;
 
-            timer1.Stop();
-            SendMountCommand(set_Zero_Position);
-            string inData = GetMountResponce(1);
-            timer1.Start();
+            lock (InOut)
+            {
+                SendMountCommand(set_Zero_Position);
+                string inData = GetMountResponce(1);
+            }
         }
 
 
         // ***** search mount zero
         private void buttonSearchMountZero_Click(object sender, EventArgs e)
         {
-            timer1.Stop();
-            SendMountCommand(search_Zero_Position);
-            string inData = GetMountResponce(1);
-            timer1.Start();
+            lock (InOut)
+            {
+                SendMountCommand(search_Zero_Position);
+                string inData = GetMountResponce(1);
+            }
         }
 
 
         // ***** park - unpark mount
         private void buttonParkMount_Click(object sender, EventArgs e)
         {
-            timer1.Stop();
-            GetParkingPostion();
-            if (cemMountParked == ON)
-                SendMountCommand(mov_Unpark);
-            else
+            lock (InOut)
             {
-                if ((cemPECplaybackOnOff == ON) || (cemPECrecording == ON))
-                    StopPlaybackRecord();
-                SendMountCommand(mov_Parking_Position);
+                GetParkingPostion();
+                if (cemMountParked == ON)
+                    SendMountCommand(mov_Unpark);
+                else
+                {
+                    if ((cemPECplaybackOnOff == ON) || (cemPECrecording == ON))
+                        StopPlaybackRecord();
+                    SendMountCommand(mov_Parking_Position);
+                }
+                string inData = GetMountResponce(1);
             }
-            string inData = GetMountResponce(1);
-            timer1.Start();
         }
 
 
         // ***** mount stop all slewing
         private void buttonAllStop_Click(object sender, EventArgs e)
         {
-            timer1.Stop();
-            SendMountCommand(slew_Stop);
-            GetMountResponce(1);
-            timer1.Start();
+            lock (InOut)
+            {
+                SendMountCommand(slew_Stop);
+                GetMountResponce(1);
+            }
         }
 
 
         // ***** mount manual move north *****
         private void buttonMoveUp_MouseDown(object sender, MouseEventArgs e)
         {
-            timer1.Stop();
-            SendMountCommand(mov_Manual_DEC_Minus);
-            timer1.Start();
+            lock (InOut)
+            {
+                SendMountCommand(mov_Manual_DEC_Minus);
+            }
         }
 
         // ***** mount manual move south *****
         private void buttonMoveDown_MouseDown(object sender, MouseEventArgs e)
         {
-            timer1.Stop();
-            SendMountCommand(mov_Manual_DEC_Plus);
-            timer1.Start();
+            lock (InOut)
+            {
+                SendMountCommand(mov_Manual_DEC_Plus);
+            }
         }
         // ***** stop DEC manual move *****
         private void Manual_DEC_MoveSTOP_MouseUp(object sender, MouseEventArgs e)
         {
-            timer1.Stop();
-            SendMountCommand(mov_Manual_DEC_Stop);
-            string inData = GetMountResponce(1);
-            timer1.Start();
+            lock (InOut)
+            {
+                SendMountCommand(mov_Manual_DEC_Stop);
+                string inData = GetMountResponce(1);
+            }
         }
 
 
         // ***** mount manual move east *****
         private void buttonMoveRight_MouseDown(object sender, MouseEventArgs e)
         {
-            timer1.Stop();
-            SendMountCommand(mov_Manual_RA_Minus);
-            timer1.Start();
+            lock (InOut)
+            {
+                SendMountCommand(mov_Manual_RA_Minus);
+            }
         }
 
         // ***** mount manual move west *****
         private void buttonMoveLeft_MouseDown(object sender, MouseEventArgs e)
         {
-            timer1.Stop();
-            SendMountCommand(mov_Manual_RA_Plus);
-            timer1.Start();
+            lock (InOut)
+            {
+                SendMountCommand(mov_Manual_RA_Plus);
+            }
         }
         // ***** stop RA manual move *****
         private void Manual_RA_MoveSTOP_MouseUp(object sender, MouseEventArgs e)
         {
-            timer1.Stop();
-            SendMountCommand(mov_Manual_RA_Stop);
-            string inData = GetMountResponce(1);
-            timer1.Start();
+            lock (InOut)
+            {
+                SendMountCommand(mov_Manual_RA_Stop);
+                string inData = GetMountResponce(1);
+            }
         }
 
 
@@ -1142,11 +1199,12 @@ namespace Optron_Mount_Control
                 uint bb = Convert.ToUInt32(userInput._TextEntered);
                 if ((bb >= 0) && (bb <= 89))
                 {
-                    timer1.Stop();
                     cemParkingAltitude = userInput._TextEntered;
-                    SendMountCommand(string.Format("{0}{1:000000000}#", set_Alt_Park_Position, bb * 360000));
-                    GetMountResponce(1);
-                    timer1.Start();
+                    lock (InOut)
+                    {
+                        SendMountCommand(string.Format("{0}{1:000000000}#", set_Alt_Park_Position, bb * 360000));
+                        GetMountResponce(1);
+                    }
                 }
             }
             this.ActiveControl = null;
@@ -1166,11 +1224,12 @@ namespace Optron_Mount_Control
                 uint bb = Convert.ToUInt32(userInput._TextEntered);
                 if ((bb >= 0) && (bb <= 359))
                 {
-                    timer1.Stop();
                     cemParkingAzimuth = userInput._TextEntered;
-                    SendMountCommand(string.Format("{0}{1:000000000}#", set_AZ_Park_Position, bb * 360000));
-                    GetMountResponce(1);
-                    timer1.Start();
+                    lock (InOut)
+                    {
+                        SendMountCommand(string.Format("{0}{1:000000000}#", set_AZ_Park_Position, bb * 360000));
+                        GetMountResponce(1);
+                    }
                 }
             }
             this.ActiveControl = null;
@@ -1191,10 +1250,8 @@ namespace Optron_Mount_Control
                 byte bb = Convert.ToByte(userInput._TextEntered);
                 if ((bb >= 0) && (bb <= 10))
                 {
-                    timer1.Stop();
                     cemMeridianFlipDegrees = bb;
                     SetMeridianTreatment(1);
-                    timer1.Start();
                 }
             }
             this.ActiveControl = null;
@@ -1212,11 +1269,12 @@ namespace Optron_Mount_Control
                 sbyte sb = Convert.ToSByte(userInput._TextEntered);
                 if ((sb >= 0) && (sb <= 89))
                 {
-                    timer1.Stop();
                     cemAltitudeLimit = sb;
-                    SendMountCommand(string.Format((cemHemisphere == 1) ? "{0}+{1:00}#" : "{0}-{1:00}#", set_Altitude_Limit, sb));
-                    GetMountResponce(1);
-                    timer1.Start();
+                    lock (InOut)
+                    {
+                        SendMountCommand(string.Format((cemHemisphere == 1) ? "{0}+{1:00}#" : "{0}-{1:00}#", set_Altitude_Limit, sb));
+                        GetMountResponce(1);
+                    }
                 }
             }
             this.ActiveControl = null;
@@ -1234,12 +1292,13 @@ namespace Optron_Mount_Control
                 double dc = Convert.ToDouble(userInput._TextEntered);
                 if ((dc >= 0.1000) && (dc <= 1.9000))
                 {
-                    timer1.Stop();
                     string _CTR = string.Format("{0:0.0000}", dc);
                     _CTR = _CTR.Substring(0, 1) + _CTR.Substring(2, 4);
-                    SendMountCommand(string.Format("{0}{1}#", set_Custom_Tracking_Rate, _CTR));
-                    GetMountResponce(1);
-                    timer1.Start();
+                    lock (InOut)
+                    {
+                        SendMountCommand(string.Format("{0}{1}#", set_Custom_Tracking_Rate, _CTR));
+                        GetMountResponce(1);
+                    }
                 }
             }
             this.ActiveControl = null;
@@ -1257,12 +1316,13 @@ namespace Optron_Mount_Control
                 double gr = Convert.ToDouble(userInput._TextEntered);
                 if ((gr >= 0.01) && (gr <= 0.90))
                 {
-                    timer1.Stop();
                     string _RAgr = string.Format("{0:0.00}", gr);
                     _RAgr = _RAgr.Substring(2, 2);
-                    SendMountCommand(string.Format("{0}{1}{2}#", set_Guiding_Rate, _RAgr, cemDECguidingRate));
-                    GetMountResponce(1);
-                    timer1.Start();
+                    lock (InOut)
+                    {
+                        SendMountCommand(string.Format("{0}{1}{2}#", set_Guiding_Rate, _RAgr, cemDECguidingRate));
+                        GetMountResponce(1);
+                    }
                 }
             }
             this.ActiveControl = null;
@@ -1280,12 +1340,13 @@ namespace Optron_Mount_Control
                 double gr = Convert.ToDouble(userInput._TextEntered);
                 if ((gr >= 0.10) && (gr <= 0.99))
                 {
-                    timer1.Stop();
                     string _DECgr = string.Format("{0:0.00}", gr);
                     _DECgr = _DECgr.Substring(2, 2);
-                    SendMountCommand(string.Format("{0}{1}{2}#", set_Guiding_Rate, cemRAguidingRate, _DECgr));
-                    GetMountResponce(1);
-                    timer1.Start();
+                    lock (InOut)
+                    {
+                        SendMountCommand(string.Format("{0}{1}{2}#", set_Guiding_Rate, cemRAguidingRate, _DECgr));
+                        GetMountResponce(1);
+                    }
                 }
             }
             this.ActiveControl = null;
@@ -1303,11 +1364,11 @@ namespace Optron_Mount_Control
                 short os = Convert.ToInt16(userInput._TextEntered);
                 if ((os >= -720) && (os <= +780))
                 {
-                    timer1.Stop();
-                    // cemUTCoffset = userInput._TextEntered;
-                    SendMountCommand(string.Format((os >= 0) ? "{0}+{1:000}#" : "{0}-{1:000}#", set_UTC_offset_Localtime, Math.Abs(os)));
-                    GetMountResponce(1);
-                    timer1.Start();
+                    lock (InOut)
+                    {
+                        SendMountCommand(string.Format((os >= 0) ? "{0}+{1:000}#" : "{0}-{1:000}#", set_UTC_offset_Localtime, Math.Abs(os)));
+                        GetMountResponce(1);
+                    }
                 }
             }
             this.ActiveControl = null;
