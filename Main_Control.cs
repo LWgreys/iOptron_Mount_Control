@@ -179,8 +179,9 @@ namespace Optron_Mount_Control
         {
             InitializeComponent();
 
-            // Disable Connect Button
+            // Disable Button
             ButtonCOMPortConnect.Enabled = OFF;
+            buttonResetPEC.Enabled = OFF;
 
             // Get a list of COM ports
             ComboBoxComPort.Items.Clear(); // Clear any existing entries
@@ -562,6 +563,11 @@ namespace Optron_Mount_Control
             {
                 lock (InOut)
                     GetPeriodicErrorStatus();
+                if (cemPECdataComplete == ON)
+                    buttonResetPEC.Enabled = ON;
+                else
+                    buttonResetPEC.Enabled = OFF;
+
                 if (cemPECplaybackOnOff == OFF)
                 {
                     if ((cemPECdataComplete == OFF) && (cemPECrecording == OFF))
@@ -1006,6 +1012,16 @@ namespace Optron_Mount_Control
             timer1.Start();
         }
 
+
+        // ***** 
+        private void buttonResetPECrecording_Click(object sender, EventArgs e)
+        {
+            // do a PEC record then stop to reset PEC recording
+            SendMountCommand(set_PE_Record_Start);
+            GetMountResponce(1);
+            SendMountCommand(set_PE_Record_Stop);
+            GetMountResponce(1);
+        }
 
 
         // ***** go immediately to mount zero
