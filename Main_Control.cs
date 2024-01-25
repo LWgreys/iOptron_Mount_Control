@@ -562,6 +562,8 @@ namespace Optron_Mount_Control
             if (cemPECenabled == ON) // && (cemTrackingOnOff == ON))
             {
                 GetPeriodicErrorStatus();
+                lock (InOut)
+                    GetPeriodicErrorStatus();
                 if (cemPECdataComplete == ON)
                     buttonResetPEC.Enabled = ON;
                 else
@@ -1040,10 +1042,9 @@ namespace Optron_Mount_Control
         }
 
 
-        // ***** 
+        // ***** reset PEC recording
         private void buttonResetPECrecording_Click(object sender, EventArgs e)
         {
-            // do a PEC record then stop to reset PEC recording
             lock (InOut)
             {
                 SendMountCommand(set_PE_Record_Start);
