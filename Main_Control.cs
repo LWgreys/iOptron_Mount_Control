@@ -74,9 +74,9 @@ namespace Optron_Mount_Control
         public string set_Meridian_Treatment = ":SMT"; // +"nnn#" first digit 0=Stop or 1=Flip at second 2 digits Degrees
         public const string reset_All_to_Defaults = ":RAS#"; // returns "1" Does NOT reset any date, time or time zone settings
         //*** CEM Mount Motion commands
-        public string slew_Previous_RA_DEC = ":MS"; // +"1#" slew normal previous set RA DEC position, +"2#"= slew counter weight up, 
+        public string slew_to_set_RA_DEC = ":MS"; // +"1#" slew normal previous set RA DEC position, +"2#"= slew counter weight up, 
                                                     // return "1" if command accepted, "0" if object below limit or exceeds mechanical limits
-        public const string slew_Previous_Alt_Az = ":MSS#"; // Slew to previous set Altitude Azimuth postion,
+        public const string slew_to_set_Alt_Az = ":MSS#"; // Slew to previous set Altitude Azimuth postion,
                                                             // return "1" if command accepted, "0" if object below limit or exceeds mechanical limits
         public const string slew_Stop = ":Q#"; // stops all slewing operations, tracking will not be effected, returns "1"
         public const string set_Tracking_OFF = ":ST0#"; // returns "1", turns tracking OFF
@@ -108,11 +108,11 @@ namespace Optron_Mount_Control
         public const string mov_Manual_DEC_Stop = ":qD#"; // stop moving manually DEC only, returns "1"
         //*** CEM Mount Position commands
         public const string Calibrate_Mount = ":CM#"; // Calibrate Mount, returns "1"
-        public const string Query_Num_Aval_Positions = ":QAP#"; // returns "0#", "1#", "2#"
-        public const string set_Calibrate_RA = ":SRA"; // +"TTTTTTTTT#"= .01 Arcseconds to most recent defined RA, returns "1"
-        public const string set_Calibrate_DEC = ":Sd"; // +"sTTTTTTTT#"= signed -+.01 Arcseconds to most recent defined DEC, returns "1"
-        public const string set_Calibrate_Alt = ":Sa"; // +"sTTTTTTTT#"= signed -+.01 Arcseconds to most recent defined Altitude, returns "1"
-        public const string set_Calibrate_Aa = ":Sz"; // +"sTTTTTTTT#"= signed -+.01 Arcseconds to most recent defined Azimuth, returns "1"
+        public const string Query_Num_Positions = ":QAP#"; // returns "0#"= cannot slew, "1#"= can slew, "2#"= ?CWup slew 
+        public const string set_RA_Position = ":SRA"; // +"TTTTTTTTT#"= .01 Arcseconds to set defined RA, returns "1"
+        public const string set_DEC_Position = ":Sd"; // +"sTTTTTTTT#"= signed -+.01 Arcseconds to set defined DEC, returns "1"
+        public const string set_ALT_Position = ":Sa"; // +"sTTTTTTTT#"= signed -+.01 Arcseconds to set defined Altitude, returns "1"
+        public const string set_AZ_Position = ":Sz"; // +"sTTTTTTTT#"= .01 Arcseconds to set defined Azimuth, returns "1"
         public const string set_Zero_Position = ":SZP#"; // set current poosition as ZERO Position, returns "1"
         public const string set_AZ_Park_Position = ":SPA"; // +"TTTTTTTTT#= .01 Arcseconds, returns "1"
         public const string set_Alt_Park_Position = ":SPH"; // +"TTTTTTTTT#= .01 Arcseconds, returns "1"
@@ -280,6 +280,7 @@ namespace Optron_Mount_Control
             firmwareDate = MountCommand(get_RA_DEC_Firmware, 13);
             cemRAfirmwareDate = firmwareDate.Substring(0, 6);
             cemDECfirmwareDate = firmwareDate.Substring(6, 6);
+            GetPeriodicErrorStatus();
 
             // set other data attributes
             labelTimeSource.Text = "....";
@@ -576,12 +577,11 @@ namespace Optron_Mount_Control
                         inData = MountCommand(set_Playback_PR_ON, 1);   // turn periodic error playback ON
                     cemPECplaybackOnOff = ON;
                 }
-
-                if (cemPECdataComplete == ON)
-                    buttonResetPEC.Enabled = ON;
-                else
-                    buttonResetPEC.Enabled = OFF;
             }
+            if (cemPECdataComplete == ON)
+                buttonResetPEC.Enabled = ON;
+            else
+                buttonResetPEC.Enabled = OFF;
             
             // get other data
             getOtherData(_OtherData_);
@@ -666,11 +666,52 @@ namespace Optron_Mount_Control
                 case 3:
                     return string.Format("{0:0} : {1:00} : {2:00}.{3:00}", _degrees, _minutes, _seconds, _decimal);
                 case 4:
-                    // return string.Format("{0:0} : {1:00} : {2:00}", _degrees, _minutes, _seconds);
                     return string.Format("{0:0}", _degrees);
-                default:
+                case 1:
                     return string.Format("{0:0}h {1:00}m {2:00}.{3:00}s", _degrees, _minutes, _seconds, _decimal);
+                default:
+                    return string.Format("{0:0} : {1:00} : {2:00}", _degrees, _minutes, _seconds);
             }
+        }
+
+
+        // do mount slew --- entry RA DEC arcseconds or AZ ALT arcseconds, 0 for RA DEC or 1 for ALT AZ --- returns 1=success 0=failed
+        // DEC & ALT are signed values
+        public byte DoMountSlew(string uRA_AZ, string sDEC_ALT, byte axisType)
+        {
+            string inData;
+
+            if (axisType == 0)
+            {
+                inData = MountCommand(set_RA_Position + uRA_AZ + "#", 1);
+                inData = MountCommand(set_DEC_Position + sDEC_ALT + "#", 1);
+                inData = MountCommand(Query_Num_Positions, 2);
+                if (inData == "0#")
+                    return 0;
+                inData = MountCommand(set_RA_Position + uRA_AZ + "#", 1);
+                inData = MountCommand(set_DEC_Position + sDEC_ALT + "#", 1);
+                inData = MountCommand(slew_to_set_RA_DEC + "1#", 1);
+                if (inData == "1")
+                    return 1;
+                else
+                    return 0;
+            }
+            if (axisType == 1)
+            {
+                inData = MountCommand(set_AZ_Position + uRA_AZ + "#", 1);
+                inData = MountCommand(set_ALT_Position + sDEC_ALT + "#", 1);
+                inData = MountCommand(Query_Num_Positions, 2);
+                if (inData == "0#")
+                    return 0;
+                inData = MountCommand(set_AZ_Position + uRA_AZ + "#", 1);
+                inData = MountCommand(set_ALT_Position + sDEC_ALT + "#", 1);
+                inData = MountCommand(slew_to_set_RA_DEC + "1#", 1);
+                if (inData == "1")
+                    return 1;
+                else
+                    return 0;
+            }
+            return 0;
         }
 
 
@@ -685,7 +726,6 @@ namespace Optron_Mount_Control
             lock (InOut)
                 inData = MountCommand(string.Format("{0}{1:0000000000000}#", set_UTC_Time, mountUTCtime), 1);
         }
-
 
 
         //******************* Julian Date ************************************************** Julian Date *****************************
@@ -731,15 +771,18 @@ namespace Optron_Mount_Control
             return (int)(365.25 * (Y + 4716)) + (int)(30.6001 * (M + 1)) + D + B - 1524.5;
         }
 
+        /*
         static public double JD(int year, int month, int day, int hour, int minute, int second, int millisecond)
         {
             return DateToJD(year, month, day, hour, minute, second, millisecond);
         }
+        */
 
         static public double JD(DateTime date)
         {
             return DateToJD(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second, date.Millisecond);
         }
+        //******************* END Julian Date
 
 
         //******************* Get Other Data *********************************************************** Get Other Data **************
@@ -833,7 +876,7 @@ namespace Optron_Mount_Control
         }
 
 
-        public void getOtherData(byte b)
+        public void getOtherData(byte b) //********** Entry point to get other data ** b = what data not to get due to button press
         {
             if ((b != 1) && (cemTrackingRate == 4) && (cemCustomTrackingRateChanged == true))
                 GetCostumTrackingRate();
@@ -862,9 +905,9 @@ namespace Optron_Mount_Control
             lock (InOut)
             {
                 if (s == 0)
-                    inData = MountCommand(string.Format((cemMeridianFlipStatus ? "{0}0{1:00}#" : "{0}1{1:00}#"), set_Meridian_Treatment, cemMeridianFlipDegrees), 1);
+                    inData = MountCommand(string.Format(cemMeridianFlipStatus ? "{0}0{1:00}#" : "{0}1{1:00}#", set_Meridian_Treatment, cemMeridianFlipDegrees), 1);
                 else
-                    inData = MountCommand(string.Format((cemMeridianFlipStatus ? "{0}1{1:00}#" : "{0}0{1:00}#"), set_Meridian_Treatment, cemMeridianFlipDegrees), 1);
+                    inData = MountCommand(string.Format(cemMeridianFlipStatus ? "{0}1{1:00}#" : "{0}0{1:00}#", set_Meridian_Treatment, cemMeridianFlipDegrees), 1);
             }
         }
 
@@ -937,6 +980,7 @@ namespace Optron_Mount_Control
             SetMeridianTreatment(0);            // change the flip statas ON or OFF
             cemMeridianTreatmentChanged = true;
         }
+
 
 
         //********************* BUTTONS ****************************************************************** BUTTONS ******************/
@@ -1187,7 +1231,6 @@ namespace Optron_Mount_Control
         }
 
 
-
         // ***** set meridian flip degrees *****
         private void MeridianFlipDegrees_Click(object sender, EventArgs e)
         {
@@ -1322,5 +1365,99 @@ namespace Optron_Mount_Control
             }
             this.ActiveControl = null;
         }
+
+        private void Goto_RA_DEC_Position_Click(object sender, EventArgs e)
+        {
+            string inData, _RA, _DEC;
+            double RA_Deg;
+            double[] d;
+            byte n;
+
+            FormUserInput2 userInput2 = new FormUserInput2();
+            userInput2._DialogLabel1 = "RA: hh mm ss";
+            userInput2._DialogLabel2 = "DEC: dd mm ss";
+            userInput2.ShowDialog();
+            if (userInput2._FormStatus == true)
+            {
+                inData = userInput2._TextEntered1;
+                d = new double[] {0,0,0,0,0,0,0,0};
+                string[] RA_Split = inData.Split(' ');
+                n = 0;
+                foreach (string num in RA_Split)
+                    d[n++] = Convert.ToDouble(num);
+                RA_Deg = d[2] / 3600.0 * 15.0;
+                RA_Deg += d[1] / 60.0 * 15.0;
+                RA_Deg += 360.0 / 24.0 * d[0];
+                _RA = string.Format("{0:000000000}", RA_Deg * 3600.0 * 100.0);
+
+                _DEC = Str2MillSecDegStr(userInput2._TextEntered2, 8);
+                lock(InOut)
+                    if (DoMountSlew(_RA, _DEC, 0) == 0)
+                    {
+                        ErrorForm _error_ = new ErrorForm();
+                        _error_.ShowDialog();
+                    }
+            }
+        }
+
+        private void Goto_AZ_ALT_Position_Click(object sender, EventArgs e)
+        {
+            string _AZ, _ALT;
+
+            FormUserInput2 userInput2 = new FormUserInput2();
+            userInput2._DialogLabel1 = "ALT: dd mm ss";
+            userInput2._DialogLabel2 = "AZ: ddd mm ss";
+            userInput2.ShowDialog();
+            if (userInput2._FormStatus == true)
+            {
+                _ALT = Str2MillSecDegStr(userInput2._TextEntered1, 8);
+                _AZ = Str2MillSecDegStr(userInput2._TextEntered2, 9);
+                lock(InOut)
+                    if (DoMountSlew(_AZ, _ALT, 1) == 0)
+                    {
+                        ErrorForm _error_ = new ErrorForm();
+                        _error_.ShowDialog();
+                    }
+            }
+        }
+
+        private string Str2MillSecDegStr(string _str, byte T) //*** T = 8 or 9 number of digits returned
+        {
+            double _Deg;
+            double[] d;
+            byte n;
+
+            d = new double[] {0,0,0,0,0,0,0,0};
+            string[] _Split = _str.Split(' ');
+            n = 0;
+            foreach (string num in _Split)
+                d[n++] = Convert.ToDouble(num);
+            _Deg = d[2] / 3600.0;
+            _Deg += d[1] / 60.0;
+            _Deg += Math.Abs(d[0]);
+            return string.Format(T == 8 ? (d[0] < 0.0 ? "{0:-00000000}" : "{0:+00000000}") : "{0:000000000}", _Deg * 3600.0 * 100.0);
+        }
+
+        private void Set_Latitude_Longitude_Click(object sender, EventArgs e)
+        {
+            string _LOG, _LAT, inData;
+
+            FormUserInput2 userInput2 = new FormUserInput2();
+            userInput2._DialogLabel1 = "LAT: dd mm ss";
+            userInput2._DialogLabel2 = "LOG: ddd mm ss";
+            userInput2.ShowDialog();
+            if (userInput2._FormStatus == true)
+            {
+                lock (InOut)
+                {
+                    _LAT = Str2MillSecDegStr(userInput2._TextEntered1, 8);
+                    inData = MountCommand(set_Latitude + _LAT + "#", 1);
+                    _LOG = Str2MillSecDegStr(userInput2._TextEntered2, 8);
+                    inData = MountCommand(set_Longitude + _LOG + "#", 1);
+                }
+            }
+        }
+
+        //############################################################ WORK IN PROGRESS ################################################
     }
 }

@@ -40,12 +40,9 @@ namespace iOptron_Mount_Control
                 _FormStatus = false;
                 Close();
             }
-            else
-            {
-                _TextEntered = _UserEntry.Text;
-                _FormStatus = true;
-                Close();
-            }
+            _TextEntered = _UserEntry.Text;
+            _FormStatus = true;
+            Close();
         }
     }
 }

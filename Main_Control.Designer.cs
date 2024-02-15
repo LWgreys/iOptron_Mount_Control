@@ -224,6 +224,7 @@
             this.labelLongitude.Size = new System.Drawing.Size(105, 21);
             this.labelLongitude.TabIndex = 8;
             this.labelLongitude.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.labelLongitude.DoubleClick += new System.EventHandler(this.Set_Latitude_Longitude_Click);
             // 
             // labelLatitude
             // 
@@ -238,6 +239,7 @@
             this.labelLatitude.Size = new System.Drawing.Size(105, 21);
             this.labelLatitude.TabIndex = 8;
             this.labelLatitude.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.labelLatitude.DoubleClick += new System.EventHandler(this.Set_Latitude_Longitude_Click);
             // 
             // labelTimeUTC
             // 
@@ -280,7 +282,7 @@
             this.labelUTC_Offset.TabIndex = 18;
             this.labelUTC_Offset.Text = "-360";
             this.labelUTC_Offset.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelUTC_Offset.Click += new System.EventHandler(this.UTC_Offset_Click);
+            this.labelUTC_Offset.DoubleClick += new System.EventHandler(this.UTC_Offset_Click);
             // 
             // checkBoxDayLightSavingsOnOff
             // 
@@ -386,6 +388,7 @@
             this.labelAzimuth.Size = new System.Drawing.Size(90, 17);
             this.labelAzimuth.TabIndex = 14;
             this.labelAzimuth.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.labelAzimuth.DoubleClick += new System.EventHandler(this.Goto_AZ_ALT_Position_Click);
             // 
             // labelDEC
             // 
@@ -398,6 +401,7 @@
             this.labelDEC.Size = new System.Drawing.Size(90, 17);
             this.labelDEC.TabIndex = 13;
             this.labelDEC.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.labelDEC.DoubleClick += new System.EventHandler(this.Goto_RA_DEC_Position_Click);
             // 
             // labelAltitude
             // 
@@ -410,6 +414,7 @@
             this.labelAltitude.Size = new System.Drawing.Size(90, 17);
             this.labelAltitude.TabIndex = 12;
             this.labelAltitude.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.labelAltitude.DoubleClick += new System.EventHandler(this.Goto_AZ_ALT_Position_Click);
             // 
             // labelRA
             // 
@@ -422,6 +427,7 @@
             this.labelRA.Size = new System.Drawing.Size(90, 17);
             this.labelRA.TabIndex = 12;
             this.labelRA.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.labelRA.DoubleClick += new System.EventHandler(this.Goto_RA_DEC_Position_Click);
             // 
             // groupBoxSettings_Limits
             // 
@@ -477,7 +483,7 @@
             this.labelDEC_GuidingRate.Size = new System.Drawing.Size(37, 21);
             this.labelDEC_GuidingRate.TabIndex = 21;
             this.labelDEC_GuidingRate.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelDEC_GuidingRate.Click += new System.EventHandler(this.DEC_GuidingRate_Click);
+            this.labelDEC_GuidingRate.DoubleClick += new System.EventHandler(this.DEC_GuidingRate_Click);
             // 
             // labelRA_GuidingRate
             // 
@@ -491,7 +497,7 @@
             this.labelRA_GuidingRate.Size = new System.Drawing.Size(37, 21);
             this.labelRA_GuidingRate.TabIndex = 20;
             this.labelRA_GuidingRate.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelRA_GuidingRate.Click += new System.EventHandler(this.RA_GuidingRate_Click);
+            this.labelRA_GuidingRate.DoubleClick += new System.EventHandler(this.RA_GuidingRate_Click);
             // 
             // labelCustomeTrackingRate
             // 
@@ -505,7 +511,7 @@
             this.labelCustomeTrackingRate.Size = new System.Drawing.Size(50, 21);
             this.labelCustomeTrackingRate.TabIndex = 19;
             this.labelCustomeTrackingRate.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelCustomeTrackingRate.Click += new System.EventHandler(this.CustomeTrackingRate_Click);
+            this.labelCustomeTrackingRate.DoubleClick += new System.EventHandler(this.CustomeTrackingRate_Click);
             // 
             // labelAltitudeLimitMIN
             // 
@@ -519,7 +525,7 @@
             this.labelAltitudeLimitMIN.Size = new System.Drawing.Size(24, 21);
             this.labelAltitudeLimitMIN.TabIndex = 18;
             this.labelAltitudeLimitMIN.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelAltitudeLimitMIN.Click += new System.EventHandler(this.AltitudeLimitMIN_Click);
+            this.labelAltitudeLimitMIN.DoubleClick += new System.EventHandler(this.AltitudeLimitMIN_Click);
             // 
             // labelMeridianFlipDegrees
             // 
@@ -533,7 +539,7 @@
             this.labelMeridianFlipDegrees.Size = new System.Drawing.Size(24, 21);
             this.labelMeridianFlipDegrees.TabIndex = 17;
             this.labelMeridianFlipDegrees.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelMeridianFlipDegrees.Click += new System.EventHandler(this.MeridianFlipDegrees_Click);
+            this.labelMeridianFlipDegrees.DoubleClick += new System.EventHandler(this.MeridianFlipDegrees_Click);
             // 
             // label14
             // 
@@ -679,7 +685,7 @@
             this.labelMountParkingAzimuth.Size = new System.Drawing.Size(30, 22);
             this.labelMountParkingAzimuth.TabIndex = 7;
             this.labelMountParkingAzimuth.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelMountParkingAzimuth.Click += new System.EventHandler(this.MountParkingAzimuth_Click);
+            this.labelMountParkingAzimuth.DoubleClick += new System.EventHandler(this.MountParkingAzimuth_Click);
             // 
             // labelMountParkingAltitude
             // 
@@ -693,7 +699,7 @@
             this.labelMountParkingAltitude.Size = new System.Drawing.Size(30, 22);
             this.labelMountParkingAltitude.TabIndex = 6;
             this.labelMountParkingAltitude.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelMountParkingAltitude.Click += new System.EventHandler(this.MountParkingAltitude_Click);
+            this.labelMountParkingAltitude.DoubleClick += new System.EventHandler(this.MountParkingAltitude_Click);
             // 
             // buttonParkMount
             // 
