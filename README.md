@@ -11,7 +11,5 @@ One issue is the meridian flip's Degrees Past Meridian should be Minutes Past Me
 Latest addin was the one button Periodic Error Correction tracking & record and the Reset PEC recording.
 
 Future addins:
-1. Manual entering RA & DEC coordinates or ALT AZ coordinates.
-2. Manual entering location and time.
-3. Slew to object.  ......................... Next
+3. Slew to object.
 4. Make the program ASCOM compatible.
