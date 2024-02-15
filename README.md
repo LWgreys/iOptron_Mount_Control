@@ -11,5 +11,7 @@ One issue is the meridian flip's Degrees Past Meridian should be Minutes Past Me
 Latest addin was the one button Periodic Error Correction tracking & record and the Reset PEC recording.
 
 Future addins:
+
 3. Slew to object.
-4. Make the program ASCOM compatible.
+4. 
+5. Make the program ASCOM compatible.
