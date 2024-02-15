@@ -13,5 +13,4 @@ Latest addin was the one button Periodic Error Correction tracking & record and 
 Future addins:
 
 3. Slew to object.
-4. 
-5. Make the program ASCOM compatible.
+4. Make the program ASCOM compatible.
