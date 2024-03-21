@@ -6,6 +6,7 @@ Coded in C# using Microsoft Visual Studio.
 I did find a few issues with the CEM firmware and have written iOptron support about the issues.
 
 02-05-2024 Addin was the Periodic Error Correction tracking & record and the Reset PEC recording.
+
 03-21-2024 Added 'Slew to Object' - requires internet to search SIMBA for data.
 
 Future addins:
