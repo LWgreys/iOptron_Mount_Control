@@ -1,4 +1,4 @@
-﻿namespace Optron_Mount_Control
+﻿namespace iOptron_Mount_Control
 {
     partial class MainControlForm
     {
@@ -107,6 +107,7 @@
             this.MountComPort = new System.IO.Ports.SerialPort(this.components);
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.buttonSlewToObject = new System.Windows.Forms.Button();
             this.groupBoxMountGPS_Time.SuspendLayout();
             this.groupBoxMountPointingPosition.SuspendLayout();
             this.groupBoxSettings_Limits.SuspendLayout();
@@ -154,9 +155,9 @@
             this.ButtonCOMPortConnect.Location = new System.Drawing.Point(182, 10);
             this.ButtonCOMPortConnect.Margin = new System.Windows.Forms.Padding(4);
             this.ButtonCOMPortConnect.Name = "ButtonCOMPortConnect";
-            this.ButtonCOMPortConnect.Size = new System.Drawing.Size(233, 31);
+            this.ButtonCOMPortConnect.Size = new System.Drawing.Size(197, 31);
             this.ButtonCOMPortConnect.TabIndex = 2;
-            this.ButtonCOMPortConnect.Text = "Connect";
+            this.ButtonCOMPortConnect.Text = "Connect to CEM70(G)-EC";
             this.ButtonCOMPortConnect.UseVisualStyleBackColor = false;
             this.ButtonCOMPortConnect.Click += new System.EventHandler(this.ButtonCOMPortConnect_Click);
             // 
@@ -293,7 +294,7 @@
             this.checkBoxDayLightSavingsOnOff.TabIndex = 17;
             this.checkBoxDayLightSavingsOnOff.Text = "Day Light Savings";
             this.checkBoxDayLightSavingsOnOff.UseVisualStyleBackColor = true;
-            this.checkBoxDayLightSavingsOnOff.MouseDown += new System.Windows.Forms.MouseEventHandler(this.checkBoxDayLightSavingsOnOff_MouseDown);
+            this.checkBoxDayLightSavingsOnOff.MouseDown += new System.Windows.Forms.MouseEventHandler(this.CheckBoxDayLightSavingsOnOff_MouseDown);
             // 
             // label13
             // 
@@ -388,7 +389,7 @@
             this.labelAzimuth.Size = new System.Drawing.Size(90, 17);
             this.labelAzimuth.TabIndex = 14;
             this.labelAzimuth.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelAzimuth.DoubleClick += new System.EventHandler(this.Goto_AZ_ALT_Position_Click);
+            this.labelAzimuth.DoubleClick += new System.EventHandler(this.Goto_ALT_AZ_Position_Click);
             // 
             // labelDEC
             // 
@@ -414,7 +415,7 @@
             this.labelAltitude.Size = new System.Drawing.Size(90, 17);
             this.labelAltitude.TabIndex = 12;
             this.labelAltitude.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelAltitude.DoubleClick += new System.EventHandler(this.Goto_AZ_ALT_Position_Click);
+            this.labelAltitude.DoubleClick += new System.EventHandler(this.Goto_ALT_AZ_Position_Click);
             // 
             // labelRA
             // 
@@ -469,7 +470,7 @@
             this.buttonResetPEC.TabIndex = 22;
             this.buttonResetPEC.Text = "Reset PEC";
             this.buttonResetPEC.UseVisualStyleBackColor = false;
-            this.buttonResetPEC.Click += new System.EventHandler(this.buttonResetPECrecording_Click);
+            this.buttonResetPEC.Click += new System.EventHandler(this.ButtonResetPECrecording_Click);
             // 
             // labelDEC_GuidingRate
             // 
@@ -595,8 +596,8 @@
             this.comboBoxTrackingRate.Name = "comboBoxTrackingRate";
             this.comboBoxTrackingRate.Size = new System.Drawing.Size(89, 23);
             this.comboBoxTrackingRate.TabIndex = 9;
-            this.comboBoxTrackingRate.DropDown += new System.EventHandler(this.comboBox_StopTimer_DropDown);
-            this.comboBoxTrackingRate.SelectedIndexChanged += new System.EventHandler(this.comboBoxTrackingRate_SelectedIndexChanged);
+            this.comboBoxTrackingRate.DropDown += new System.EventHandler(this.ComboBox_StopTimer_DropDown);
+            this.comboBoxTrackingRate.SelectedIndexChanged += new System.EventHandler(this.ComboBoxTrackingRate_SelectedIndexChanged);
             // 
             // label12
             // 
@@ -617,7 +618,7 @@
             this.checkBoxMeridianFlipOnOff.TabIndex = 7;
             this.checkBoxMeridianFlipOnOff.Text = "Meridian Flip";
             this.checkBoxMeridianFlipOnOff.UseVisualStyleBackColor = false;
-            this.checkBoxMeridianFlipOnOff.MouseDown += new System.Windows.Forms.MouseEventHandler(this.checkBoxMeridianFlipOnOff_MouseDown);
+            this.checkBoxMeridianFlipOnOff.MouseDown += new System.Windows.Forms.MouseEventHandler(this.CheckBoxMeridianFlipOnOff_MouseDown);
             // 
             // comboBoxMaxSlewingRate
             // 
@@ -635,8 +636,8 @@
             this.comboBoxMaxSlewingRate.Name = "comboBoxMaxSlewingRate";
             this.comboBoxMaxSlewingRate.Size = new System.Drawing.Size(63, 23);
             this.comboBoxMaxSlewingRate.TabIndex = 6;
-            this.comboBoxMaxSlewingRate.DropDown += new System.EventHandler(this.comboBox_StopTimer_DropDown);
-            this.comboBoxMaxSlewingRate.SelectedIndexChanged += new System.EventHandler(this.comboBoxMaxSlewingRate_SelectedIndexChanged);
+            this.comboBoxMaxSlewingRate.DropDown += new System.EventHandler(this.ComboBox_StopTimer_DropDown);
+            this.comboBoxMaxSlewingRate.SelectedIndexChanged += new System.EventHandler(this.ComboBoxMaxSlewingRate_SelectedIndexChanged);
             // 
             // label11
             // 
@@ -714,7 +715,7 @@
             this.buttonParkMount.TabIndex = 5;
             this.buttonParkMount.Text = "Park Mount";
             this.buttonParkMount.UseVisualStyleBackColor = false;
-            this.buttonParkMount.Click += new System.EventHandler(this.buttonParkMount_Click);
+            this.buttonParkMount.Click += new System.EventHandler(this.ButtonParkMount_Click);
             // 
             // label22
             // 
@@ -776,7 +777,7 @@
             this.buttonSetNewZeroPosition.TabIndex = 2;
             this.buttonSetNewZeroPosition.Text = "Set New Zero Pos.";
             this.buttonSetNewZeroPosition.UseVisualStyleBackColor = false;
-            this.buttonSetNewZeroPosition.Click += new System.EventHandler(this.buttonSetNewZeroPosition_Click);
+            this.buttonSetNewZeroPosition.Click += new System.EventHandler(this.ButtonSetNewZeroPosition_Click);
             // 
             // buttonGotoZeroPosition
             // 
@@ -790,7 +791,7 @@
             this.buttonGotoZeroPosition.TabIndex = 1;
             this.buttonGotoZeroPosition.Text = "Goto Zero Position";
             this.buttonGotoZeroPosition.UseVisualStyleBackColor = false;
-            this.buttonGotoZeroPosition.Click += new System.EventHandler(this.buttonGotoZeroPosition_Click);
+            this.buttonGotoZeroPosition.Click += new System.EventHandler(this.ButtonGotoZeroPosition_Click);
             // 
             // buttonSearchMountZero
             // 
@@ -804,7 +805,7 @@
             this.buttonSearchMountZero.TabIndex = 0;
             this.buttonSearchMountZero.Text = "Search Zero Pos.";
             this.buttonSearchMountZero.UseVisualStyleBackColor = false;
-            this.buttonSearchMountZero.Click += new System.EventHandler(this.buttonSearchMountZero_Click);
+            this.buttonSearchMountZero.Click += new System.EventHandler(this.ButtonSearchMountZero_Click);
             // 
             // groupBoxMountPad
             // 
@@ -895,8 +896,8 @@
             this.comboBoxManualMovingRate.Name = "comboBoxManualMovingRate";
             this.comboBoxManualMovingRate.Size = new System.Drawing.Size(73, 23);
             this.comboBoxManualMovingRate.TabIndex = 13;
-            this.comboBoxManualMovingRate.DropDown += new System.EventHandler(this.comboBox_StopTimer_DropDown);
-            this.comboBoxManualMovingRate.SelectedIndexChanged += new System.EventHandler(this.comboBoxManualMovingRate_SelectedIndexChanged);
+            this.comboBoxManualMovingRate.DropDown += new System.EventHandler(this.ComboBox_StopTimer_DropDown);
+            this.comboBoxManualMovingRate.SelectedIndexChanged += new System.EventHandler(this.ComboBoxManualMovingRate_SelectedIndexChanged);
             // 
             // buttonAllStop
             // 
@@ -914,7 +915,7 @@
             this.buttonAllStop.TabIndex = 12;
             this.buttonAllStop.Text = "STOP";
             this.buttonAllStop.UseVisualStyleBackColor = false;
-            this.buttonAllStop.Click += new System.EventHandler(this.buttonAllStop_Click);
+            this.buttonAllStop.Click += new System.EventHandler(this.ButtonAllStop_Click);
             // 
             // buttonMoveDown
             // 
@@ -931,7 +932,7 @@
             this.buttonMoveDown.Size = new System.Drawing.Size(75, 75);
             this.buttonMoveDown.TabIndex = 3;
             this.buttonMoveDown.UseVisualStyleBackColor = false;
-            this.buttonMoveDown.MouseDown += new System.Windows.Forms.MouseEventHandler(this.buttonMoveDown_MouseDown);
+            this.buttonMoveDown.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ButtonMoveDown_MouseDown);
             this.buttonMoveDown.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Manual_DEC_MoveSTOP_MouseUp);
             // 
             // buttonMoveRight
@@ -949,7 +950,7 @@
             this.buttonMoveRight.Size = new System.Drawing.Size(75, 75);
             this.buttonMoveRight.TabIndex = 2;
             this.buttonMoveRight.UseVisualStyleBackColor = false;
-            this.buttonMoveRight.MouseDown += new System.Windows.Forms.MouseEventHandler(this.buttonMoveRight_MouseDown);
+            this.buttonMoveRight.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ButtonMoveRight_MouseDown);
             this.buttonMoveRight.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Manual_RA_MoveSTOP_MouseUp);
             // 
             // buttonMoveLeft
@@ -967,7 +968,7 @@
             this.buttonMoveLeft.Size = new System.Drawing.Size(75, 75);
             this.buttonMoveLeft.TabIndex = 1;
             this.buttonMoveLeft.UseVisualStyleBackColor = false;
-            this.buttonMoveLeft.MouseDown += new System.Windows.Forms.MouseEventHandler(this.buttonMoveLeft_MouseDown);
+            this.buttonMoveLeft.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ButtonMoveLeft_MouseDown);
             this.buttonMoveLeft.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Manual_RA_MoveSTOP_MouseUp);
             // 
             // buttonMoveUp
@@ -985,7 +986,7 @@
             this.buttonMoveUp.Size = new System.Drawing.Size(75, 75);
             this.buttonMoveUp.TabIndex = 0;
             this.buttonMoveUp.UseVisualStyleBackColor = false;
-            this.buttonMoveUp.MouseDown += new System.Windows.Forms.MouseEventHandler(this.buttonMoveUp_MouseDown);
+            this.buttonMoveUp.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ButtonMoveUp_MouseDown);
             this.buttonMoveUp.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Manual_DEC_MoveSTOP_MouseUp);
             // 
             // groupBoxMountTracking
@@ -1014,7 +1015,7 @@
             this.buttonPeriodicErrorCorrection.TabIndex = 17;
             this.buttonPeriodicErrorCorrection.Text = "PEC Tracking OFF";
             this.buttonPeriodicErrorCorrection.UseVisualStyleBackColor = false;
-            this.buttonPeriodicErrorCorrection.Click += new System.EventHandler(this.buttonPeriodicErrorCorrection_Click);
+            this.buttonPeriodicErrorCorrection.Click += new System.EventHandler(this.ButtonPeriodicErrorCorrection_Click);
             // 
             // buttonTrackingOnOff
             // 
@@ -1028,7 +1029,7 @@
             this.buttonTrackingOnOff.TabIndex = 16;
             this.buttonTrackingOnOff.Text = "Tracking OFF";
             this.buttonTrackingOnOff.UseVisualStyleBackColor = false;
-            this.buttonTrackingOnOff.MouseClick += new System.Windows.Forms.MouseEventHandler(this.buttonTrackingOnOff_MouseClick);
+            this.buttonTrackingOnOff.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ButtonTrackingOnOff_MouseClick);
             // 
             // ButtonEXIT
             // 
@@ -1036,10 +1037,10 @@
             this.ButtonEXIT.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
             this.ButtonEXIT.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.ButtonEXIT.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ButtonEXIT.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ButtonEXIT.Location = new System.Drawing.Point(567, 11);
+            this.ButtonEXIT.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ButtonEXIT.Location = new System.Drawing.Point(567, 10);
             this.ButtonEXIT.Name = "ButtonEXIT";
-            this.ButtonEXIT.Size = new System.Drawing.Size(75, 28);
+            this.ButtonEXIT.Size = new System.Drawing.Size(75, 31);
             this.ButtonEXIT.TabIndex = 17;
             this.ButtonEXIT.Text = "EXIT";
             this.ButtonEXIT.UseVisualStyleBackColor = false;
@@ -1127,7 +1128,7 @@
             // timer1
             // 
             this.timer1.Interval = 1000;
-            this.timer1.Tick += new System.EventHandler(this.getMountData);
+            this.timer1.Tick += new System.EventHandler(this.GetMountData);
             // 
             // pictureBox1
             // 
@@ -1138,12 +1139,27 @@
             this.pictureBox1.TabIndex = 18;
             this.pictureBox1.TabStop = false;
             // 
+            // buttonSlewToObject
+            // 
+            this.buttonSlewToObject.BackColor = System.Drawing.Color.DarkRed;
+            this.buttonSlewToObject.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.buttonSlewToObject.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonSlewToObject.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonSlewToObject.Location = new System.Drawing.Point(391, 10);
+            this.buttonSlewToObject.Name = "buttonSlewToObject";
+            this.buttonSlewToObject.Size = new System.Drawing.Size(156, 31);
+            this.buttonSlewToObject.TabIndex = 19;
+            this.buttonSlewToObject.Text = "Slew to Object";
+            this.buttonSlewToObject.UseVisualStyleBackColor = false;
+            this.buttonSlewToObject.Click += new System.EventHandler(this.SlewToObject_Click);
+            // 
             // MainControlForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.Red;
             this.ClientSize = new System.Drawing.Size(654, 527);
             this.ControlBox = false;
+            this.Controls.Add(this.buttonSlewToObject);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.ButtonEXIT);
             this.Controls.Add(this.groupBoxMountTracking);
@@ -1263,6 +1279,7 @@
         private System.Windows.Forms.Label labelTimeSource;
         private System.Windows.Forms.Button buttonPeriodicErrorCorrection;
         private System.Windows.Forms.Button buttonResetPEC;
+        private System.Windows.Forms.Button buttonSlewToObject;
     }
 }
 

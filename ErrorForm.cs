@@ -12,6 +12,8 @@ namespace iOptron_Mount_Control
 {
     public partial class ErrorForm : Form
     {
+        public string ErrorText;
+
         public ErrorForm()
         {
             InitializeComponent();
@@ -20,6 +22,11 @@ namespace iOptron_Mount_Control
         private void buttonOK_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void ErrorForm_Load(object sender, EventArgs e)
+        {
+            labelERROR.Text = ErrorText;
         }
     }
 }

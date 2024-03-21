@@ -50,7 +50,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Optron_Mount_Control.Program</StartupObject>
+    <StartupObject>iOptron_Mount_Control.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -71,6 +71,12 @@
     </Compile>
     <Compile Include="ErrorForm.Designer.cs">
       <DependentUpon>ErrorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Slew2Object.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Slew2Object.Designer.cs">
+      <DependentUpon>Slew2Object.cs</DependentUpon>
     </Compile>
     <Compile Include="UserInput2.cs">
       <SubType>Form</SubType>
@@ -94,6 +100,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="ErrorForm.resx">
       <DependentUpon>ErrorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Slew2Object.resx">
+      <DependentUpon>Slew2Object.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserInput2.resx">
       <DependentUpon>UserInput2.cs</DependentUpon>

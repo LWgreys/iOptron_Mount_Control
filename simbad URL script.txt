@@ -1,0 +1,11 @@
+SIMBAD URL Script
+
+https://simbad.cds.unistra.fr/simbad/sim-script?script=format%20object%20%22%25IDLIST%281%29%20%7c%20%25COO%28A%20D%29%22%0am45
+
+https://simbad.cds.unistra.fr/simbad/sim-script?script=format%20object%20%22%25COO%28A%20D%29%22%0am45
+
+https://simbad.cds.unistra.fr/simbad/sim-script?script=format%20object%20%22%25COO(2;C)%22%0Angc%201998
+
+https://simbad.cds.unistra.fr/simbad/sim-script?script=format%20object%20%22%25COO(2;CP7)%22%0Am58
+
+https://simbad.cds.unistra.fr/simbad/sim-script?script=format%20object%20%22%7E%7E%20%25COO(2%3BC%3BJ2000%3B2024)%22%0Am15

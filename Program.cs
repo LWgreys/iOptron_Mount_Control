@@ -1,10 +1,12 @@
-﻿using System;
+﻿// Ignore Spelling: Optron
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Optron_Mount_Control
+namespace iOptron_Mount_Control
 {
     internal static class Program
     {

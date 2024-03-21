@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Ignore Spelling: CEM Optron HC Loc UTC Localtime mov Unpark Bfirmware Cfirmware Afirmware Sstatus Aposition Cposition Ctime Coffset Aguiding Cguiding Cdata Crecording Cplayback Cenabled ret Postion pdd Costum Meridain
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -19,39 +21,39 @@ using iOptron_Mount_Control;
 
 
 
-namespace Optron_Mount_Control
+namespace iOptron_Mount_Control
 {
 
     public partial class MainControlForm : Form
     {
         //*** CEM Mount get command strings
-        public const string get_CEM_Info = ":MountInfo#"; // retuns "nnnn" = Mount
-        public const string get_MB_HC_Firmware = ":FW1#"; // returns "YYMMDDYYMMDD#" first date mainborad, second date hand controler
-        public const string get_RA_DEC_Firmware = ":FW2#"; // returns "YYMMDDYYMMDD#" first data RA borad, second date DEC board
+        public const string get_CEM_Info = ":MountInfo#"; // returns "nnnn" = Mount
+        public const string get_MB_HC_Firmware = ":FW1#"; // returns "YYMMDDYYMMDD#" first date mainboard, second date hand controller
+        public const string get_RA_DEC_Firmware = ":FW2#"; // returns "YYMMDDYYMMDD#" first data RA board, second date DEC board
         public const string get_Loc_Stat = ":GLS#"; // returns "sTTTTTTTTTTTTTTTTnnnnnn#" s=sign -or+ first 8 Ts=Longitude in .01 arcsecound,
-                                                    // second 8 Ts=Latitude in .01 arcseconds,
+                                                    // second 8 Ts=Latitude in .01 arc-seconds,
                                                     // first n=0 GPS malfunction, n=1 GPS not received valid data, n=2 GPS valid data received
-                                                    // second n=0 Stoped at Non-Zero Position, n=1 Tracking no PEC, n=2 Slewing, n=3 Auto Guiding, n=4 Meridian Flipping, n=5 Tracking with PEC, n=6 Parked, n=7 Stopped at Zero position
+                                                    // second n=0 Stopped at Non-Zero Position, n=1 Tracking no PEC, n=2 Slewing, n=3 Auto Guiding, n=4 Meridian Flipping, n=5 Tracking with PEC, n=6 Parked, n=7 Stopped at Zero position
                                                     // third n=0 Sidereal Rate, n=1 Lunar Rate, n=2 Solar Rate, n=3 King Rate, n=4 Custom Rate
-                                                    // forth n= Moving Speed by Arror, 1= 1x, 2= 2x, 3= 8x, 4= 16x, 5= 64x, 6= 128x, 7= 256x, 8= 512x, 9= MAX
+                                                    // forth n= Moving Speed by Arrow, 1= 1x, 2= 2x, 3= 8x, 4= 16x, 5= 64x, 6= 128x, 7= 256x, 8= 512x, 9= MAX
                                                     // fifth n= The Source of Time, 1= From RS-232 port or Ethernet port, 2= From Hand Controller, 3= From GPS
                                                     // sixth n= Hemisphere, 0= Southern, 1= Northern
         public const string get_UTC_Time = ":GUT#"; // returns "sMMMnXXXXXXXXXXXXX#" sMMM= UTC Offset for local time,
                                                     // n= Day Light Savings 0=OFF 1=ON,
                                                     // 13 digits XXXXXXXXXXXXX= Julian Date of current UTC Time
-        public const string get_RA_DEC_Pos = ":GEP#"; // returns "sTTTTTTTTTTTTTTTTnn#" sTTTTTTTT= signed current DEC Position in .01 Arcseconds,
-                                                      // second TTTTTTTT= current RA Position in .01 Arcseconds, 
-                                                      // first n=0 for Pier East, n=1 for Pier West , n=2 for Undetermend Pier Position,
-                                                      // second n=0 counterweight up, n=1 counterwieght normal
-        public const string get_Alt_Az_Pos = ":GAC#"; //returns "sTTTTTTTTTTTTTTTTT#" sTTTTTTTT= signed Current Altitude in .01 Arcseconds
-                                                      // second 9 digits TTTTTTTTT= Curent Azimuth in .01 Arcseconds of 360 degrees
+        public const string get_RA_DEC_Pos = ":GEP#"; // returns "sTTTTTTTTTTTTTTTTnn#" sTTTTTTTT= signed current DEC Position in .01 arc-seconds,
+                                                      // second TTTTTTTT= current RA Position in .01 arc-seconds, 
+                                                      // first n=0 for Pier East, n=1 for Pier West , n=2 for indeterminate Pier Position,
+                                                      // second n=0 counterweight up, n=1 counterweight normal
+        public const string get_Alt_Az_Pos = ":GAC#"; //returns "sTTTTTTTTTTTTTTTTT#" sTTTTTTTT= signed Current Altitude in .01 arc-seconds
+                                                      // second 9 digits TTTTTTTTT= current Azimuth in .01 arc-seconds of 360 degrees
         public const string get_Tracking_Rate = ":GTR#"; // returns "nnnnn#" = Current Custom Tracking Rate 0.1000 to 1.9000
-        public const string get_Park_Pos = ":GPC#"; // returns "TTTTTTTTTTTTTTTTT#" first 8 digits = Parking Altitude in .01 Arcseconds
-                                                    // second 9 Digits = Parking Azimuth in .01 Arcseconds of 360 degrees
+        public const string get_Park_Pos = ":GPC#"; // returns "TTTTTTTTTTTTTTTTT#" first 8 digits = Parking Altitude in .01 arc-seconds
+                                                    // second 9 Digits = Parking Azimuth in .01 arc-seconds of 360 degrees
         public const string get_MAX_Slew_Rate = ":GSR#"; // returns Slew Rate "7#"=256x, "8#"=512x, "9#"=MAX
         public const string get_Alt_Limit = ":GAL#"; // returns "snn#" = Altitude Limit signed degrees
         public const string get_RA_DEC_Guide_Rate = ":AG#"; // returns "nnnn#" first 2 digits = RA Guiding Rate, second 2 digits = DEC Guiding Rate
-        public const string get_Meridian_Treatment = ":GMT#"; // returns "nnn#" first digit 0=Stop at Meridian, 1=Flipp at second 2 digits degrees 0 to 10
+        public const string get_Meridian_Treatment = ":GMT#"; // returns "nnn#" first digit 0=Stop at Meridian, 1=Flip at second 2 digits degrees 0 to 10
         public const string get_Guiding_Filter_RA = ":GGF#"; // returns RA AutoGuiding "0"=Off "1"=ON, Available only equatorial mount with encoders
         public const string getPeriodicErrorDataComplete = ":GPE#"; // returns "0"=incomplete PED, "1"=Completed PED, Available only equatorial mount without encoders
         public const string getPeriodicError_RecordStat = ":GPR#"; // returns "0"=PE recording Stopped, "1"=PE being Recorded, Available only equatorial mount without encoders
@@ -59,7 +61,7 @@ namespace Optron_Mount_Control
         public string set_Tracking_Rate = ":RT"; // +"0#" = Sidereal, +"1#" = Lunar, +"2#" = Solar, +"3#" = King, +"4#" = Custom
         public string set_Moving_Rate = ":SR"; // +"1#" = 1x, +"2#" = 2x, +"3#" = 8x, +"4#" = 16x, +"5#" = 64x, +"6#" = 128x, +"7#" = 256x, +"8#" = 512x, +"9#" = MAX
         public string set_Guiding_Filter = ":SGF"; // +"0#" = OFF, +"1#" = ON // Available only equatorial mount with encoders
-        //*** CEM Mount set command strings that are saved in mount after poower cycle
+        //*** CEM Mount set command strings that are saved in mount after power cycle
         public string set_UTC_offset_Localtime = ":SG"; // +"sMMM#" s=sign -or+, MMM=minutes
         public const string set_DayLightSavings_OFF = ":SDS0#"; // returns "1", set daylight savings OFF
         public const string set_DayLightSavings_ON = ":SDS1#"; // returns "1", set daylight savings ON
@@ -67,7 +69,7 @@ namespace Optron_Mount_Control
         public string set_Longitude = ":SLO:"; // +"sTTTTTTTT#" s=sign -West or +East, TTTTTTTT=arc-seconds 0.01 resolution
         public string set_Latitude = ":SLA"; // +"sTTTTTTTT#" s=sign -South or +North, TTTTTTTT=arc-seconds 0.01 resolution
         public const string set_Hemisphere_South = ":SHE0#";// returns "1", Southern hemisphere
-        public const string set_Hemisphere_North = ":SHE1#";// returns "1", Northen hemisphere
+        public const string set_Hemisphere_North = ":SHE1#";// returns "1", Northern hemisphere
         public string set_MAX_Slew_Rate = ":MSR"; // +"7#"=256x, +"8#"=512x, +"9#"=MAX
         public string set_Altitude_Limit = ":SAL"; // +"snn#" s=sign -or+, nn=Degrees
         public string set_Guiding_Rate = ":RG"; // +"nnnn#" first 2 digits set RA rate [.01 to .90], second 2 digits set DEC Rate [.01 to .99]
@@ -93,10 +95,10 @@ namespace Optron_Mount_Control
         public const string mov_Guiding_DEC_Minus_old = ":Ms"; // +"XXXXX#"=milliseconds DEC+ at current guiding rate
         public const string mov_Parking_Position = ":MP1#"; // move to previous set parking position, return "1"
         public const string mov_Unpark = ":MP0#"; // unpark mount, returns "1"
-        public const string slew_Zero_Position = ":MH#"; // slew to zero position immediatly, returns "1"
-        public const string search_Zero_Position = ":MSH#"; // returns "1", availble only for CEM120, CEM70, Gem45, CEM40
+        public const string slew_Zero_Position = ":MH#"; // slew to zero position immediately, returns "1"
+        public const string search_Zero_Position = ":MSH#"; // returns "1", available only for CEM120, CEM70, Gem45, CEM40
         public const string set_PE_Record_Stop = ":SPR0#"; // returns "1", stop Periodic Error Recording
-        public const string set_PE_Record_Start = ":SPR1#"; // returns "1", strat Periodic Error Recording
+        public const string set_PE_Record_Start = ":SPR1#"; // returns "1", start Periodic Error Recording
         public const string set_Playback_PR_OFF = ":SPP0#"; // returns "1", disable Periodic Error Correction playback
         public const string set_Playback_PR_ON = ":SPP1#"; // returns "1", enable Periodic Error Correction playback
         public const string set_Custom_Tracking_Rate = ":RR"; // +"nnnnn#"=0.1000 to 1.9000 no decimal, returns "1"
@@ -109,13 +111,13 @@ namespace Optron_Mount_Control
         //*** CEM Mount Position commands
         public const string Calibrate_Mount = ":CM#"; // Calibrate Mount, returns "1"
         public const string Query_Num_Positions = ":QAP#"; // returns "0#"= cannot slew, "1#"= can slew, "2#"= ?CWup slew 
-        public const string set_RA_Position = ":SRA"; // +"TTTTTTTTT#"= .01 Arcseconds to set defined RA, returns "1"
-        public const string set_DEC_Position = ":Sd"; // +"sTTTTTTTT#"= signed -+.01 Arcseconds to set defined DEC, returns "1"
-        public const string set_ALT_Position = ":Sa"; // +"sTTTTTTTT#"= signed -+.01 Arcseconds to set defined Altitude, returns "1"
-        public const string set_AZ_Position = ":Sz"; // +"sTTTTTTTT#"= .01 Arcseconds to set defined Azimuth, returns "1"
-        public const string set_Zero_Position = ":SZP#"; // set current poosition as ZERO Position, returns "1"
-        public const string set_AZ_Park_Position = ":SPA"; // +"TTTTTTTTT#= .01 Arcseconds, returns "1"
-        public const string set_Alt_Park_Position = ":SPH"; // +"TTTTTTTTT#= .01 Arcseconds, returns "1"
+        public const string set_RA_Position = ":SRA"; // +"TTTTTTTTT#"= .01 arc-seconds to set defined RA, returns "1"
+        public const string set_DEC_Position = ":Sd"; // +"sTTTTTTTT#"= signed -+.01 arc-seconds to set defined DEC, returns "1"
+        public const string set_ALT_Position = ":Sa"; // +"sTTTTTTTT#"= signed -+.01 arc-seconds to set defined Altitude, returns "1"
+        public const string set_AZ_Position = ":Sz"; // +"sTTTTTTTT#"= .01 arc-seconds to set defined Azimuth, returns "1"
+        public const string set_Zero_Position = ":SZP#"; // set current position as ZERO Position, returns "1"
+        public const string set_AZ_Park_Position = ":SPA"; // +"TTTTTTTTT#= .01 arc-seconds, returns "1"
+        public const string set_Alt_Park_Position = ":SPH"; // +"TTTTTTTTT#= .01 arc-seconds, returns "1"
 
         //*** CEM Mount Models
         public string[,] MountModel = { {"0026", "0027", "0028", "0029", "0040", "0041", "0043", "0044", "0070", "0071", "0120", "0121", "0122"},
@@ -160,7 +162,7 @@ namespace Optron_Mount_Control
         public static bool cemPECdataComplete; //.................. Periodic Error Recorded Data Complete Status
         public static bool cemPECrecording; //..................... Periodic Error Recording Status
         public static bool cemPECplaybackOnOff; //................. Periodic Error Playback Status
-        public static bool cemPECenabled; // ...................... Periodic Error Enabled Ststus
+        public static bool cemPECenabled; // ...................... Periodic Error Enabled Status
         public static bool cemCustomTrackingRateChanged;
         public static bool cemParkingPositionChanged;
         public static bool cemMeridianTreatmentChanged;
@@ -170,7 +172,7 @@ namespace Optron_Mount_Control
 
         const string NO_PORTS_MESSAGE = "No COM ports found";
         static byte _OtherData_;
-        const double miliSecondsInDay = 86400000.0;     // Number of miliseconds in a day
+        const double miliSecondsInDay = 86400000.0;     // Number of milliseconds in a day
         const double J2000 = 2451545.0;                 // Julian date time 2000-01-01 12:00.00 noon
         static readonly bool ON = true;
         static readonly bool OFF = false;
@@ -191,7 +193,7 @@ namespace Optron_Mount_Control
             // Get a list of COM ports
             ComboBoxComPort.Items.Clear(); // Clear any existing entries
             foreach (string ComString in SerialPort.GetPortNames())
-                ComboBoxComPort.Items.Add(ComString); // Get Avaliable ComPorts
+                ComboBoxComPort.Items.Add(ComString); // Get Available ComPorts
             if (ComboBoxComPort.Items.Count == 0)
             {
                 ButtonCOMPortConnect.Text = NO_PORTS_MESSAGE;
@@ -231,7 +233,7 @@ namespace Optron_Mount_Control
             string firmwareDate;
             string inData;
 
-            if (ButtonCOMPortConnect.Text == NO_PORTS_MESSAGE) // Exit progam if no ports found
+            if (ButtonCOMPortConnect.Text == NO_PORTS_MESSAGE) // Exit program if no ports found
                 return;
 
             if (MountComPort.IsOpen == false)
@@ -295,7 +297,7 @@ namespace Optron_Mount_Control
         }
 
 
-        // ***** send Mount Command & return Responce
+        // ***** send Mount Command & return Response
         public string MountCommand(string outString, int numberOfChar)
         {
             string inBuffer;
@@ -315,11 +317,11 @@ namespace Optron_Mount_Control
 
 
         //********** TIMER 1 ***************************************************************************** TIMER 1 *******************
-        public void getMountData(Object myObject, EventArgs myEventArgs)
+        public void GetMountData(Object myObject, EventArgs myEventArgs)
         {
             string inData;
 
-            // Get GPS Longitude Latitude and other infomation
+            // Get GPS Longitude Latitude and other information
             lock (InOut)
                 inData = MountCommand(get_Loc_Stat, 24);
             cemLongitude = inData.Substring(0, 9);
@@ -488,7 +490,7 @@ namespace Optron_Mount_Control
             // Moving rate
             comboBoxManualMovingRate.SelectedIndex = cemMovingRate - 1;
             
-            // show were souce of time comming from
+            // show were source of time coming from
             switch (cemTimeSource)
             {
                 //case 1:
@@ -502,7 +504,7 @@ namespace Optron_Mount_Control
                     break;
                 default:
                     // set to computer UTC time if no HC or GPS
-                    setToComputerTime();
+                    SetToComputerTime();
                     labelTimeSource.Text = "CPU";
                     break;
             }
@@ -524,13 +526,13 @@ namespace Optron_Mount_Control
                 cemDaylightTime = checkBoxDayLightSavingsOnOff.Checked = (DLST == 1) ? ON : OFF;
                 UTCtime = (MountTime / miliSecondsInDay) + J2000;     // convert Mount Time to UTC time
                 UTCtime -= (int)UTCtime;                        // get the time part
-                cemUTCtime = labelTimeUTC.Text = retTimeString(UTCtime);
+                cemUTCtime = labelTimeUTC.Text = RetTimeString(UTCtime);
                 // convert mount time to Local time
                 LocalTime = MountTime / miliSecondsInDay;
                 localJ2000 = J2000 - (1.0 - ((1440.0 + ((DLST == 1) ? (UTCoffset - -60.0) : UTCoffset)) / 1440.0));
                 LocalTime += localJ2000;
                 LocalTime -= (int)LocalTime;
-                labelTimeLocal.Text = retTimeString(LocalTime);
+                labelTimeLocal.Text = RetTimeString(LocalTime);
             }
 
             // get RA and DEC position
@@ -584,7 +586,7 @@ namespace Optron_Mount_Control
                 buttonResetPEC.Enabled = OFF;
             
             // get other data
-            getOtherData(_OtherData_);
+            GetOtherData(_OtherData_);
         }
         //***************** END TIMER 1 ******************************************************************** END TIME 1 **************/
 
@@ -621,7 +623,7 @@ namespace Optron_Mount_Control
 
 
         // ***** return formated time string
-        public static string retTimeString(double tdd)
+        public static string RetTimeString(double tdd)
         {
             int _hours, _minutes, _seconds;
 
@@ -675,7 +677,7 @@ namespace Optron_Mount_Control
         }
 
 
-        // do mount slew --- entry RA DEC arcseconds or AZ ALT arcseconds, 0 for RA DEC or 1 for ALT AZ --- returns 1=success 0=failed
+        // do mount slew --- entry RA DEC arc-seconds or AZ ALT arc-seconds, 0 for RA DEC or 1 for ALT AZ --- returns 1=success 0=failed
         // DEC & ALT are signed values
         public byte DoMountSlew(string uRA_AZ, string sDEC_ALT, byte axisType)
         {
@@ -716,7 +718,7 @@ namespace Optron_Mount_Control
 
 
         // set mount time to computer time
-        public void setToComputerTime()
+        public void SetToComputerTime()
         {
             string inData;
 
@@ -729,7 +731,7 @@ namespace Optron_Mount_Control
 
 
         //******************* Julian Date ************************************************** Julian Date *****************************
-        public static bool isJulianDate(int year, int month, int day)
+        public static bool IsJulianDate(int year, int month, int day)
         {
             // All dates prior to 1582 are in the Julian calendar
             if (year < 1582)
@@ -761,7 +763,7 @@ namespace Optron_Mount_Control
         static private double DateToJD(int year, int month, int day, int hour, int minute, int second, int millisecond)
         {
             // Determine correct calendar based on date
-            bool JulianCalendar = isJulianDate(year, month, day);
+            bool JulianCalendar = IsJulianDate(year, month, day);
 
             int M = month > 2 ? month : month + 12;
             int Y = month > 2 ? year : year - 1;
@@ -796,7 +798,6 @@ namespace Optron_Mount_Control
             cemCustomTrackingRateChanged = false;
         }
 
-
         public void GetParkingPostion()
         {
             string inData;
@@ -810,7 +811,6 @@ namespace Optron_Mount_Control
             cemParkingPositionChanged = false;
         }
 
-
         public void GetMaximumSlewingRate()
         {
             string inData;
@@ -823,7 +823,6 @@ namespace Optron_Mount_Control
             cemMaxSlewRateChanged = false;
         }
 
-
         public void GetAltitudeLimit()
         {
             string inData;
@@ -834,7 +833,6 @@ namespace Optron_Mount_Control
             cemAltitudeLimit = Convert.ToSByte(inData.Substring(0, 3));
             cemAltitudeLimitChanged = false;
         }
-
 
         public void GetRA_DEC_GuidingRates()
         {
@@ -849,7 +847,6 @@ namespace Optron_Mount_Control
             cemRA_DEC_GuidingRateChanged = false;
         }
 
-
         public void GetMeridainTreatment()
         {
             string inData;
@@ -861,7 +858,6 @@ namespace Optron_Mount_Control
             labelMeridianFlipDegrees.Text = string.Format("{0}", cemMeridianFlipDegrees);
             cemMeridianTreatmentChanged = false;
         }
-
 
         public void GetStatusOfAutoGuidingFilterRA()
         {
@@ -875,8 +871,7 @@ namespace Optron_Mount_Control
             }
         }
 
-
-        public void getOtherData(byte b) //********** Entry point to get other data ** b = what data not to get due to button press
+        public void GetOtherData(byte b) //********** Entry point to get other data ** b = what data not to get due to button press
         {
             if ((b != 1) && (cemTrackingRate == 4) && (cemCustomTrackingRateChanged == true))
                 GetCostumTrackingRate();
@@ -895,7 +890,6 @@ namespace Optron_Mount_Control
         }
 
 
-
         //****************** Set Other Data *********************************************************** Set Other Data ***************
         // set meridian treatment, s=0 for OnOff treatment
         public void SetMeridianTreatment(byte s)
@@ -912,10 +906,9 @@ namespace Optron_Mount_Control
         }
 
 
-
         // ********** Combo Boxes ************************************************************************ Combo Boxes ***************
         // ***** tracking rates
-        private void comboBoxTrackingRate_SelectedIndexChanged(object sender, EventArgs e)
+        private void ComboBoxTrackingRate_SelectedIndexChanged(object sender, EventArgs e)
         {
             string inData;
 
@@ -928,7 +921,7 @@ namespace Optron_Mount_Control
         }
 
         // ***** max slewing rates
-        private void comboBoxMaxSlewingRate_SelectedIndexChanged(object sender, EventArgs e)
+        private void ComboBoxMaxSlewingRate_SelectedIndexChanged(object sender, EventArgs e)
         {
             string inData;
 
@@ -941,7 +934,7 @@ namespace Optron_Mount_Control
         }
 
         // ***** moving rates
-        private void comboBoxManualMovingRate_SelectedIndexChanged(object sender, EventArgs e)
+        private void ComboBoxManualMovingRate_SelectedIndexChanged(object sender, EventArgs e)
         {
             string inData;
 
@@ -952,15 +945,14 @@ namespace Optron_Mount_Control
             this.ActiveControl = null;
         }
 
-        private void comboBox_StopTimer_DropDown(object sender, EventArgs e)
+        private void ComboBox_StopTimer_DropDown(object sender, EventArgs e)
         {
             timer1.Stop();
         }
 
 
-
         //********************* CHECK BOXES ******************************************************************* CHECK BOXES ******************/
-        private void checkBoxDayLightSavingsOnOff_MouseDown(object sender, MouseEventArgs e)
+        private void CheckBoxDayLightSavingsOnOff_MouseDown(object sender, MouseEventArgs e)
         {
             string inData;
 
@@ -973,8 +965,7 @@ namespace Optron_Mount_Control
             }
         }
 
-
-        private void checkBoxMeridianFlipOnOff_MouseDown(object sender, MouseEventArgs e)
+        private void CheckBoxMeridianFlipOnOff_MouseDown(object sender, MouseEventArgs e)
         {
             //GetMeridainTreatment();
             SetMeridianTreatment(0);            // change the flip statas ON or OFF
@@ -982,11 +973,10 @@ namespace Optron_Mount_Control
         }
 
 
-
         //********************* BUTTONS ****************************************************************** BUTTONS ******************/
 
         // ***** turn tracking on - off
-        private void buttonTrackingOnOff_MouseClick(object sender, MouseEventArgs e)
+        private void ButtonTrackingOnOff_MouseClick(object sender, MouseEventArgs e)
         {
             string inData;
 
@@ -1006,9 +996,8 @@ namespace Optron_Mount_Control
             }
         }
 
-
         // ***** Periodic Error Correction
-        private void buttonPeriodicErrorCorrection_Click(object sender, EventArgs e)
+        private void ButtonPeriodicErrorCorrection_Click(object sender, EventArgs e)
         {
             string inData;
 
@@ -1038,9 +1027,8 @@ namespace Optron_Mount_Control
             }
         }
 
-
         // ***** reset PEC recording
-        private void buttonResetPECrecording_Click(object sender, EventArgs e)
+        private void ButtonResetPECrecording_Click(object sender, EventArgs e)
         {
             string inData;
 
@@ -1051,9 +1039,8 @@ namespace Optron_Mount_Control
             }
         }
 
-
         // ***** go immediately to mount zero
-        private void buttonGotoZeroPosition_Click(object sender, EventArgs e)
+        private void ButtonGotoZeroPosition_Click(object sender, EventArgs e)
         {
             string inData;
 
@@ -1061,9 +1048,8 @@ namespace Optron_Mount_Control
                 inData = MountCommand(slew_Zero_Position, 1);
         }
 
-
         // ***** set new mount zero
-        private void buttonSetNewZeroPosition_Click(object sender, EventArgs e)
+        private void ButtonSetNewZeroPosition_Click(object sender, EventArgs e)
         {
             string inData;
 
@@ -1074,16 +1060,15 @@ namespace Optron_Mount_Control
             DialogResult _answer;
             // displays MessageBox
             _answer = MessageBox.Show(_question, _caption, _buttons, MessageBoxIcon.None, MessageBoxDefaultButton.Button2);
-            // exit buttonSetNewZeroPosition_Click if NO answre
+            // exit ButtonSetNewZeroPosition_Click if NO answer
             if (_answer == DialogResult.No)
                 return;
             lock (InOut)
                 inData = MountCommand(set_Zero_Position, 1);
         }
 
-
         // ***** search mount zero
-        private void buttonSearchMountZero_Click(object sender, EventArgs e)
+        private void ButtonSearchMountZero_Click(object sender, EventArgs e)
         {
             string inData;
 
@@ -1091,9 +1076,8 @@ namespace Optron_Mount_Control
                 inData = MountCommand(search_Zero_Position, 1);
         }
 
-
         // ***** park - unpark mount
-        private void buttonParkMount_Click(object sender, EventArgs e)
+        private void ButtonParkMount_Click(object sender, EventArgs e)
         {
             string inData;
 
@@ -1111,9 +1095,8 @@ namespace Optron_Mount_Control
             }
         }
 
-
         // ***** mount stop all slewing
-        private void buttonAllStop_Click(object sender, EventArgs e)
+        private void ButtonAllStop_Click(object sender, EventArgs e)
         {
             string inData;
 
@@ -1121,9 +1104,8 @@ namespace Optron_Mount_Control
                 inData = MountCommand(slew_Stop, 1);
         }
 
-
         // ***** mount manual move north *****
-        private void buttonMoveUp_MouseDown(object sender, MouseEventArgs e)
+        private void ButtonMoveUp_MouseDown(object sender, MouseEventArgs e)
         {
             string inData;
 
@@ -1132,7 +1114,7 @@ namespace Optron_Mount_Control
         }
 
         // ***** mount manual move south *****
-        private void buttonMoveDown_MouseDown(object sender, MouseEventArgs e)
+        private void ButtonMoveDown_MouseDown(object sender, MouseEventArgs e)
         {
             string inData;
 
@@ -1149,9 +1131,8 @@ namespace Optron_Mount_Control
                 inData = MountCommand(mov_Manual_DEC_Stop, 1);
         }
 
-
         // ***** mount manual move east *****
-        private void buttonMoveRight_MouseDown(object sender, MouseEventArgs e)
+        private void ButtonMoveRight_MouseDown(object sender, MouseEventArgs e)
         {
             string inData;
 
@@ -1160,7 +1141,7 @@ namespace Optron_Mount_Control
         }
 
         // ***** mount manual move west *****
-        private void buttonMoveLeft_MouseDown(object sender, MouseEventArgs e)
+        private void ButtonMoveLeft_MouseDown(object sender, MouseEventArgs e)
         {
             string inData;
 
@@ -1177,7 +1158,42 @@ namespace Optron_Mount_Control
                 inData = MountCommand(mov_Manual_RA_Stop, 1);
         }
 
+        // ***** slew to object *****
+        private void SlewToObject_Click(object sender, EventArgs e)
+        {
+            string _RA, _DEC;
+            double[] d;
+            byte n;
 
+            Slew2Object Slew2 = new Slew2Object();
+            Slew2.ShowDialog();
+            if (Slew2._FormStatus == true)
+            {
+                _RA = Str2MilliSecRAstr(Slew2._RA_of_Object);
+                _DEC = Str2MiliSecDegStr(Slew2._DEC_of_Object, 8);
+                lock (InOut)
+                    if (DoMountSlew(_RA, _DEC, 0) == 0)
+                    {
+                        ErrorForm _error_ = new ErrorForm();
+                        _error_.ErrorText = "ERROR: Cannot slew due to mount limits.";
+                        _error_.ShowDialog();
+                    }
+            }
+
+        }
+
+        private string Str2MilliSecRAstr(string _str) //*** convert HH MM SS.SS to RA milliseconds
+        {
+            double[] d;
+            byte n;
+
+            d = new double[] { 0, 0, 0, 0, 0 };
+            string[] RA_Split = _str.Split(' ');
+            n = 0;
+            foreach (string num in RA_Split)
+                d[n++] = Convert.ToDouble(num);
+            return string.Format("{0:000000000}", (d[2] / 3600.0 * 15.0) + (d[1] / 60.0 * 15.0) + (360.0 / 24.0 * d[0]) * 3600.0 * 100.0);
+        }
 
         // ******************** User Data Entry **************************************************** User Data Entry ******************
 
@@ -1205,7 +1221,6 @@ namespace Optron_Mount_Control
             this.ActiveControl = null;
         }
 
-
         // ***** set parking azimuth degrees *****
         private void MountParkingAzimuth_Click(object sender, EventArgs e)
         {
@@ -1230,7 +1245,6 @@ namespace Optron_Mount_Control
             this.ActiveControl = null;
         }
 
-
         // ***** set meridian flip degrees *****
         private void MeridianFlipDegrees_Click(object sender, EventArgs e)
         {
@@ -1252,6 +1266,7 @@ namespace Optron_Mount_Control
             this.ActiveControl = null;
         }
 
+        // ***** set altitude limit *****
         private void AltitudeLimitMIN_Click(object sender, EventArgs e)
         {
             string inData;
@@ -1275,6 +1290,7 @@ namespace Optron_Mount_Control
             this.ActiveControl = null;
         }
 
+        // ***** set custom tracking rate *****
         private void CustomeTrackingRate_Click(object sender, EventArgs e)
         {
             string inData;
@@ -1299,6 +1315,7 @@ namespace Optron_Mount_Control
             this.ActiveControl = null;
         }
 
+        // ***** set RA guiding rate *****
         private void RA_GuidingRate_Click(object sender, EventArgs e)
         {
             string inData;
@@ -1323,6 +1340,7 @@ namespace Optron_Mount_Control
             this.ActiveControl = null;
         }
 
+        // ***** set DEC guiding rate *****
         private void DEC_GuidingRate_Click(object sender, EventArgs e)
         {
             string inData;
@@ -1347,6 +1365,7 @@ namespace Optron_Mount_Control
             this.ActiveControl = null;
         }
 
+        // ***** set the time zone offset *****
         private void UTC_Offset_Click(object sender, EventArgs e)
         {
             string inData;
@@ -1366,6 +1385,7 @@ namespace Optron_Mount_Control
             this.ActiveControl = null;
         }
 
+        // ***** goto RA DEC position *****
         private void Goto_RA_DEC_Position_Click(object sender, EventArgs e)
         {
             string inData, _RA, _DEC;
@@ -1379,28 +1399,20 @@ namespace Optron_Mount_Control
             userInput2.ShowDialog();
             if (userInput2._FormStatus == true)
             {
-                inData = userInput2._TextEntered1;
-                d = new double[] {0,0,0,0,0,0,0,0};
-                string[] RA_Split = inData.Split(' ');
-                n = 0;
-                foreach (string num in RA_Split)
-                    d[n++] = Convert.ToDouble(num);
-                RA_Deg = d[2] / 3600.0 * 15.0;
-                RA_Deg += d[1] / 60.0 * 15.0;
-                RA_Deg += 360.0 / 24.0 * d[0];
-                _RA = string.Format("{0:000000000}", RA_Deg * 3600.0 * 100.0);
-
-                _DEC = Str2MillSecDegStr(userInput2._TextEntered2, 8);
+                _RA = Str2MilliSecRAstr(userInput2._TextEntered1);
+                _DEC = Str2MiliSecDegStr(userInput2._TextEntered2, 8);
                 lock(InOut)
                     if (DoMountSlew(_RA, _DEC, 0) == 0)
                     {
                         ErrorForm _error_ = new ErrorForm();
+                        _error_.ErrorText = "ERROR: Cannot slew due to mount limits.";
                         _error_.ShowDialog();
                     }
             }
         }
 
-        private void Goto_AZ_ALT_Position_Click(object sender, EventArgs e)
+        // ***** goto ALT AZ position *****
+        private void Goto_ALT_AZ_Position_Click(object sender, EventArgs e)
         {
             string _AZ, _ALT;
 
@@ -1410,18 +1422,20 @@ namespace Optron_Mount_Control
             userInput2.ShowDialog();
             if (userInput2._FormStatus == true)
             {
-                _ALT = Str2MillSecDegStr(userInput2._TextEntered1, 8);
-                _AZ = Str2MillSecDegStr(userInput2._TextEntered2, 9);
+                _ALT = Str2MiliSecDegStr(userInput2._TextEntered1, 8);
+                _AZ = Str2MiliSecDegStr(userInput2._TextEntered2, 9);
                 lock(InOut)
                     if (DoMountSlew(_AZ, _ALT, 1) == 0)
                     {
                         ErrorForm _error_ = new ErrorForm();
+                        _error_.ErrorText = "ERROR: Cannot slew due to mount limits.";
                         _error_.ShowDialog();
                     }
             }
         }
 
-        private string Str2MillSecDegStr(string _str, byte T) //*** T = 8 or 9 number of digits returned
+        // ***** convert string to millisecond string *****
+        private string Str2MiliSecDegStr(string _str, byte T) //*** T = 8 for DEC or 9 for RA number of digits returned
         {
             double _Deg;
             double[] d;
@@ -1438,6 +1452,7 @@ namespace Optron_Mount_Control
             return string.Format(T == 8 ? (d[0] < 0.0 ? "{0:-00000000}" : "{0:+00000000}") : "{0:000000000}", _Deg * 3600.0 * 100.0);
         }
 
+        // ***** set latitude longitude position *****
         private void Set_Latitude_Longitude_Click(object sender, EventArgs e)
         {
             string _LOG, _LAT, inData;
@@ -1450,14 +1465,15 @@ namespace Optron_Mount_Control
             {
                 lock (InOut)
                 {
-                    _LAT = Str2MillSecDegStr(userInput2._TextEntered1, 8);
+                    _LAT = Str2MiliSecDegStr(userInput2._TextEntered1, 8);
                     inData = MountCommand(set_Latitude + _LAT + "#", 1);
-                    _LOG = Str2MillSecDegStr(userInput2._TextEntered2, 8);
+                    _LOG = Str2MiliSecDegStr(userInput2._TextEntered2, 8);
                     inData = MountCommand(set_Longitude + _LOG + "#", 1);
                 }
             }
         }
 
+ 
         //############################################################ WORK IN PROGRESS ################################################
     }
 }
