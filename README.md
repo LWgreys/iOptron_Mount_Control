@@ -4,13 +4,10 @@ It's just a simple manual control program for iOptron CEM GEM telescope mounts.
 Coded in C# using Microsoft Visual Studio. 
 
 I did find a few issues with the CEM firmware and have written iOptron support about the issues.
-One issue is the meridian flip's Degrees Past Meridian should be Minutes Past Meridian.
-  The reason is that in astrophotography, it's better to know the amount of time one has before doing the flip past meriadian.
-  Another reason is 1 degree is 4 minutes on earths rotation and one would have 0 to 40 minutes vers 0 to 10 degrees.
-  It would be better control.
-Latest addin was the one button Periodic Error Correction tracking & record and the Reset PEC recording.
+
+02-05-2024 Addin was the Periodic Error Correction tracking & record and the Reset PEC recording.
+03-21-2024 Added 'Slew to Object' - requires internet to search SIMBA for data.
 
 Future addins:
 
-3. Slew to object.
-4. Make the program ASCOM compatible.
+4. Make the program ASCOM compatible. - This feature may take awhile because I have to write an ASCOM driver for it.
