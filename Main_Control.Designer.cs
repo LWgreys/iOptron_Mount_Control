@@ -1142,6 +1142,7 @@
             // buttonSlewToObject
             // 
             this.buttonSlewToObject.BackColor = System.Drawing.Color.DarkRed;
+            this.buttonSlewToObject.Enabled = false;
             this.buttonSlewToObject.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
             this.buttonSlewToObject.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonSlewToObject.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));

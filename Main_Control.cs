@@ -242,6 +242,7 @@ namespace iOptron_Mount_Control
                 MountComPort.DiscardOutBuffer();
                 MountComPort.DiscardInBuffer();
                 buttonResetPEC.Enabled = OFF;
+                buttonSlewToObject.Enabled = ON;
                 groupBoxMountGPS_Time.Enabled = ON;
                 groupBoxMountPad.Enabled = ON;
                 groupBoxMountParking.Enabled = ON;
@@ -254,6 +255,7 @@ namespace iOptron_Mount_Control
             {
                 MountComPort.Close();
                 ButtonCOMPortConnect.Text = "Connect";
+                buttonSlewToObject.Enabled = OFF;
                 groupBoxMountGPS_Time.Enabled = OFF;
                 groupBoxMountPad.Enabled = OFF;
                 groupBoxMountParking.Enabled = OFF;
