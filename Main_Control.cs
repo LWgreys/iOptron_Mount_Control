@@ -323,6 +323,7 @@ namespace iOptron_Mount_Control
         }
 
 
+        // this part of code runs every 1 second once the program is connect to a mount 
         //********** TIMER 1 ***************************************************************************** TIMER 1 *******************
         public void GetMountData(Object myObject, EventArgs myEventArgs)
         {
@@ -341,7 +342,7 @@ namespace iOptron_Mount_Control
             cemTimeSource = Convert.ToByte(inData.Substring(21, 1));
             cemHemisphere = Convert.ToByte(inData.Substring(22, 1));
             
-            // get GPS status
+            // *** GPS status
             switch (cemGPSstatus)
             {
                 case 2:
@@ -362,7 +363,7 @@ namespace iOptron_Mount_Control
                     break;
             }
 
-            // get mount motion status
+            // *** mount motion status
             switch (cemInMotion)
             {
                 case 0: // stopped at none zero position
@@ -487,17 +488,17 @@ namespace iOptron_Mount_Control
                     break;
             }
 
-            // Tracking rate
+            // *** Tracking rate
             comboBoxTrackingRate.SelectedIndex = cemTrackingRate;
             if (cemTrackingRate == 4)
                 labelCustomeTrackingRate.Enabled = ON;
             else
                 labelCustomeTrackingRate.Enabled = OFF;
 
-            // Moving rate
+            // *** Moving rate
             comboBoxManualMovingRate.SelectedIndex = cemMovingRate - 1;
             
-            // show were source of time coming from
+            // *** show were source of time coming from
             switch (cemTimeSource)
             {
                 //case 1:
@@ -516,7 +517,7 @@ namespace iOptron_Mount_Control
                     break;
             }
 
-            // Get Mount UTC time
+            // *** Get Mount UTC time
             if ((cemTimeSource == 2) || (cemTimeSource == 3) || (labelTimeSource.Text == "CPU"))
             {
                 byte DLST;
@@ -542,7 +543,7 @@ namespace iOptron_Mount_Control
                 labelTimeLocal.Text = RetTimeString(LocalTime);
             }
 
-            // get RA and DEC position
+            // *** get RA and DEC position
             lock (InOut)
                 inData = MountCommand(get_RA_DEC_Pos, 21);
             cemDECposition = inData.Substring(0, 9);
@@ -567,7 +568,7 @@ namespace iOptron_Mount_Control
                     break;
             }
 
-            // get ALT and AZ position
+            // *** get ALT and AZ position
             lock (InOut)
                 inData = MountCommand(get_Alt_Az_Pos, 19);
             cemAltitudePosition = inData.Substring(0, 9);
@@ -575,7 +576,7 @@ namespace iOptron_Mount_Control
             cemAltitudePosition = labelAltitude.Text = RetPostionString(Convert.ToDouble(cemAltitudePosition), 0);
             cemAzimuthPosition = labelAzimuth.Text = RetPostionString(Convert.ToDouble(cemAzimuthPosition), 0);
 
-            // periodic error correction
+            // *** periodic error correction
             if (cemPECenabled == ON)
             {
                 lock (InOut)
@@ -592,7 +593,7 @@ namespace iOptron_Mount_Control
             else
                 buttonResetPEC.Enabled = OFF;
             
-            // get other data
+            // *** get other data
             GetOtherData(_OtherData_);
         }
         //***************** END TIMER 1 ******************************************************************** END TIME 1 **************/
