@@ -3,7 +3,8 @@ iOptron_Mount_Control written by Lawrence Widacki.
 This source is Open-Source and may be modified to your liking using a branch Pull request.
 
 It's just a simple manual control program for iOptron CEM GEM telescope mounts.
-Coded in C# using Microsoft Visual Studio. 
+Coded in C# using Microsoft Visual Studio.
+Have not added in any Exceptions to the code yet because need to get a working version going first.
 
 I did find a few issues with the CEM firmware and have written iOptron support about the issues. No responce yet as of 03-21-2024.
 
