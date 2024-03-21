@@ -1,4 +1,9 @@
-﻿// Ignore Spelling: CEM Optron HC Loc UTC Localtime mov Unpark Bfirmware Cfirmware Afirmware Sstatus Aposition Cposition Ctime Coffset Aguiding Cguiding Cdata Crecording Cplayback Cenabled ret Postion pdd Costum Meridain
+﻿/*
+ * This program and code is OPEN SOURCE and you can modifi it as long as you use a branch and keep it updated.
+ * The master branch is my coding but will accept updates to the master on approval.
+*/
+
+// Ignore Spelling: CEM Optron HC Loc UTC Localtime mov Unpark Bfirmware Cfirmware Afirmware Sstatus Aposition Cposition Ctime Coffset Aguiding Cguiding Cdata Crecording Cplayback Cenabled ret Postion pdd Costum Meridain
 
 using System;
 using System.Collections.Generic;
