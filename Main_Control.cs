@@ -1,5 +1,5 @@
 ﻿/*
- * This program and code is OPEN SOURCE and you can modifi it as long as you use a branch and keep it updated.
+ * This program and code is OPEN SOURCE and you can modify it as long as you use a branch and keep it updated.
  * The master branch is my coding but will accept updates to the master on approval.
 */
 
@@ -128,6 +128,7 @@ namespace iOptron_Mount_Control
         public string[,] MountModel = { {"0026", "0027", "0028", "0029", "0040", "0041", "0043", "0044", "0070", "0071", "0120", "0121", "0122"},
             {"CEM26", "CEM26-EC", "GEM28", "GEM28-EC", "CEM40(G)", "CEM40(G)-EC", "GEM45(G)", "GEM45(G)-EC", "CEM70(G)", "CEM70(G)-EC", "CEM120", "CEM120-EC", "CEM120-EC2"} };
 
+        //*** Mount variables
         public static string cemMountModel;
         public static string cemMBfirmwareDate;
         public static string cemHCfirmwareDate;
@@ -323,7 +324,7 @@ namespace iOptron_Mount_Control
         }
 
 
-        // this part of code runs every 1 second once the program is connect to a mount 
+        // this part of code runs every 1 second once the program is connect to a mount and timer1 started
         //********** TIMER 1 ***************************************************************************** TIMER 1 *******************
         public void GetMountData(Object myObject, EventArgs myEventArgs)
         {
@@ -605,7 +606,7 @@ namespace iOptron_Mount_Control
 
             inData = MountCommand(getPeriodicError_RecordStat, 1);
             if (inData == "1")
-                cemPECrecording = ON;   // periodic erreo being recorded
+                cemPECrecording = ON;   // periodic error being recorded
             else
                 cemPECrecording = OFF;  // periodic error recording STOPPED
 
@@ -1187,7 +1188,6 @@ namespace iOptron_Mount_Control
                         _error_.ShowDialog();
                     }
             }
-
         }
 
         private string Str2MilliSecRAstr(string _str) //*** convert HH MM SS.SS to RA milliseconds
