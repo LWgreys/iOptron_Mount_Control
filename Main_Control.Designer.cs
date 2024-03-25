@@ -157,7 +157,6 @@
             this.ButtonCOMPortConnect.Name = "ButtonCOMPortConnect";
             this.ButtonCOMPortConnect.Size = new System.Drawing.Size(197, 31);
             this.ButtonCOMPortConnect.TabIndex = 2;
-            this.ButtonCOMPortConnect.Text = "Connect to CEM70(G)-EC";
             this.ButtonCOMPortConnect.UseVisualStyleBackColor = false;
             this.ButtonCOMPortConnect.Click += new System.EventHandler(this.ButtonCOMPortConnect_Click);
             // 

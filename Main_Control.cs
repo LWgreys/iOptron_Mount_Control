@@ -225,6 +225,7 @@ namespace iOptron_Mount_Control
         {
             // Set mount COM port
             MountComPort.PortName = ComboBoxComPort.Text;
+            ButtonCOMPortConnect.Text = "Connect";
             ButtonCOMPortConnect.Enabled = ON;
             this.ActiveControl = null;
         }
