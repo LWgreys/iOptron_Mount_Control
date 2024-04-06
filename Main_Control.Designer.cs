@@ -90,10 +90,6 @@
             this.label23 = new System.Windows.Forms.Label();
             this.comboBoxManualMovingRate = new System.Windows.Forms.ComboBox();
             this.buttonAllStop = new System.Windows.Forms.Button();
-            this.buttonMoveDown = new System.Windows.Forms.Button();
-            this.buttonMoveRight = new System.Windows.Forms.Button();
-            this.buttonMoveLeft = new System.Windows.Forms.Button();
-            this.buttonMoveUp = new System.Windows.Forms.Button();
             this.groupBoxMountTracking = new System.Windows.Forms.GroupBox();
             this.buttonPeriodicErrorCorrection = new System.Windows.Forms.Button();
             this.buttonTrackingOnOff = new System.Windows.Forms.Button();
@@ -106,8 +102,12 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.MountComPort = new System.IO.Ports.SerialPort(this.components);
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.buttonSlewToObject = new System.Windows.Forms.Button();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.buttonMoveDown = new System.Windows.Forms.Button();
+            this.buttonMoveRight = new System.Windows.Forms.Button();
+            this.buttonMoveLeft = new System.Windows.Forms.Button();
+            this.buttonMoveUp = new System.Windows.Forms.Button();
             this.groupBoxMountGPS_Time.SuspendLayout();
             this.groupBoxMountPointingPosition.SuspendLayout();
             this.groupBoxSettings_Limits.SuspendLayout();
@@ -224,7 +224,7 @@
             this.labelLongitude.Size = new System.Drawing.Size(105, 21);
             this.labelLongitude.TabIndex = 8;
             this.labelLongitude.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelLongitude.DoubleClick += new System.EventHandler(this.Set_Latitude_Longitude_Click);
+            this.labelLongitude.DoubleClick += new System.EventHandler(this.Set_Latitude_Longitude);
             // 
             // labelLatitude
             // 
@@ -239,7 +239,7 @@
             this.labelLatitude.Size = new System.Drawing.Size(105, 21);
             this.labelLatitude.TabIndex = 8;
             this.labelLatitude.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelLatitude.DoubleClick += new System.EventHandler(this.Set_Latitude_Longitude_Click);
+            this.labelLatitude.DoubleClick += new System.EventHandler(this.Set_Latitude_Longitude);
             // 
             // labelTimeUTC
             // 
@@ -254,6 +254,7 @@
             this.labelTimeUTC.Size = new System.Drawing.Size(75, 21);
             this.labelTimeUTC.TabIndex = 18;
             this.labelTimeUTC.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.labelTimeUTC.DoubleClick += new System.EventHandler(this.ShowSiderealTime_dClick);
             // 
             // labelTimeLocal
             // 
@@ -268,6 +269,7 @@
             this.labelTimeLocal.Size = new System.Drawing.Size(75, 21);
             this.labelTimeLocal.TabIndex = 18;
             this.labelTimeLocal.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.labelTimeLocal.DoubleClick += new System.EventHandler(this.ShowSiderealTime_dClick);
             // 
             // labelUTC_Offset
             // 
@@ -282,7 +284,7 @@
             this.labelUTC_Offset.TabIndex = 18;
             this.labelUTC_Offset.Text = "-360";
             this.labelUTC_Offset.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelUTC_Offset.DoubleClick += new System.EventHandler(this.UTC_Offset_Click);
+            this.labelUTC_Offset.DoubleClick += new System.EventHandler(this.UTC_Offset);
             // 
             // checkBoxDayLightSavingsOnOff
             // 
@@ -388,7 +390,7 @@
             this.labelAzimuth.Size = new System.Drawing.Size(90, 17);
             this.labelAzimuth.TabIndex = 14;
             this.labelAzimuth.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelAzimuth.DoubleClick += new System.EventHandler(this.Goto_ALT_AZ_Position_Click);
+            this.labelAzimuth.DoubleClick += new System.EventHandler(this.Goto_ALT_AZ_Position);
             // 
             // labelDEC
             // 
@@ -401,7 +403,7 @@
             this.labelDEC.Size = new System.Drawing.Size(90, 17);
             this.labelDEC.TabIndex = 13;
             this.labelDEC.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelDEC.DoubleClick += new System.EventHandler(this.Goto_RA_DEC_Position_Click);
+            this.labelDEC.DoubleClick += new System.EventHandler(this.Goto_RA_DEC_Position);
             // 
             // labelAltitude
             // 
@@ -414,7 +416,7 @@
             this.labelAltitude.Size = new System.Drawing.Size(90, 17);
             this.labelAltitude.TabIndex = 12;
             this.labelAltitude.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelAltitude.DoubleClick += new System.EventHandler(this.Goto_ALT_AZ_Position_Click);
+            this.labelAltitude.DoubleClick += new System.EventHandler(this.Goto_ALT_AZ_Position);
             // 
             // labelRA
             // 
@@ -427,7 +429,7 @@
             this.labelRA.Size = new System.Drawing.Size(90, 17);
             this.labelRA.TabIndex = 12;
             this.labelRA.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelRA.DoubleClick += new System.EventHandler(this.Goto_RA_DEC_Position_Click);
+            this.labelRA.DoubleClick += new System.EventHandler(this.Goto_RA_DEC_Position);
             // 
             // groupBoxSettings_Limits
             // 
@@ -483,7 +485,7 @@
             this.labelDEC_GuidingRate.Size = new System.Drawing.Size(37, 21);
             this.labelDEC_GuidingRate.TabIndex = 21;
             this.labelDEC_GuidingRate.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelDEC_GuidingRate.DoubleClick += new System.EventHandler(this.DEC_GuidingRate_Click);
+            this.labelDEC_GuidingRate.DoubleClick += new System.EventHandler(this.DEC_GuidingRate);
             // 
             // labelRA_GuidingRate
             // 
@@ -497,7 +499,7 @@
             this.labelRA_GuidingRate.Size = new System.Drawing.Size(37, 21);
             this.labelRA_GuidingRate.TabIndex = 20;
             this.labelRA_GuidingRate.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelRA_GuidingRate.DoubleClick += new System.EventHandler(this.RA_GuidingRate_Click);
+            this.labelRA_GuidingRate.DoubleClick += new System.EventHandler(this.RA_GuidingRate);
             // 
             // labelCustomeTrackingRate
             // 
@@ -511,7 +513,7 @@
             this.labelCustomeTrackingRate.Size = new System.Drawing.Size(50, 21);
             this.labelCustomeTrackingRate.TabIndex = 19;
             this.labelCustomeTrackingRate.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelCustomeTrackingRate.DoubleClick += new System.EventHandler(this.CustomeTrackingRate_Click);
+            this.labelCustomeTrackingRate.DoubleClick += new System.EventHandler(this.CustomeTrackingRate);
             // 
             // labelAltitudeLimitMIN
             // 
@@ -525,7 +527,7 @@
             this.labelAltitudeLimitMIN.Size = new System.Drawing.Size(24, 21);
             this.labelAltitudeLimitMIN.TabIndex = 18;
             this.labelAltitudeLimitMIN.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelAltitudeLimitMIN.DoubleClick += new System.EventHandler(this.AltitudeLimitMIN_Click);
+            this.labelAltitudeLimitMIN.DoubleClick += new System.EventHandler(this.AltitudeLimitMIN);
             // 
             // labelMeridianFlipDegrees
             // 
@@ -539,7 +541,7 @@
             this.labelMeridianFlipDegrees.Size = new System.Drawing.Size(24, 21);
             this.labelMeridianFlipDegrees.TabIndex = 17;
             this.labelMeridianFlipDegrees.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelMeridianFlipDegrees.DoubleClick += new System.EventHandler(this.MeridianFlipDegrees_Click);
+            this.labelMeridianFlipDegrees.DoubleClick += new System.EventHandler(this.MeridianFlipDegrees);
             // 
             // label14
             // 
@@ -685,7 +687,7 @@
             this.labelMountParkingAzimuth.Size = new System.Drawing.Size(30, 22);
             this.labelMountParkingAzimuth.TabIndex = 7;
             this.labelMountParkingAzimuth.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelMountParkingAzimuth.DoubleClick += new System.EventHandler(this.MountParkingAzimuth_Click);
+            this.labelMountParkingAzimuth.DoubleClick += new System.EventHandler(this.MountParkingAzimuth);
             // 
             // labelMountParkingAltitude
             // 
@@ -699,7 +701,7 @@
             this.labelMountParkingAltitude.Size = new System.Drawing.Size(30, 22);
             this.labelMountParkingAltitude.TabIndex = 6;
             this.labelMountParkingAltitude.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelMountParkingAltitude.DoubleClick += new System.EventHandler(this.MountParkingAltitude_Click);
+            this.labelMountParkingAltitude.DoubleClick += new System.EventHandler(this.MountParkingAltitude);
             // 
             // buttonParkMount
             // 
@@ -916,78 +918,6 @@
             this.buttonAllStop.UseVisualStyleBackColor = false;
             this.buttonAllStop.Click += new System.EventHandler(this.ButtonAllStop_Click);
             // 
-            // buttonMoveDown
-            // 
-            this.buttonMoveDown.BackColor = System.Drawing.Color.DarkRed;
-            this.buttonMoveDown.FlatAppearance.BorderColor = System.Drawing.Color.Yellow;
-            this.buttonMoveDown.FlatAppearance.BorderSize = 2;
-            this.buttonMoveDown.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Green;
-            this.buttonMoveDown.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Red;
-            this.buttonMoveDown.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonMoveDown.ForeColor = System.Drawing.Color.Yellow;
-            this.buttonMoveDown.Image = global::iOptron_Mount_Control.Properties.Resources.Arrow_Down_TC;
-            this.buttonMoveDown.Location = new System.Drawing.Point(101, 210);
-            this.buttonMoveDown.Name = "buttonMoveDown";
-            this.buttonMoveDown.Size = new System.Drawing.Size(75, 75);
-            this.buttonMoveDown.TabIndex = 3;
-            this.buttonMoveDown.UseVisualStyleBackColor = false;
-            this.buttonMoveDown.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ButtonMoveDown_MouseDown);
-            this.buttonMoveDown.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Manual_DEC_MoveSTOP_MouseUp);
-            // 
-            // buttonMoveRight
-            // 
-            this.buttonMoveRight.BackColor = System.Drawing.Color.DarkRed;
-            this.buttonMoveRight.FlatAppearance.BorderColor = System.Drawing.Color.Yellow;
-            this.buttonMoveRight.FlatAppearance.BorderSize = 2;
-            this.buttonMoveRight.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Green;
-            this.buttonMoveRight.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Red;
-            this.buttonMoveRight.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonMoveRight.ForeColor = System.Drawing.Color.Yellow;
-            this.buttonMoveRight.Image = global::iOptron_Mount_Control.Properties.Resources.Arrow_Right_TC;
-            this.buttonMoveRight.Location = new System.Drawing.Point(182, 129);
-            this.buttonMoveRight.Name = "buttonMoveRight";
-            this.buttonMoveRight.Size = new System.Drawing.Size(75, 75);
-            this.buttonMoveRight.TabIndex = 2;
-            this.buttonMoveRight.UseVisualStyleBackColor = false;
-            this.buttonMoveRight.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ButtonMoveRight_MouseDown);
-            this.buttonMoveRight.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Manual_RA_MoveSTOP_MouseUp);
-            // 
-            // buttonMoveLeft
-            // 
-            this.buttonMoveLeft.BackColor = System.Drawing.Color.DarkRed;
-            this.buttonMoveLeft.FlatAppearance.BorderColor = System.Drawing.Color.Yellow;
-            this.buttonMoveLeft.FlatAppearance.BorderSize = 2;
-            this.buttonMoveLeft.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Green;
-            this.buttonMoveLeft.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Red;
-            this.buttonMoveLeft.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonMoveLeft.ForeColor = System.Drawing.Color.Yellow;
-            this.buttonMoveLeft.Image = global::iOptron_Mount_Control.Properties.Resources.Arrow_Left_TC;
-            this.buttonMoveLeft.Location = new System.Drawing.Point(20, 129);
-            this.buttonMoveLeft.Name = "buttonMoveLeft";
-            this.buttonMoveLeft.Size = new System.Drawing.Size(75, 75);
-            this.buttonMoveLeft.TabIndex = 1;
-            this.buttonMoveLeft.UseVisualStyleBackColor = false;
-            this.buttonMoveLeft.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ButtonMoveLeft_MouseDown);
-            this.buttonMoveLeft.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Manual_RA_MoveSTOP_MouseUp);
-            // 
-            // buttonMoveUp
-            // 
-            this.buttonMoveUp.BackColor = System.Drawing.Color.DarkRed;
-            this.buttonMoveUp.FlatAppearance.BorderColor = System.Drawing.Color.Yellow;
-            this.buttonMoveUp.FlatAppearance.BorderSize = 2;
-            this.buttonMoveUp.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Green;
-            this.buttonMoveUp.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Red;
-            this.buttonMoveUp.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonMoveUp.ForeColor = System.Drawing.Color.Yellow;
-            this.buttonMoveUp.Image = global::iOptron_Mount_Control.Properties.Resources.Arrow_Up_TC;
-            this.buttonMoveUp.Location = new System.Drawing.Point(101, 48);
-            this.buttonMoveUp.Name = "buttonMoveUp";
-            this.buttonMoveUp.Size = new System.Drawing.Size(75, 75);
-            this.buttonMoveUp.TabIndex = 0;
-            this.buttonMoveUp.UseVisualStyleBackColor = false;
-            this.buttonMoveUp.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ButtonMoveUp_MouseDown);
-            this.buttonMoveUp.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Manual_DEC_MoveSTOP_MouseUp);
-            // 
             // groupBoxMountTracking
             // 
             this.groupBoxMountTracking.BackColor = System.Drawing.Color.Black;
@@ -1129,15 +1059,6 @@
             this.timer1.Interval = 1000;
             this.timer1.Tick += new System.EventHandler(this.GetMountData);
             // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = global::iOptron_Mount_Control.Properties.Resources.cem70a_32x32;
-            this.pictureBox1.Location = new System.Drawing.Point(13, 9);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(32, 32);
-            this.pictureBox1.TabIndex = 18;
-            this.pictureBox1.TabStop = false;
-            // 
             // buttonSlewToObject
             // 
             this.buttonSlewToObject.BackColor = System.Drawing.Color.DarkRed;
@@ -1152,6 +1073,87 @@
             this.buttonSlewToObject.Text = "Slew to Object";
             this.buttonSlewToObject.UseVisualStyleBackColor = false;
             this.buttonSlewToObject.Click += new System.EventHandler(this.SlewToObject_Click);
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::iOptron_Mount_Control.Properties.Resources.cem70a_32x32;
+            this.pictureBox1.Location = new System.Drawing.Point(13, 9);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(32, 32);
+            this.pictureBox1.TabIndex = 18;
+            this.pictureBox1.TabStop = false;
+            // 
+            // buttonMoveDown
+            // 
+            this.buttonMoveDown.BackColor = System.Drawing.Color.DarkRed;
+            this.buttonMoveDown.FlatAppearance.BorderColor = System.Drawing.Color.Yellow;
+            this.buttonMoveDown.FlatAppearance.BorderSize = 2;
+            this.buttonMoveDown.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Green;
+            this.buttonMoveDown.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Red;
+            this.buttonMoveDown.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonMoveDown.ForeColor = System.Drawing.Color.Yellow;
+            this.buttonMoveDown.Image = global::iOptron_Mount_Control.Properties.Resources.Arrow_Down_TC;
+            this.buttonMoveDown.Location = new System.Drawing.Point(101, 210);
+            this.buttonMoveDown.Name = "buttonMoveDown";
+            this.buttonMoveDown.Size = new System.Drawing.Size(75, 75);
+            this.buttonMoveDown.TabIndex = 3;
+            this.buttonMoveDown.UseVisualStyleBackColor = false;
+            this.buttonMoveDown.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ButtonMoveDown_MouseDown);
+            this.buttonMoveDown.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Manual_DEC_MoveSTOP_MouseUp);
+            // 
+            // buttonMoveRight
+            // 
+            this.buttonMoveRight.BackColor = System.Drawing.Color.DarkRed;
+            this.buttonMoveRight.FlatAppearance.BorderColor = System.Drawing.Color.Yellow;
+            this.buttonMoveRight.FlatAppearance.BorderSize = 2;
+            this.buttonMoveRight.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Green;
+            this.buttonMoveRight.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Red;
+            this.buttonMoveRight.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonMoveRight.ForeColor = System.Drawing.Color.Yellow;
+            this.buttonMoveRight.Image = global::iOptron_Mount_Control.Properties.Resources.Arrow_Right_TC;
+            this.buttonMoveRight.Location = new System.Drawing.Point(182, 129);
+            this.buttonMoveRight.Name = "buttonMoveRight";
+            this.buttonMoveRight.Size = new System.Drawing.Size(75, 75);
+            this.buttonMoveRight.TabIndex = 2;
+            this.buttonMoveRight.UseVisualStyleBackColor = false;
+            this.buttonMoveRight.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ButtonMoveRight_MouseDown);
+            this.buttonMoveRight.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Manual_RA_MoveSTOP_MouseUp);
+            // 
+            // buttonMoveLeft
+            // 
+            this.buttonMoveLeft.BackColor = System.Drawing.Color.DarkRed;
+            this.buttonMoveLeft.FlatAppearance.BorderColor = System.Drawing.Color.Yellow;
+            this.buttonMoveLeft.FlatAppearance.BorderSize = 2;
+            this.buttonMoveLeft.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Green;
+            this.buttonMoveLeft.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Red;
+            this.buttonMoveLeft.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonMoveLeft.ForeColor = System.Drawing.Color.Yellow;
+            this.buttonMoveLeft.Image = global::iOptron_Mount_Control.Properties.Resources.Arrow_Left_TC;
+            this.buttonMoveLeft.Location = new System.Drawing.Point(20, 129);
+            this.buttonMoveLeft.Name = "buttonMoveLeft";
+            this.buttonMoveLeft.Size = new System.Drawing.Size(75, 75);
+            this.buttonMoveLeft.TabIndex = 1;
+            this.buttonMoveLeft.UseVisualStyleBackColor = false;
+            this.buttonMoveLeft.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ButtonMoveLeft_MouseDown);
+            this.buttonMoveLeft.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Manual_RA_MoveSTOP_MouseUp);
+            // 
+            // buttonMoveUp
+            // 
+            this.buttonMoveUp.BackColor = System.Drawing.Color.DarkRed;
+            this.buttonMoveUp.FlatAppearance.BorderColor = System.Drawing.Color.Yellow;
+            this.buttonMoveUp.FlatAppearance.BorderSize = 2;
+            this.buttonMoveUp.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Green;
+            this.buttonMoveUp.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Red;
+            this.buttonMoveUp.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonMoveUp.ForeColor = System.Drawing.Color.Yellow;
+            this.buttonMoveUp.Image = global::iOptron_Mount_Control.Properties.Resources.Arrow_Up_TC;
+            this.buttonMoveUp.Location = new System.Drawing.Point(101, 48);
+            this.buttonMoveUp.Name = "buttonMoveUp";
+            this.buttonMoveUp.Size = new System.Drawing.Size(75, 75);
+            this.buttonMoveUp.TabIndex = 0;
+            this.buttonMoveUp.UseVisualStyleBackColor = false;
+            this.buttonMoveUp.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ButtonMoveUp_MouseDown);
+            this.buttonMoveUp.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Manual_DEC_MoveSTOP_MouseUp);
             // 
             // MainControlForm
             // 

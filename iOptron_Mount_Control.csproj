@@ -75,6 +75,12 @@
     <Compile Include="ErrorForm.Designer.cs">
       <DependentUpon>ErrorForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="SiderealTime.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SiderealTime.Designer.cs">
+      <DependentUpon>SiderealTime.cs</DependentUpon>
+    </Compile>
     <Compile Include="Slew2Object.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -103,6 +109,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="ErrorForm.resx">
       <DependentUpon>ErrorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SiderealTime.resx">
+      <DependentUpon>SiderealTime.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Slew2Object.resx">
       <DependentUpon>Slew2Object.cs</DependentUpon>

@@ -175,15 +175,16 @@ namespace iOptron_Mount_Control
         public static bool cemAltitudeLimitChanged;
         public static bool cemRA_DEC_GuidingRateChanged;
         public static bool cemMaxSlewRateChanged;
+        public static double UTC_sidereal_time;
+        public static double Local_sidereal_time;
+        public const double J2000 = 2451545.0;                 // Julian date time 2000-01-01 12:00.00 noon
+        public const double miliSecondsInDay = 86400000.0;     // Number of milliseconds in a day
 
         const string NO_PORTS_MESSAGE = "No COM ports found";
         static byte _OtherData_;
-        const double miliSecondsInDay = 86400000.0;     // Number of milliseconds in a day
-        const double J2000 = 2451545.0;                 // Julian date time 2000-01-01 12:00.00 noon
         static readonly bool ON = true;
         static readonly bool OFF = false;
         static readonly object InOut = new object();
-
 
         //****************************************************************************************************************************
         //****************************************************************************************************************************
@@ -242,7 +243,7 @@ namespace iOptron_Mount_Control
 
             if (ButtonCOMPortConnect.Text == NO_PORTS_MESSAGE) // Exit program if no ports found
                 return;
-
+            NoMount:
             if (MountComPort.IsOpen == false)
             {
                 MountComPort.Open(); // Open mount COM port if not already open
@@ -262,6 +263,7 @@ namespace iOptron_Mount_Control
             {
                 MountComPort.Close();
                 ButtonCOMPortConnect.Text = "Connect";
+                ComboBoxComPort.Enabled = ON;
                 buttonSlewToObject.Enabled = OFF;
                 groupBoxMountGPS_Time.Enabled = OFF;
                 groupBoxMountPad.Enabled = OFF;
@@ -279,8 +281,19 @@ namespace iOptron_Mount_Control
             for (i = 0; i < index; i++)
             {
                 if (MountModel[0, i] == inData)
-                    break;
+                {
+                    ComboBoxComPort.Enabled = OFF;
+                    break; 
+                }
             }
+            // if no CEM or GEM mount found show error
+            if (i >= index)
+            {
+                ErrorForm _nomount = new ErrorForm();
+                _nomount.ErrorText = "No CEM GEM iOptron mount found";
+                _nomount.ShowDialog();
+                goto NoMount;
+            }    
             cemMountModel = MountModel[1, i];
             ButtonCOMPortConnect.Text = "Connected To " + MountModel[1, i];
 
@@ -534,13 +547,15 @@ namespace iOptron_Mount_Control
                 cemMountTime = inData.Substring(5, 13);
                 MountTime = Convert.ToDouble(cemMountTime);
                 cemDaylightTime = checkBoxDayLightSavingsOnOff.Checked = (DLST == 1) ? ON : OFF;
-                UTCtime = (MountTime / miliSecondsInDay) + J2000;     // convert Mount Time to UTC time
-                UTCtime -= (int)UTCtime;                        // get the time part
+                UTCtime = (MountTime / miliSecondsInDay) + J2000;       // convert Mount Time to UTC time
+                UTC_sidereal_time = UTCtime; // >>>>>>>>>>>>>>>>>>>>>>>>>> for computing sidereal time
+                UTCtime -= (int)UTCtime;                                // get the time part
                 cemUTCtime = labelTimeUTC.Text = RetTimeString(UTCtime);
                 // convert mount time to Local time
                 LocalTime = MountTime / miliSecondsInDay;
                 localJ2000 = J2000 - (1.0 - ((1440.0 + ((DLST == 1) ? (UTCoffset - -60.0) : UTCoffset)) / 1440.0));
                 LocalTime += localJ2000;
+                Local_sidereal_time = LocalTime; // >>>>>>>>>>>>>>>>>>>>>> for computing sidereal time
                 LocalTime -= (int)LocalTime;
                 labelTimeLocal.Text = RetTimeString(LocalTime);
             }
@@ -1207,7 +1222,7 @@ namespace iOptron_Mount_Control
         // ******************** User Data Entry **************************************************** User Data Entry ******************
 
         // ***** enter parking altitude degrees *****
-        private void MountParkingAltitude_Click(object sender, EventArgs e)
+        private void MountParkingAltitude(object sender, EventArgs e)
         {
             string inData;
 
@@ -1231,7 +1246,7 @@ namespace iOptron_Mount_Control
         }
 
         // ***** set parking azimuth degrees *****
-        private void MountParkingAzimuth_Click(object sender, EventArgs e)
+        private void MountParkingAzimuth(object sender, EventArgs e)
         {
             string inData;
 
@@ -1255,7 +1270,7 @@ namespace iOptron_Mount_Control
         }
 
         // ***** set meridian flip degrees *****
-        private void MeridianFlipDegrees_Click(object sender, EventArgs e)
+        private void MeridianFlipDegrees(object sender, EventArgs e)
         {
             _OtherData_ = 6;
             formUserInput userInput = new formUserInput();
@@ -1276,7 +1291,7 @@ namespace iOptron_Mount_Control
         }
 
         // ***** set altitude limit *****
-        private void AltitudeLimitMIN_Click(object sender, EventArgs e)
+        private void AltitudeLimitMIN(object sender, EventArgs e)
         {
             string inData;
 
@@ -1300,7 +1315,7 @@ namespace iOptron_Mount_Control
         }
 
         // ***** set custom tracking rate *****
-        private void CustomeTrackingRate_Click(object sender, EventArgs e)
+        private void CustomeTrackingRate(object sender, EventArgs e)
         {
             string inData;
 
@@ -1325,7 +1340,7 @@ namespace iOptron_Mount_Control
         }
 
         // ***** set RA guiding rate *****
-        private void RA_GuidingRate_Click(object sender, EventArgs e)
+        private void RA_GuidingRate(object sender, EventArgs e)
         {
             string inData;
 
@@ -1350,7 +1365,7 @@ namespace iOptron_Mount_Control
         }
 
         // ***** set DEC guiding rate *****
-        private void DEC_GuidingRate_Click(object sender, EventArgs e)
+        private void DEC_GuidingRate(object sender, EventArgs e)
         {
             string inData;
 
@@ -1375,7 +1390,7 @@ namespace iOptron_Mount_Control
         }
 
         // ***** set the time zone offset *****
-        private void UTC_Offset_Click(object sender, EventArgs e)
+        private void UTC_Offset(object sender, EventArgs e)
         {
             string inData;
 
@@ -1395,7 +1410,7 @@ namespace iOptron_Mount_Control
         }
 
         // ***** goto RA DEC position *****
-        private void Goto_RA_DEC_Position_Click(object sender, EventArgs e)
+        private void Goto_RA_DEC_Position(object sender, EventArgs e)
         {
             string inData, _RA, _DEC;
             double RA_Deg;
@@ -1421,7 +1436,7 @@ namespace iOptron_Mount_Control
         }
 
         // ***** goto ALT AZ position *****
-        private void Goto_ALT_AZ_Position_Click(object sender, EventArgs e)
+        private void Goto_ALT_AZ_Position(object sender, EventArgs e)
         {
             string _AZ, _ALT;
 
@@ -1462,7 +1477,7 @@ namespace iOptron_Mount_Control
         }
 
         // ***** set latitude longitude position *****
-        private void Set_Latitude_Longitude_Click(object sender, EventArgs e)
+        private void Set_Latitude_Longitude(object sender, EventArgs e)
         {
             string _LOG, _LAT, inData;
 
@@ -1482,7 +1497,14 @@ namespace iOptron_Mount_Control
             }
         }
 
- 
+        // ***** show sidereal time *****
+        private void ShowSiderealTime_dClick(object sender, EventArgs e)
+        {
+            Sidereal_Form _sidereal_ = new Sidereal_Form();
+            _sidereal_.ShowDialog();
+        }
+
+
         //############################################################ WORK IN PROGRESS ################################################
     }
 }
