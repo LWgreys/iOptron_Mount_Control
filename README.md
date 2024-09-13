@@ -12,6 +12,8 @@ I did find a few issues with the CEM firmware and have written iOptron support a
 
 03-21-2024 Added 'Slew to Object' - requires internet to search SIMBA for data using https://.
 
+11-13-2024 Added Sidereal Time to Main_Control form
+
 Future addins:
 
 4. Make the program ASCOM compatible. - This feature may take awhile because I have to write an ASCOM driver for it.
