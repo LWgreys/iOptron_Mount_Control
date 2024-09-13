@@ -905,7 +905,7 @@ namespace iOptron_Mount_Control
             cemMeridianTreatmentChanged = false;
         }
 
-        public void GetStatusOfAutoGuidingFilterRA()
+        public void GetStatusOfAutoGuidingFilterRA() // ********** NOT CODED YET - FOR MOUNTS WITH ENCODERS
         {
             string inData;
 
