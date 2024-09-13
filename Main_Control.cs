@@ -607,7 +607,7 @@ namespace iOptron_Mount_Control
         //***************** END TIMER 1 ******************************************************************** END TIME 1 **************/
 
 
-        // ***** figure siderealtime of location
+        // ***** siderealtime of location
         public static string LocalSiderealTime(double dUTC, double _longitude_)
         {
             // varibles for Local Sidereal Time
@@ -622,7 +622,6 @@ namespace iOptron_Mount_Control
             Days_dif = (_UTC - J2000).TotalDays;
             UT = _UTC.Hour + _UTC.Minute / 60.0 + _UTC.Second / 3600.0;
             LST = 100.4606184 + (_SDx_ * Days_dif) + _longitude_ + (15 * UT);
-            // LST = 100.4606184 + (_SDx_ * Days_dif) + -97.4838 + (15 * UT);
             LST %= 360;
             LST /= 15.0;
             var h = (int)LST;
