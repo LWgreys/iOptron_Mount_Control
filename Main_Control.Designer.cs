@@ -36,6 +36,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBoxMountGPS_Time = new System.Windows.Forms.GroupBox();
+            this.labelLST = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
             this.labelTimeSource = new System.Windows.Forms.Label();
             this.labelLongitude = new System.Windows.Forms.Label();
             this.labelLatitude = new System.Windows.Forms.Label();
@@ -56,7 +58,6 @@
             this.labelAltitude = new System.Windows.Forms.Label();
             this.labelRA = new System.Windows.Forms.Label();
             this.groupBoxSettings_Limits = new System.Windows.Forms.GroupBox();
-            this.buttonResetPEC = new System.Windows.Forms.Button();
             this.labelDEC_GuidingRate = new System.Windows.Forms.Label();
             this.labelRA_GuidingRate = new System.Windows.Forms.Label();
             this.labelCustomeTrackingRate = new System.Windows.Forms.Label();
@@ -72,6 +73,7 @@
             this.comboBoxMaxSlewingRate = new System.Windows.Forms.ComboBox();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
+            this.buttonResetPEC = new System.Windows.Forms.Button();
             this.groupBoxMountParking = new System.Windows.Forms.GroupBox();
             this.labelMountParkingAzimuth = new System.Windows.Forms.Label();
             this.labelMountParkingAltitude = new System.Windows.Forms.Label();
@@ -157,7 +159,7 @@
             this.ButtonCOMPortConnect.Name = "ButtonCOMPortConnect";
             this.ButtonCOMPortConnect.Size = new System.Drawing.Size(197, 31);
             this.ButtonCOMPortConnect.TabIndex = 2;
-            this.ButtonCOMPortConnect.Text = "Connect to CEM70(G)-EC";
+            this.ButtonCOMPortConnect.Text = "Connect";
             this.ButtonCOMPortConnect.UseVisualStyleBackColor = false;
             this.ButtonCOMPortConnect.Click += new System.EventHandler(this.ButtonCOMPortConnect_Click);
             // 
@@ -182,6 +184,8 @@
             // groupBoxMountGPS_Time
             // 
             this.groupBoxMountGPS_Time.BackColor = System.Drawing.Color.Black;
+            this.groupBoxMountGPS_Time.Controls.Add(this.labelLST);
+            this.groupBoxMountGPS_Time.Controls.Add(this.label15);
             this.groupBoxMountGPS_Time.Controls.Add(this.labelTimeSource);
             this.groupBoxMountGPS_Time.Controls.Add(this.labelLongitude);
             this.groupBoxMountGPS_Time.Controls.Add(this.labelLatitude);
@@ -198,10 +202,35 @@
             this.groupBoxMountGPS_Time.ForeColor = System.Drawing.Color.Yellow;
             this.groupBoxMountGPS_Time.Location = new System.Drawing.Point(13, 47);
             this.groupBoxMountGPS_Time.Name = "groupBoxMountGPS_Time";
-            this.groupBoxMountGPS_Time.Size = new System.Drawing.Size(352, 104);
+            this.groupBoxMountGPS_Time.Size = new System.Drawing.Size(352, 141);
             this.groupBoxMountGPS_Time.TabIndex = 5;
             this.groupBoxMountGPS_Time.TabStop = false;
             this.groupBoxMountGPS_Time.Text = "Mount GPS and TIME";
+            // 
+            // labelLST
+            // 
+            this.labelLST.AutoSize = true;
+            this.labelLST.BackColor = System.Drawing.Color.DarkRed;
+            this.labelLST.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.labelLST.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.labelLST.ForeColor = System.Drawing.Color.White;
+            this.labelLST.Location = new System.Drawing.Point(91, 72);
+            this.labelLST.MinimumSize = new System.Drawing.Size(75, 21);
+            this.labelLST.Name = "labelLST";
+            this.labelLST.Size = new System.Drawing.Size(75, 21);
+            this.labelLST.TabIndex = 21;
+            this.labelLST.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(20, 74);
+            this.label15.MinimumSize = new System.Drawing.Size(68, 0);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(68, 15);
+            this.label15.TabIndex = 20;
+            this.label15.Text = "LST";
+            this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // labelTimeSource
             // 
@@ -276,7 +305,7 @@
             this.labelUTC_Offset.BackColor = System.Drawing.Color.DarkRed;
             this.labelUTC_Offset.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.labelUTC_Offset.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.labelUTC_Offset.Location = new System.Drawing.Point(131, 74);
+            this.labelUTC_Offset.Location = new System.Drawing.Point(130, 105);
             this.labelUTC_Offset.MinimumSize = new System.Drawing.Size(35, 21);
             this.labelUTC_Offset.Name = "labelUTC_Offset";
             this.labelUTC_Offset.Size = new System.Drawing.Size(35, 21);
@@ -288,7 +317,7 @@
             // checkBoxDayLightSavingsOnOff
             // 
             this.checkBoxDayLightSavingsOnOff.AutoSize = true;
-            this.checkBoxDayLightSavingsOnOff.Location = new System.Drawing.Point(184, 75);
+            this.checkBoxDayLightSavingsOnOff.Location = new System.Drawing.Point(183, 106);
             this.checkBoxDayLightSavingsOnOff.Name = "checkBoxDayLightSavingsOnOff";
             this.checkBoxDayLightSavingsOnOff.Size = new System.Drawing.Size(123, 19);
             this.checkBoxDayLightSavingsOnOff.TabIndex = 17;
@@ -299,7 +328,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(21, 77);
+            this.label13.Location = new System.Drawing.Point(20, 108);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(102, 15);
             this.label13.TabIndex = 15;
@@ -371,7 +400,7 @@
             this.groupBoxMountPointingPosition.Controls.Add(this.label6);
             this.groupBoxMountPointingPosition.Controls.Add(this.label7);
             this.groupBoxMountPointingPosition.ForeColor = System.Drawing.Color.Yellow;
-            this.groupBoxMountPointingPosition.Location = new System.Drawing.Point(13, 157);
+            this.groupBoxMountPointingPosition.Location = new System.Drawing.Point(14, 194);
             this.groupBoxMountPointingPosition.Name = "groupBoxMountPointingPosition";
             this.groupBoxMountPointingPosition.Size = new System.Drawing.Size(352, 82);
             this.groupBoxMountPointingPosition.TabIndex = 10;
@@ -433,7 +462,6 @@
             // groupBoxSettings_Limits
             // 
             this.groupBoxSettings_Limits.BackColor = System.Drawing.Color.Black;
-            this.groupBoxSettings_Limits.Controls.Add(this.buttonResetPEC);
             this.groupBoxSettings_Limits.Controls.Add(this.labelDEC_GuidingRate);
             this.groupBoxSettings_Limits.Controls.Add(this.labelRA_GuidingRate);
             this.groupBoxSettings_Limits.Controls.Add(this.labelCustomeTrackingRate);
@@ -451,26 +479,12 @@
             this.groupBoxSettings_Limits.Controls.Add(this.label10);
             this.groupBoxSettings_Limits.Enabled = false;
             this.groupBoxSettings_Limits.ForeColor = System.Drawing.Color.Yellow;
-            this.groupBoxSettings_Limits.Location = new System.Drawing.Point(13, 245);
+            this.groupBoxSettings_Limits.Location = new System.Drawing.Point(13, 282);
             this.groupBoxSettings_Limits.Name = "groupBoxSettings_Limits";
             this.groupBoxSettings_Limits.Size = new System.Drawing.Size(353, 164);
             this.groupBoxSettings_Limits.TabIndex = 11;
             this.groupBoxSettings_Limits.TabStop = false;
             this.groupBoxSettings_Limits.Text = "Mount Settings and Limits";
-            // 
-            // buttonResetPEC
-            // 
-            this.buttonResetPEC.BackColor = System.Drawing.Color.Maroon;
-            this.buttonResetPEC.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
-            this.buttonResetPEC.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Red;
-            this.buttonResetPEC.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonResetPEC.Location = new System.Drawing.Point(253, 130);
-            this.buttonResetPEC.Name = "buttonResetPEC";
-            this.buttonResetPEC.Size = new System.Drawing.Size(88, 25);
-            this.buttonResetPEC.TabIndex = 22;
-            this.buttonResetPEC.Text = "Reset PEC";
-            this.buttonResetPEC.UseVisualStyleBackColor = false;
-            this.buttonResetPEC.Click += new System.EventHandler(this.ButtonResetPECrecording_Click);
             // 
             // labelDEC_GuidingRate
             // 
@@ -657,6 +671,20 @@
             this.label10.TabIndex = 0;
             this.label10.Text = "MAX Slewing Rate";
             // 
+            // buttonResetPEC
+            // 
+            this.buttonResetPEC.BackColor = System.Drawing.Color.Maroon;
+            this.buttonResetPEC.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.buttonResetPEC.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Red;
+            this.buttonResetPEC.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonResetPEC.Location = new System.Drawing.Point(6, 59);
+            this.buttonResetPEC.Name = "buttonResetPEC";
+            this.buttonResetPEC.Size = new System.Drawing.Size(88, 25);
+            this.buttonResetPEC.TabIndex = 22;
+            this.buttonResetPEC.Text = "Reset PEC";
+            this.buttonResetPEC.UseVisualStyleBackColor = false;
+            this.buttonResetPEC.Click += new System.EventHandler(this.ButtonResetPECrecording_Click);
+            // 
             // groupBoxMountParking
             // 
             this.groupBoxMountParking.BackColor = System.Drawing.Color.Black;
@@ -667,7 +695,7 @@
             this.groupBoxMountParking.Controls.Add(this.label21);
             this.groupBoxMountParking.Enabled = false;
             this.groupBoxMountParking.ForeColor = System.Drawing.Color.Yellow;
-            this.groupBoxMountParking.Location = new System.Drawing.Point(13, 415);
+            this.groupBoxMountParking.Location = new System.Drawing.Point(13, 452);
             this.groupBoxMountParking.Name = "groupBoxMountParking";
             this.groupBoxMountParking.Size = new System.Drawing.Size(353, 98);
             this.groupBoxMountParking.TabIndex = 12;
@@ -746,7 +774,7 @@
             this.groupBoxMountZeroPosition.Controls.Add(this.buttonSearchMountZero);
             this.groupBoxMountZeroPosition.Enabled = false;
             this.groupBoxMountZeroPosition.ForeColor = System.Drawing.Color.Yellow;
-            this.groupBoxMountZeroPosition.Location = new System.Drawing.Point(372, 415);
+            this.groupBoxMountZeroPosition.Location = new System.Drawing.Point(372, 452);
             this.groupBoxMountZeroPosition.Name = "groupBoxMountZeroPosition";
             this.groupBoxMountZeroPosition.Size = new System.Drawing.Size(269, 98);
             this.groupBoxMountZeroPosition.TabIndex = 13;
@@ -992,13 +1020,14 @@
             // groupBoxMountTracking
             // 
             this.groupBoxMountTracking.BackColor = System.Drawing.Color.Black;
+            this.groupBoxMountTracking.Controls.Add(this.buttonResetPEC);
             this.groupBoxMountTracking.Controls.Add(this.buttonPeriodicErrorCorrection);
             this.groupBoxMountTracking.Controls.Add(this.buttonTrackingOnOff);
             this.groupBoxMountTracking.Enabled = false;
             this.groupBoxMountTracking.ForeColor = System.Drawing.Color.Yellow;
             this.groupBoxMountTracking.Location = new System.Drawing.Point(371, 348);
             this.groupBoxMountTracking.Name = "groupBoxMountTracking";
-            this.groupBoxMountTracking.Size = new System.Drawing.Size(270, 61);
+            this.groupBoxMountTracking.Size = new System.Drawing.Size(270, 98);
             this.groupBoxMountTracking.TabIndex = 16;
             this.groupBoxMountTracking.TabStop = false;
             this.groupBoxMountTracking.Text = "Mount Tracking";
@@ -1158,7 +1187,7 @@
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.Red;
-            this.ClientSize = new System.Drawing.Size(654, 527);
+            this.ClientSize = new System.Drawing.Size(654, 561);
             this.ControlBox = false;
             this.Controls.Add(this.buttonSlewToObject);
             this.Controls.Add(this.pictureBox1);
@@ -1178,8 +1207,6 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
-            this.MaximumSize = new System.Drawing.Size(670, 566);
-            this.MinimumSize = new System.Drawing.Size(670, 566);
             this.Name = "MainControlForm";
             this.Text = "iOptron Mount";
             this.groupBoxMountGPS_Time.ResumeLayout(false);
@@ -1281,6 +1308,8 @@
         private System.Windows.Forms.Button buttonPeriodicErrorCorrection;
         private System.Windows.Forms.Button buttonResetPEC;
         private System.Windows.Forms.Button buttonSlewToObject;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label labelLST;
     }
 }
 

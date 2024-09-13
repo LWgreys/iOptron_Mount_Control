@@ -174,11 +174,11 @@ namespace iOptron_Mount_Control
         public static bool cemAltitudeLimitChanged;
         public static bool cemRA_DEC_GuidingRateChanged;
         public static bool cemMaxSlewRateChanged;
-
+        public static double LST_longitude; // .....................Used for LocalSiderealTime()
         const string NO_PORTS_MESSAGE = "No COM ports found";
         static byte _OtherData_;
         const double miliSecondsInDay = 86400000.0;     // Number of milliseconds in a day
-        const double J2000 = 2451545.0;                 // Julian date time 2000-01-01 12:00.00 noon
+        const double JD_J2000 = 2451545.0;                 // Julian date time 2000-01-01 12:00.00 noon
         static readonly bool ON = true;
         static readonly bool OFF = false;
         static readonly object InOut = new object();
@@ -194,8 +194,15 @@ namespace iOptron_Mount_Control
 
             // Disable Button
             ButtonCOMPortConnect.Enabled = OFF;
+            GetListOfComPorts();
+            _OtherData_ = 0;
+            timer1.Stop();
+        }
 
-            // Get a list of COM ports
+
+        // Get a list of COM ports
+        public void GetListOfComPorts()
+        {
             ComboBoxComPort.Items.Clear(); // Clear any existing entries
             foreach (string ComString in SerialPort.GetPortNames())
                 ComboBoxComPort.Items.Add(ComString); // Get Available ComPorts
@@ -204,9 +211,6 @@ namespace iOptron_Mount_Control
                 ButtonCOMPortConnect.Text = NO_PORTS_MESSAGE;
                 ButtonCOMPortConnect.Enabled = ON;
             }
-
-            _OtherData_ = 0;
-            timer1.Stop();
         }
 
 
@@ -341,11 +345,13 @@ namespace iOptron_Mount_Control
             cemMovingRate = Convert.ToByte(inData.Substring(20, 1));
             cemTimeSource = Convert.ToByte(inData.Substring(21, 1));
             cemHemisphere = Convert.ToByte(inData.Substring(22, 1));
-            
+            LST_longitude = 0.0; // Convert.ToDouble(cemLongitude) / 360000.0;
+
             // *** GPS status
             switch (cemGPSstatus)
             {
                 case 2:
+                    LST_longitude = Convert.ToDouble(cemLongitude) / 360000.0;
                     if (cemLatitudeEastWest == "+")
                         cemLongitude = labelLongitude.Text = RetPostionString(Convert.ToDouble(cemLongitude), 0) + " E"; // convert string to double
                     else
@@ -532,12 +538,14 @@ namespace iOptron_Mount_Control
                 cemMountTime = inData.Substring(5, 13);
                 MountTime = Convert.ToDouble(cemMountTime);
                 cemDaylightTime = checkBoxDayLightSavingsOnOff.Checked = (DLST == 1) ? ON : OFF;
-                UTCtime = (MountTime / miliSecondsInDay) + J2000;     // convert Mount Time to UTC time
+                UTCtime = (MountTime / miliSecondsInDay) + JD_J2000;     // convert Mount Time to UTC time
+                lock (InOut)
+                    labelLST.Text = LocalSiderealTime(UTCtime, LST_longitude);
                 UTCtime -= (int)UTCtime;                        // get the time part
                 cemUTCtime = labelTimeUTC.Text = RetTimeString(UTCtime);
                 // convert mount time to Local time
                 LocalTime = MountTime / miliSecondsInDay;
-                localJ2000 = J2000 - (1.0 - ((1440.0 + ((DLST == 1) ? (UTCoffset - -60.0) : UTCoffset)) / 1440.0));
+                localJ2000 = JD_J2000 - (1.0 - ((1440.0 + ((DLST == 1) ? (UTCoffset - -60.0) : UTCoffset)) / 1440.0)); // 1440 = minutes in 24 hours
                 LocalTime += localJ2000;
                 LocalTime -= (int)LocalTime;
                 labelTimeLocal.Text = RetTimeString(LocalTime);
@@ -597,6 +605,36 @@ namespace iOptron_Mount_Control
             GetOtherData(_OtherData_);
         }
         //***************** END TIMER 1 ******************************************************************** END TIME 1 **************/
+
+
+        // ***** figure siderealtime of location
+        public static string LocalSiderealTime(double dUTC, double _longitude_)
+        {
+            // varibles for Local Sidereal Time
+            double Tropical_year = 365.2421875; // = 365 days 5 hours 48 minutes 45 seconds
+            double _SDx_ = 360.0 / Tropical_year; // SD multiplyer
+            DateTime J2000 = new DateTime(2000, 1, 1, 12, 0, 0);
+            double Days_dif, UT, LST;
+            DateTime _UTC;
+            
+            dUTC -= JD_J2000;
+            _UTC = ((((DateTime.FromOADate(dUTC)).AddYears(100)).AddHours(12)).AddMinutes(3)).AddSeconds(56);
+            Days_dif = (_UTC - J2000).TotalDays;
+            UT = _UTC.Hour + _UTC.Minute / 60.0 + _UTC.Second / 3600.0;
+            LST = 100.4606184 + (_SDx_ * Days_dif) + _longitude_ + (15 * UT);
+            // LST = 100.4606184 + (_SDx_ * Days_dif) + -97.4838 + (15 * UT);
+            LST %= 360;
+            LST /= 15.0;
+            var h = (int)LST;
+            LST -= (int)LST;
+            LST *= 60.0;
+            var m = (int)LST;
+            LST -= (int)LST;
+            LST *= 60.0;
+            var s = LST;
+            return string.Format(" {0:00} : {1:00} : {2:00}", h, m, s);
+        }
+
 
         // ***** get Periodic Error Status
         public void GetPeriodicErrorStatus()
@@ -732,7 +770,7 @@ namespace iOptron_Mount_Control
 
             DateTime utcdatetime = DateTime.UtcNow;
             double jUTC = JD(utcdatetime);                                      // convert UTC DateTime to Julian date.time
-            ulong mountUTCtime = (ulong)((jUTC - J2000) * miliSecondsInDay);    // convert Julian date.time to mount time
+            ulong mountUTCtime = (ulong)((jUTC - JD_J2000) * miliSecondsInDay);    // convert Julian date.time to mount time
             lock (InOut)
                 inData = MountCommand(string.Format("{0}{1:0000000000000}#", set_UTC_Time, mountUTCtime), 1);
         }
@@ -1170,8 +1208,8 @@ namespace iOptron_Mount_Control
         private void SlewToObject_Click(object sender, EventArgs e)
         {
             string _RA, _DEC;
-            double[] d;
-            byte n;
+            // double[] d;
+            // byte n;
 
             Slew2Object Slew2 = new Slew2Object();
             Slew2.ShowDialog();
@@ -1396,10 +1434,10 @@ namespace iOptron_Mount_Control
         // ***** goto RA DEC position *****
         private void Goto_RA_DEC_Position_Click(object sender, EventArgs e)
         {
-            string inData, _RA, _DEC;
-            double RA_Deg;
-            double[] d;
-            byte n;
+            string _RA, _DEC; // , inData
+            // double RA_Deg;
+            // double[] d;
+            // byte n;
 
             FormUserInput2 userInput2 = new FormUserInput2();
             userInput2._DialogLabel1 = "RA: hh mm ss";
