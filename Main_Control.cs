@@ -163,6 +163,7 @@ namespace iOptron_Mount_Control
         public static bool cemMeridianFlipStatus;
         public static byte cemMeridianFlipDegrees;
         public static bool cemTrackingOnOff;
+        public static bool cemMountParking = false;
         public static bool cemMountParked;
         public static bool cemPECdataComplete; //.................. Periodic Error Recorded Data Complete Status
         public static bool cemPECrecording; //..................... Periodic Error Recording Status
@@ -385,7 +386,9 @@ namespace iOptron_Mount_Control
                     labelMountSlewing.BackColor = Color.Maroon;
                     checkBoxMeridianFlipOnOff.BackColor = Color.Black;
                     buttonParkMount.BackColor = Color.Maroon;
+                    buttonParkMount.ForeColor = Color.Yellow;
                     buttonParkMount.Text = "Park Mount";
+                    cemMountParking = OFF;
                     cemMountParked = OFF;
                     break;
                 case 1: // tracking with periodic error correction disabled
@@ -399,7 +402,9 @@ namespace iOptron_Mount_Control
                     labelMountSlewing.BackColor = Color.Maroon;
                     checkBoxMeridianFlipOnOff.BackColor = Color.Black;
                     buttonParkMount.BackColor = Color.Maroon;
+                    buttonParkMount.ForeColor = Color.Yellow;
                     buttonParkMount.Text = "Park Mount";
+                    cemMountParking = OFF;
                     cemMountParked = OFF;
                     break;
                 case 2: // slewing
@@ -411,9 +416,20 @@ namespace iOptron_Mount_Control
                     cemTrackingOnOff = OFF;
                     labelMountSlewing.BackColor = Color.Green;
                     checkBoxMeridianFlipOnOff.BackColor = Color.Black;
-                    buttonParkMount.BackColor = Color.Maroon;
-                    buttonParkMount.Text = "Park Mount";
-                    cemMountParked = OFF;
+                    if (cemMountParking == OFF)
+                    {
+                        buttonParkMount.BackColor = Color.Maroon;
+                        buttonParkMount.ForeColor = Color.Yellow;
+                        buttonParkMount.Text = "Park Mount";
+                        cemMountParked = OFF;
+                    }
+                    else
+                    {
+                        buttonParkMount.BackColor = Color.Yellow;
+                        buttonParkMount.ForeColor = Color.Black;
+                        buttonParkMount.Text = "Parking Mount";
+                        cemMountParked = OFF;
+                    }
                     break;
                 case 3: // auto-guiding
                     buttonPeriodicErrorCorrection.BackColor = Color.Maroon;
@@ -425,7 +441,9 @@ namespace iOptron_Mount_Control
                     labelMountSlewing.BackColor = Color.Maroon;
                     checkBoxMeridianFlipOnOff.BackColor = Color.Black;
                     buttonParkMount.BackColor = Color.Maroon;
+                    buttonParkMount.ForeColor = Color.Yellow;
                     buttonParkMount.Text = "Park Mount";
+                    cemMountParking = OFF;
                     cemMountParked = OFF;
                     break;
                 case 4: // meridian flipping
@@ -438,7 +456,9 @@ namespace iOptron_Mount_Control
                     labelMountSlewing.BackColor = Color.Maroon;
                     checkBoxMeridianFlipOnOff.BackColor = Color.Green;
                     buttonParkMount.BackColor = Color.Maroon;
+                    buttonParkMount.ForeColor = Color.Yellow;
                     buttonParkMount.Text = "Park Mount";
+                    cemMountParking = OFF;
                     cemMountParked = OFF;
                     break;
                 case 5: // tracking with periodic error correction enabled
@@ -460,7 +480,9 @@ namespace iOptron_Mount_Control
                     labelMountSlewing.BackColor = Color.Maroon;
                     checkBoxMeridianFlipOnOff.BackColor = Color.Black;
                     buttonParkMount.BackColor = Color.Maroon;
+                    buttonParkMount.ForeColor = Color.Yellow;
                     buttonParkMount.Text = "Park Mount";
+                    cemMountParking = OFF;
                     cemMountParked = OFF;
                     break;
                 case 6: // parked
@@ -473,7 +495,9 @@ namespace iOptron_Mount_Control
                     labelMountSlewing.BackColor = Color.Maroon;
                     checkBoxMeridianFlipOnOff.BackColor = Color.Black;
                     buttonParkMount.BackColor = Color.Green;
+                    buttonParkMount.ForeColor = Color.Yellow;
                     buttonParkMount.Text = "Unpark Mount";
+                    cemMountParking = OFF;
                     cemMountParked = ON;
                     break;
                 case 7: //stopped at zero position
@@ -489,7 +513,9 @@ namespace iOptron_Mount_Control
                     labelMountSlewing.BackColor = Color.Maroon;
                     checkBoxMeridianFlipOnOff.BackColor = Color.Black;
                     buttonParkMount.BackColor = Color.Maroon;
+                    buttonParkMount.ForeColor = Color.Yellow;
                     buttonParkMount.Text = "Park Mount";
+                    cemMountParking = OFF;
                     cemMountParked = OFF;
                     break;
             }
@@ -711,7 +737,7 @@ namespace iOptron_Mount_Control
             {
                 case 0:
                 case 3:
-                    return string.Format("{0:0} : {1:00} : {2:00}.{3:00}", _degrees, _minutes, _seconds, _decimal);
+                    return string.Format("{0:00} : {1:00} : {2:00}.{3:00}", _degrees, _minutes, _seconds, _decimal);
                 case 4:
                     return string.Format("{0:0}", _degrees);
                 case 1:
@@ -1128,8 +1154,11 @@ namespace iOptron_Mount_Control
 
             GetParkingPostion();
             if (cemMountParked == ON)
+            {
                 lock (InOut)
                     inData = MountCommand(mov_Unpark, 1);
+                cemMountParking = OFF;
+            }
             else
             {
                 if ((cemPECplaybackOnOff == ON) || (cemPECrecording == ON))
@@ -1137,6 +1166,7 @@ namespace iOptron_Mount_Control
                         StopPlaybackRecord();
                 lock (InOut)
                     inData = MountCommand(mov_Parking_Position, 1);
+                cemMountParking = ON;
             }
         }
 
