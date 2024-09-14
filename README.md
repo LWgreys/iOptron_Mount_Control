@@ -17,3 +17,8 @@ I did find a few issues with the CEM firmware and have written iOptron support a
 Future addins:
 
 4. Make the program ASCOM compatible. - This feature may take awhile because I have to write an ASCOM driver for it.
+
+
+
+View of the main control panel
+![Main Control Panel](https://github.com/user-attachments/assets/b6620356-9768-45dd-8de6-0dd92c84b856)
