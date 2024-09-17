@@ -1208,6 +1208,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "MainControlForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "iOptron Mount";
             this.groupBoxMountGPS_Time.ResumeLayout(false);
             this.groupBoxMountGPS_Time.PerformLayout();

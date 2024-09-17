@@ -205,8 +205,7 @@ namespace iOptron_Mount_Control
         public void GetListOfComPorts()
         {
             ComboBoxComPort.Items.Clear(); // Clear any existing entries
-            foreach (string ComString in SerialPort.GetPortNames())
-                ComboBoxComPort.Items.Add(ComString); // Get Available ComPorts
+            ComboBoxComPort.Items.AddRange(SerialPort.GetPortNames()); // Get Available ComPorts using System.IO because it's static
             if (ComboBoxComPort.Items.Count == 0)
             {
                 ButtonCOMPortConnect.Text = NO_PORTS_MESSAGE;
@@ -252,27 +251,12 @@ namespace iOptron_Mount_Control
                 MountComPort.DiscardOutBuffer();
                 MountComPort.DiscardInBuffer();
                 buttonResetPEC.Enabled = OFF;
-                buttonSlewToObject.Enabled = ON;
-                groupBoxMountGPS_Time.Enabled = ON;
-                groupBoxMountPad.Enabled = ON;
-                groupBoxMountParking.Enabled = ON;
-                groupBoxMountPointingPosition.Enabled = ON;
-                groupBoxMountTracking.Enabled = ON;
-                groupBoxMountZeroPosition.Enabled = ON;
-                groupBoxSettings_Limits.Enabled = ON;
+                groupBoxesState(ON);
             }
             else
             {
                 MountComPort.Close();
-                ButtonCOMPortConnect.Text = "Connect";
-                buttonSlewToObject.Enabled = OFF;
-                groupBoxMountGPS_Time.Enabled = OFF;
-                groupBoxMountPad.Enabled = OFF;
-                groupBoxMountParking.Enabled = OFF;
-                groupBoxMountPointingPosition.Enabled = OFF;
-                groupBoxMountTracking.Enabled = OFF;
-                groupBoxMountZeroPosition.Enabled = OFF;
-                groupBoxSettings_Limits.Enabled = OFF;
+                groupBoxesState(OFF);
                 return;
             }
 
@@ -284,6 +268,13 @@ namespace iOptron_Mount_Control
                 if (MountModel[0, i] == inData)
                     break;
             }
+            if (i >= index)
+            {
+                MountComPort.Close();
+                groupBoxesState(OFF);
+                return;
+            }
+
             cemMountModel = MountModel[1, i];
             ButtonCOMPortConnect.Text = "Connected To " + MountModel[1, i];
 
@@ -306,6 +297,21 @@ namespace iOptron_Mount_Control
             cemMaxSlewRateChanged = true;
 
             timer1.Start();
+        }
+
+
+        // ***** turn on or off group boxes
+        public void groupBoxesState(bool onoff)
+        {
+            ButtonCOMPortConnect.Text = "Connect";
+            buttonSlewToObject.Enabled = onoff;
+            groupBoxMountGPS_Time.Enabled = onoff;
+            groupBoxMountPad.Enabled = onoff;
+            groupBoxMountParking.Enabled = onoff;
+            groupBoxMountPointingPosition.Enabled = onoff;
+            groupBoxMountTracking.Enabled = onoff;
+            groupBoxMountZeroPosition.Enabled = onoff;
+            groupBoxSettings_Limits.Enabled = onoff;
         }
 
 
