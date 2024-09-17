@@ -192,10 +192,10 @@ namespace iOptron_Mount_Control
         public MainControlForm()
         {
             InitializeComponent();
-
-            // Disable Button
-            ButtonCOMPortConnect.Enabled = OFF;
-            GetListOfComPorts();
+            
+            ButtonCOMPortConnect.Enabled = OFF; // Disable Button
+            GetListOfComPorts(); // get list of COM ports
+            ComboBoxBaudRate.SelectedIndex = 0;
             _OtherData_ = 0;
             timer1.Stop();
         }
@@ -227,8 +227,15 @@ namespace iOptron_Mount_Control
         private void ComboBoxComPort_SelectedIndexChanged(object sender, EventArgs e)
         {
             // Set mount COM port
-            MountComPort.PortName = ComboBoxComPort.Text;
+            labelComPort.Text = MountComPort.PortName = ComboBoxComPort.Text;
             ButtonCOMPortConnect.Enabled = ON;
+            this.ActiveControl = null;
+        }
+
+
+        private void ComboBoxBaudRate_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            MountComPort.BaudRate = Convert.ToInt32(labelBaudRate.Text = ComboBoxBaudRate.Text);
             this.ActiveControl = null;
         }
 
@@ -304,6 +311,8 @@ namespace iOptron_Mount_Control
         public void groupBoxesState(bool onoff)
         {
             ButtonCOMPortConnect.Text = "Connect";
+            ComboBoxBaudRate.Visible = !onoff;
+            ComboBoxComPort.Visible = !onoff;
             buttonSlewToObject.Enabled = onoff;
             groupBoxMountGPS_Time.Enabled = onoff;
             groupBoxMountPad.Enabled = onoff;
@@ -1554,7 +1563,7 @@ namespace iOptron_Mount_Control
             }
         }
 
- 
+
         //############################################################ WORK IN PROGRESS ################################################
     }
 }

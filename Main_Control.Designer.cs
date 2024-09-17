@@ -108,8 +108,10 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.MountComPort = new System.IO.Ports.SerialPort(this.components);
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.buttonSlewToObject = new System.Windows.Forms.Button();
+            this.ComboBoxBaudRate = new System.Windows.Forms.ComboBox();
+            this.labelBaudRate = new System.Windows.Forms.Label();
+            this.labelComPort = new System.Windows.Forms.Label();
             this.groupBoxMountGPS_Time.SuspendLayout();
             this.groupBoxMountPointingPosition.SuspendLayout();
             this.groupBoxSettings_Limits.SuspendLayout();
@@ -117,7 +119,6 @@
             this.groupBoxMountZeroPosition.SuspendLayout();
             this.groupBoxMountPad.SuspendLayout();
             this.groupBoxMountTracking.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // ComboBoxComPort
@@ -127,12 +128,13 @@
             this.ComboBoxComPort.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ComboBoxComPort.ForeColor = System.Drawing.Color.Yellow;
             this.ComboBoxComPort.FormattingEnabled = true;
-            this.ComboBoxComPort.Location = new System.Drawing.Point(97, 14);
+            this.ComboBoxComPort.Location = new System.Drawing.Point(134, 14);
             this.ComboBoxComPort.Margin = new System.Windows.Forms.Padding(4);
             this.ComboBoxComPort.MaxDropDownItems = 3;
             this.ComboBoxComPort.Name = "ComboBoxComPort";
             this.ComboBoxComPort.Size = new System.Drawing.Size(78, 24);
             this.ComboBoxComPort.TabIndex = 0;
+            this.ComboBoxComPort.Text = "COM";
             this.ComboBoxComPort.SelectedIndexChanged += new System.EventHandler(this.ComboBoxComPort_SelectedIndexChanged);
             // 
             // label1
@@ -140,7 +142,7 @@
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.Color.Red;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(58, 17);
+            this.label1.Location = new System.Drawing.Point(11, 18);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(31, 16);
@@ -154,7 +156,7 @@
             this.ButtonCOMPortConnect.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.ButtonCOMPortConnect.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ButtonCOMPortConnect.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ButtonCOMPortConnect.Location = new System.Drawing.Point(182, 10);
+            this.ButtonCOMPortConnect.Location = new System.Drawing.Point(225, 10);
             this.ButtonCOMPortConnect.Margin = new System.Windows.Forms.Padding(4);
             this.ButtonCOMPortConnect.Name = "ButtonCOMPortConnect";
             this.ButtonCOMPortConnect.Size = new System.Drawing.Size(197, 31);
@@ -1067,9 +1069,9 @@
             this.ButtonEXIT.FlatAppearance.MouseOverBackColor = System.Drawing.Color.OrangeRed;
             this.ButtonEXIT.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ButtonEXIT.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ButtonEXIT.Location = new System.Drawing.Point(567, 10);
+            this.ButtonEXIT.Location = new System.Drawing.Point(568, 10);
             this.ButtonEXIT.Name = "ButtonEXIT";
-            this.ButtonEXIT.Size = new System.Drawing.Size(75, 31);
+            this.ButtonEXIT.Size = new System.Drawing.Size(74, 31);
             this.ButtonEXIT.TabIndex = 17;
             this.ButtonEXIT.Text = "EXIT";
             this.ButtonEXIT.UseVisualStyleBackColor = false;
@@ -1159,15 +1161,6 @@
             this.timer1.Interval = 1000;
             this.timer1.Tick += new System.EventHandler(this.GetMountData);
             // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = global::iOptron_Mount_Control.Properties.Resources.cem70a_32x32;
-            this.pictureBox1.Location = new System.Drawing.Point(13, 9);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(32, 32);
-            this.pictureBox1.TabIndex = 18;
-            this.pictureBox1.TabStop = false;
-            // 
             // buttonSlewToObject
             // 
             this.buttonSlewToObject.BackColor = System.Drawing.Color.DarkRed;
@@ -1175,13 +1168,52 @@
             this.buttonSlewToObject.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
             this.buttonSlewToObject.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonSlewToObject.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonSlewToObject.Location = new System.Drawing.Point(391, 10);
+            this.buttonSlewToObject.Location = new System.Drawing.Point(429, 10);
             this.buttonSlewToObject.Name = "buttonSlewToObject";
-            this.buttonSlewToObject.Size = new System.Drawing.Size(156, 31);
+            this.buttonSlewToObject.Size = new System.Drawing.Size(133, 31);
             this.buttonSlewToObject.TabIndex = 19;
             this.buttonSlewToObject.Text = "Slew to Object";
             this.buttonSlewToObject.UseVisualStyleBackColor = false;
             this.buttonSlewToObject.Click += new System.EventHandler(this.SlewToObject_Click);
+            // 
+            // ComboBoxBaudRate
+            // 
+            this.ComboBoxBaudRate.BackColor = System.Drawing.Color.Firebrick;
+            this.ComboBoxBaudRate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ComboBoxBaudRate.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ComboBoxBaudRate.ForeColor = System.Drawing.Color.Yellow;
+            this.ComboBoxBaudRate.FormattingEnabled = true;
+            this.ComboBoxBaudRate.Items.AddRange(new object[] {
+            "115200",
+            "9600"});
+            this.ComboBoxBaudRate.Location = new System.Drawing.Point(48, 14);
+            this.ComboBoxBaudRate.Margin = new System.Windows.Forms.Padding(4);
+            this.ComboBoxBaudRate.MaxDropDownItems = 3;
+            this.ComboBoxBaudRate.Name = "ComboBoxBaudRate";
+            this.ComboBoxBaudRate.Size = new System.Drawing.Size(78, 24);
+            this.ComboBoxBaudRate.TabIndex = 20;
+            this.ComboBoxBaudRate.Text = "Baud";
+            this.ComboBoxBaudRate.SelectedIndexChanged += new System.EventHandler(this.ComboBoxBaudRate_SelectedIndexChanged);
+            // 
+            // labelBaudRate
+            // 
+            this.labelBaudRate.AutoSize = true;
+            this.labelBaudRate.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelBaudRate.Location = new System.Drawing.Point(51, 17);
+            this.labelBaudRate.Name = "labelBaudRate";
+            this.labelBaudRate.Size = new System.Drawing.Size(49, 16);
+            this.labelBaudRate.TabIndex = 21;
+            this.labelBaudRate.Text = "115200";
+            // 
+            // labelComPort
+            // 
+            this.labelComPort.AutoSize = true;
+            this.labelComPort.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelComPort.Location = new System.Drawing.Point(134, 17);
+            this.labelComPort.Name = "labelComPort";
+            this.labelComPort.Size = new System.Drawing.Size(43, 16);
+            this.labelComPort.TabIndex = 22;
+            this.labelComPort.Text = "COMx";
             // 
             // MainControlForm
             // 
@@ -1190,18 +1222,20 @@
             this.ClientSize = new System.Drawing.Size(654, 561);
             this.ControlBox = false;
             this.Controls.Add(this.buttonSlewToObject);
-            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.ButtonEXIT);
             this.Controls.Add(this.groupBoxMountTracking);
             this.Controls.Add(this.groupBoxMountPad);
             this.Controls.Add(this.groupBoxMountZeroPosition);
             this.Controls.Add(this.groupBoxMountParking);
             this.Controls.Add(this.groupBoxSettings_Limits);
-            this.Controls.Add(this.ComboBoxComPort);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.groupBoxMountPointingPosition);
             this.Controls.Add(this.ButtonCOMPortConnect);
             this.Controls.Add(this.groupBoxMountGPS_Time);
+            this.Controls.Add(this.labelBaudRate);
+            this.Controls.Add(this.ComboBoxBaudRate);
+            this.Controls.Add(this.ComboBoxComPort);
+            this.Controls.Add(this.labelComPort);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ForeColor = System.Drawing.Color.Yellow;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -1223,7 +1257,6 @@
             this.groupBoxMountPad.ResumeLayout(false);
             this.groupBoxMountPad.PerformLayout();
             this.groupBoxMountTracking.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1279,7 +1312,6 @@
         private System.Windows.Forms.GroupBox groupBoxMountTracking;
         private System.Windows.Forms.Button buttonTrackingOnOff;
         private System.Windows.Forms.Button ButtonEXIT;
-        private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button buttonConnectComPort;
         private System.Windows.Forms.Button buttonExitApp;
         private System.Windows.Forms.TextBox textBox3;
@@ -1311,6 +1343,9 @@
         private System.Windows.Forms.Button buttonSlewToObject;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label labelLST;
+        private System.Windows.Forms.ComboBox ComboBoxBaudRate;
+        private System.Windows.Forms.Label labelBaudRate;
+        private System.Windows.Forms.Label labelComPort;
     }
 }
 
