@@ -14,6 +14,8 @@ I did find a few issues with the CEM firmware and have written iOptron support a
 
 11-13-2024 Added Sidereal Time to Main_Control form
 
+11-16-2024 Fixed so the mount models listed in "iOptron Mount RS-232 Command Language" version 3.10 are only used.
+
 Future addins:
 
 4. Make the program ASCOM compatible. - This feature may take awhile because I have to write an ASCOM driver for it.
