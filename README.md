@@ -16,6 +16,8 @@ I did find a few issues with the CEM firmware and have written iOptron support a
 
 11-16-2024 Fixed so the mount models listed in "iOptron Mount RS-232 Command Language" version 3.10 are only used.
 
+11-17-2024 Made changes to the main control panel (upper left) to add in BaudRate and once connected to the mount, prevent changing BaudRate and COM port while connected to the mount.
+
 Future addins:
 
 4. Make the program ASCOM compatible. - This feature may take awhile because I have to write an ASCOM driver for it.
@@ -24,4 +26,5 @@ Future addins:
 
 View of the main control panel
 
-![Main Control Panel](https://github.com/user-attachments/assets/b6620356-9768-45dd-8de6-0dd92c84b856)
+
+![MainControlPic](https://github.com/user-attachments/assets/cd475902-514a-410a-8eb0-de89e7eb1f9c)
