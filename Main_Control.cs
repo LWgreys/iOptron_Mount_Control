@@ -175,14 +175,15 @@ namespace iOptron_Mount_Control
         public static bool cemAltitudeLimitChanged;
         public static bool cemRA_DEC_GuidingRateChanged;
         public static bool cemMaxSlewRateChanged;
-        public static double LST_longitude; // .....................Used for LocalSiderealTime()
+        public static string slewedObject = ""; // ................ slew2object name
+        public static double LST_longitude; // .................... Used for LocalSiderealTime()
         const string NO_PORTS_MESSAGE = "No COM ports found";
         static byte _OtherData_;
-        const double miliSecondsInDay = 86400000.0;     // Number of milliseconds in a day
-        const double JD_J2000 = 2451545.0;                 // Julian date time 2000-01-01 12:00.00 noon
+        const double miliSecondsInDay = 86400000.0; // ............ Number of milliseconds in a day
+        const double JD_J2000 = 2451545.0; // ..................... Julian date time 2000-01-01 12:00.00 noon
         static readonly bool ON = true;
         static readonly bool OFF = false;
-        static readonly object InOut = new object();
+        static readonly object OutIn = new object();
 
 
         //****************************************************************************************************************************
@@ -350,7 +351,7 @@ namespace iOptron_Mount_Control
             string inData;
 
             // Get GPS Longitude Latitude and other information
-            lock (InOut)
+            lock (OutIn)
                 inData = MountCommand(get_Loc_Stat, 24);
             cemLongitude = inData.Substring(0, 9);
             cemLatitude = inData.Substring(9, 8);
@@ -390,7 +391,7 @@ namespace iOptron_Mount_Control
             {
                 case 0: // stopped at none zero position
                     if ((cemPECenabled == ON) || (cemPECplaybackOnOff == ON) || (cemPECrecording == ON))
-                        lock (InOut)
+                        lock (OutIn)
                             StopPlaybackRecord();
                     buttonPeriodicErrorCorrection.BackColor = Color.Maroon;
                     buttonPeriodicErrorCorrection.Text = "PEC Tracking OFF";
@@ -517,7 +518,7 @@ namespace iOptron_Mount_Control
                     break;
                 case 7: //stopped at zero position
                     if ((cemPECenabled == ON) || (cemPECplaybackOnOff == ON) || (cemPECrecording == ON))
-                        lock (InOut)
+                        lock (OutIn)
                             StopPlaybackRecord();
                     buttonPeriodicErrorCorrection.BackColor = Color.Maroon;
                     buttonPeriodicErrorCorrection.Text = "PEC Tracking OFF";
@@ -570,7 +571,7 @@ namespace iOptron_Mount_Control
                 byte DLST;
                 double UTCtime, UTCoffset, MountTime, LocalTime, localJ2000;
 
-                lock (InOut)
+                lock (OutIn)
                     inData = MountCommand(get_UTC_Time, 19);
                 // convert mount time to UTC time
                 cemUTCoffset = labelUTC_Offset.Text = inData.Substring(0, 4);
@@ -580,7 +581,7 @@ namespace iOptron_Mount_Control
                 MountTime = Convert.ToDouble(cemMountTime);
                 cemDaylightTime = checkBoxDayLightSavingsOnOff.Checked = (DLST == 1) ? ON : OFF;
                 UTCtime = (MountTime / miliSecondsInDay) + JD_J2000;     // convert Mount Time to UTC time
-                lock (InOut)
+                lock (OutIn)
                     labelLST.Text = LocalSiderealTime(UTCtime, LST_longitude);
                 UTCtime -= (int)UTCtime;                        // get the time part
                 cemUTCtime = labelTimeUTC.Text = RetTimeString(UTCtime);
@@ -593,7 +594,7 @@ namespace iOptron_Mount_Control
             }
 
             // *** get RA and DEC position
-            lock (InOut)
+            lock (OutIn)
                 inData = MountCommand(get_RA_DEC_Pos, 21);
             cemDECposition = inData.Substring(0, 9);
             cemRAposition = inData.Substring(9, 9);
@@ -618,7 +619,7 @@ namespace iOptron_Mount_Control
             }
 
             // *** get ALT and AZ position
-            lock (InOut)
+            lock (OutIn)
                 inData = MountCommand(get_Alt_Az_Pos, 19);
             cemAltitudePosition = inData.Substring(0, 9);
             cemAzimuthPosition = inData.Substring(9, 9);
@@ -628,11 +629,11 @@ namespace iOptron_Mount_Control
             // *** periodic error correction
             if (cemPECenabled == ON)
             {
-                lock (InOut)
+                lock (OutIn)
                     GetPeriodicErrorStatus();
                 if ((cemPECdataComplete == ON) && (cemPECrecording == OFF) && (cemPECplaybackOnOff == OFF))
                 {
-                    lock (InOut)
+                    lock (OutIn)
                         inData = MountCommand(set_Playback_PR_ON, 1);   // turn periodic error playback ON
                     cemPECplaybackOnOff = ON;
                 }
@@ -652,27 +653,27 @@ namespace iOptron_Mount_Control
         public static string LocalSiderealTime(double dUTC, double _longitude_)
         {
             // varibles for Local Sidereal Time
+            DateTime _UTC;
+            double Days_dif, UT, LST;
             double Tropical_year = 365.2421875; // = 365 days 5 hours 48 minutes 45 seconds
             double _SDx_ = 360.0 / Tropical_year; // SD multiplyer
-            DateTime J2000 = new DateTime(2000, 1, 1, 12, 0, 0);
-            double Days_dif, UT, LST;
-            DateTime _UTC;
+            DateTime J2000 = new DateTime(2000, 1, 1, 12, 0, 0); // J2000 datetime
             
-            dUTC -= JD_J2000;
-            _UTC = ((((DateTime.FromOADate(dUTC)).AddYears(100)).AddHours(12)).AddMinutes(3)).AddSeconds(56);
-            Days_dif = (_UTC - J2000).TotalDays;
-            UT = _UTC.Hour + _UTC.Minute / 60.0 + _UTC.Second / 3600.0;
-            LST = 100.4606184 + (_SDx_ * Days_dif) + _longitude_ + (15 * UT);
-            LST %= 360;
-            LST /= 15.0;
-            var h = (int)LST;
-            LST -= (int)LST;
-            LST *= 60.0;
-            var m = (int)LST;
-            LST -= (int)LST;
-            LST *= 60.0;
-            var s = LST;
-            return string.Format(" {0:00} : {1:00} : {2:00}", h, m, s);
+            dUTC -= JD_J2000; // subtract Julian datetime of J2000 DateTime from the UTC DateTime 
+            _UTC = ((((DateTime.FromOADate(dUTC)).AddYears(100)).AddHours(12)).AddMinutes(3)).AddSeconds(56); // convert UTC DataTime to decimal datetime
+            Days_dif = (_UTC - J2000).TotalDays; // get the number of days sense J2000 including decmal part
+            UT = _UTC.Hour + _UTC.Minute / 60.0 + _UTC.Second / 3600.0; // convert adjusted UTC time to decimal hours
+            LST = 100.4606184 + (_SDx_ * Days_dif) + _longitude_ + (15 * UT); // convert to degrees
+            LST %= 360; // adjusted until degrees is lessthan 360
+            LST /= 15.0; // convert to decmal hours
+            var h = (int)LST; // hour part
+            LST -= (int)LST; // remove hour part
+            LST *= 60.0; // adjust for minutes
+            var m = (int)LST; // minutes part
+            LST -= (int)LST; // remove minutes part
+            LST *= 60.0; // adjust for seconds
+            var s = LST; // seconds part
+            return string.Format(" {0:00} : {1:00} : {2:00}", h, m, s); // return formated time string
         }
 
 
@@ -811,7 +812,7 @@ namespace iOptron_Mount_Control
             DateTime utcdatetime = DateTime.UtcNow;
             double jUTC = JD(utcdatetime);                                      // convert UTC DateTime to Julian date.time
             ulong mountUTCtime = (ulong)((jUTC - JD_J2000) * miliSecondsInDay);    // convert Julian date.time to mount time
-            lock (InOut)
+            lock (OutIn)
                 inData = MountCommand(string.Format("{0}{1:0000000000000}#", set_UTC_Time, mountUTCtime), 1);
         }
 
@@ -878,7 +879,7 @@ namespace iOptron_Mount_Control
         {
             string inData;
 
-            lock (InOut)
+            lock (OutIn)
                 inData = MountCommand(get_Tracking_Rate, 6);
             cemCustomTrackRate = labelCustomeTrackingRate.Text = inData.Substring(0, 1) + "." + inData.Substring(1, 4);
             cemCustomTrackingRateChanged = false;
@@ -888,7 +889,7 @@ namespace iOptron_Mount_Control
         {
             string inData;
 
-            lock (InOut)
+            lock (OutIn)
                 inData = MountCommand(get_Park_Pos, 18);
             cemParkingAltitude = inData.Substring(0, 8);
             cemParkingAzimuth = inData.Substring(8, 9);
@@ -901,7 +902,7 @@ namespace iOptron_Mount_Control
         {
             string inData;
 
-            lock (InOut)
+            lock (OutIn)
                 inData = MountCommand(get_MAX_Slew_Rate, 2);
             cemMAXSlewingRate = Convert.ToByte(inData.Substring(0, 1));
             cemMAXSlewingRate -= 7;
@@ -913,7 +914,7 @@ namespace iOptron_Mount_Control
         {
             string inData;
 
-            lock (InOut)
+            lock (OutIn)
                 inData = MountCommand(get_Alt_Limit, 4);
             labelAltitudeLimitMIN.Text = inData.Substring(0, 3);
             cemAltitudeLimit = Convert.ToSByte(inData.Substring(0, 3));
@@ -924,7 +925,7 @@ namespace iOptron_Mount_Control
         {
             string inData;
 
-            lock (InOut)
+            lock (OutIn)
                 inData = MountCommand(get_RA_DEC_Guide_Rate, 5);
             cemRAguidingRate = inData.Substring(0, 2);
             cemDECguidingRate = inData.Substring(2, 2);
@@ -937,7 +938,7 @@ namespace iOptron_Mount_Control
         {
             string inData;
 
-            lock (InOut)
+            lock (OutIn)
                 inData = MountCommand(get_Meridian_Treatment, 4);
             cemMeridianFlipStatus = checkBoxMeridianFlipOnOff.Checked = (inData.Substring(0, 1) == "1") ? ON : OFF;
             cemMeridianFlipDegrees = Convert.ToByte(inData.Substring(1, 2));
@@ -951,7 +952,7 @@ namespace iOptron_Mount_Control
 
             if (cemMountModel.Contains("EC") == true)
             {
-                lock (InOut)
+                lock (OutIn)
                     inData = MountCommand(get_Guiding_Filter_RA, 1);
                 // ADD CODE FOR AUTO-GUIDING FILTER HERE
             }
@@ -982,7 +983,7 @@ namespace iOptron_Mount_Control
         {
             string inData;
 
-            lock (InOut)
+            lock (OutIn)
             {
                 if (s == 0)
                     inData = MountCommand(string.Format(cemMeridianFlipStatus ? "{0}0{1:00}#" : "{0}1{1:00}#", set_Meridian_Treatment, cemMeridianFlipDegrees), 1);
@@ -1042,7 +1043,7 @@ namespace iOptron_Mount_Control
         {
             string inData;
 
-            lock (InOut)
+            lock (OutIn)
             {
                 if (checkBoxDayLightSavingsOnOff.Checked == true)
                     inData = MountCommand(set_DayLightSavings_OFF, 1);
@@ -1071,13 +1072,13 @@ namespace iOptron_Mount_Control
             if (cemTrackingOnOff == ON)
             {
                 cemTrackingOnOff = OFF;
-                lock (InOut)
+                lock (OutIn)
                     inData = MountCommand(set_Tracking_OFF, 1);     // tracking OFF
             }
             else
             {
                 cemTrackingOnOff = ON;
-                lock (InOut)
+                lock (OutIn)
                     inData = MountCommand(set_Tracking_ON, 1);  	// tracking ON
             }
         }
@@ -1089,14 +1090,14 @@ namespace iOptron_Mount_Control
 
             if (cemMountParked == ON)
                 return;
-            lock(InOut)
+            lock(OutIn)
                 GetPeriodicErrorStatus();
             if (cemPECenabled == OFF)
             {
-                lock (InOut)
+                lock (OutIn)
                     inData = MountCommand(set_Playback_PR_ON, 1);               // periodic error playback ON
                 if (cemPECdataComplete == OFF)
-                    lock (InOut)
+                    lock (OutIn)
                         inData = MountCommand(set_PE_Record_Start, 1);          // periodic error record ON
                 cemPECplaybackOnOff = ON;
                 cemPECenabled = ON;
@@ -1104,9 +1105,9 @@ namespace iOptron_Mount_Control
             else
             {
                 if (cemPECrecording == ON)
-                    lock (InOut)
+                    lock (OutIn)
                         inData = MountCommand(set_PE_Record_Stop, 1);           // periodic error record OFF
-                lock (InOut)
+                lock (OutIn)
                     inData = MountCommand(set_Playback_PR_OFF, 1);              // periodic error playback OFF
                 cemPECplaybackOnOff = OFF;
                 cemPECenabled = OFF;
@@ -1118,7 +1119,7 @@ namespace iOptron_Mount_Control
         {
             string inData;
 
-            lock (InOut)
+            lock (OutIn)
             {
                 inData = MountCommand(set_PE_Record_Start, 1);
                 inData = MountCommand(set_PE_Record_Stop, 1);
@@ -1130,7 +1131,7 @@ namespace iOptron_Mount_Control
         {
             string inData;
 
-            lock (InOut)
+            lock (OutIn)
                 inData = MountCommand(slew_Zero_Position, 1);
         }
 
@@ -1149,7 +1150,7 @@ namespace iOptron_Mount_Control
             // exit ButtonSetNewZeroPosition_Click if NO answer
             if (_answer == DialogResult.No)
                 return;
-            lock (InOut)
+            lock (OutIn)
                 inData = MountCommand(set_Zero_Position, 1);
         }
 
@@ -1158,7 +1159,7 @@ namespace iOptron_Mount_Control
         {
             string inData;
 
-            lock (InOut)
+            lock (OutIn)
                 inData = MountCommand(search_Zero_Position, 1);
         }
 
@@ -1170,16 +1171,16 @@ namespace iOptron_Mount_Control
             GetParkingPostion();
             if (cemMountParked == ON)
             {
-                lock (InOut)
+                lock (OutIn)
                     inData = MountCommand(mov_Unpark, 1);
                 cemMountParking = OFF;
             }
             else
             {
                 if ((cemPECplaybackOnOff == ON) || (cemPECrecording == ON))
-                    lock (InOut)
+                    lock (OutIn)
                         StopPlaybackRecord();
-                lock (InOut)
+                lock (OutIn)
                     inData = MountCommand(mov_Parking_Position, 1);
                 cemMountParking = ON;
             }
@@ -1190,7 +1191,7 @@ namespace iOptron_Mount_Control
         {
             string inData;
 
-            lock (InOut)
+            lock (OutIn)
                 inData = MountCommand(slew_Stop, 1);
         }
 
@@ -1199,7 +1200,7 @@ namespace iOptron_Mount_Control
         {
             string inData;
 
-            lock (InOut)
+            lock (OutIn)
                 inData = MountCommand(mov_Manual_DEC_Minus, 0);
         }
 
@@ -1208,7 +1209,7 @@ namespace iOptron_Mount_Control
         {
             string inData;
 
-            lock (InOut)
+            lock (OutIn)
                 inData = MountCommand(mov_Manual_DEC_Plus, 0);
         }
 
@@ -1217,7 +1218,7 @@ namespace iOptron_Mount_Control
         {
             string inData;
 
-            lock (InOut)
+            lock (OutIn)
                 inData = MountCommand(mov_Manual_DEC_Stop, 1);
         }
 
@@ -1226,7 +1227,7 @@ namespace iOptron_Mount_Control
         {
             string inData;
 
-            lock (InOut)
+            lock (OutIn)
                 inData = MountCommand(mov_Manual_RA_Minus, 0);
         }
 
@@ -1235,7 +1236,7 @@ namespace iOptron_Mount_Control
         {
             string inData;
 
-            lock (InOut)
+            lock (OutIn)
                 inData = MountCommand(mov_Manual_RA_Plus, 0);
         }
 
@@ -1244,7 +1245,7 @@ namespace iOptron_Mount_Control
         {
             string inData;
 
-            lock (InOut)
+            lock (OutIn)
                 inData = MountCommand(mov_Manual_RA_Stop, 1);
         }
 
@@ -1252,8 +1253,6 @@ namespace iOptron_Mount_Control
         private void SlewToObject_Click(object sender, EventArgs e)
         {
             string _RA, _DEC;
-            // double[] d;
-            // byte n;
 
             Slew2Object Slew2 = new Slew2Object();
             Slew2.ShowDialog();
@@ -1261,7 +1260,7 @@ namespace iOptron_Mount_Control
             {
                 _RA = Str2MilliSecRAstr(Slew2._RA_of_Object);
                 _DEC = Str2MiliSecDegStr(Slew2._DEC_of_Object, 8);
-                lock (InOut)
+                lock (OutIn)
                     if (DoMountSlew(_RA, _DEC, 0) == 0)
                     {
                         ErrorForm _error_ = new ErrorForm();
@@ -1302,7 +1301,7 @@ namespace iOptron_Mount_Control
                 if ((bb >= 0) && (bb <= 89))
                 {
                     cemParkingAltitude = userInput._TextEntered;
-                    lock (InOut)
+                    lock (OutIn)
                         inData = MountCommand(string.Format("{0}{1:000000000}#", set_Alt_Park_Position, bb * 360000), 1);
                 }
             }
@@ -1326,7 +1325,7 @@ namespace iOptron_Mount_Control
                 if ((bb >= 0) && (bb <= 359))
                 {
                     cemParkingAzimuth = userInput._TextEntered;
-                    lock (InOut)
+                    lock (OutIn)
                         inData = MountCommand(string.Format("{0}{1:000000000}#", set_AZ_Park_Position, bb * 360000), 1);
                 }
             }
@@ -1371,7 +1370,7 @@ namespace iOptron_Mount_Control
                 if ((sb >= 0) && (sb <= 89))
                 {
                     cemAltitudeLimit = sb;
-                    lock (InOut)
+                    lock (OutIn)
                         inData = MountCommand(string.Format((cemHemisphere == 1) ? "{0}+{1:00}#" : "{0}-{1:00}#", set_Altitude_Limit, sb), 1);
                 }
             }
@@ -1396,7 +1395,7 @@ namespace iOptron_Mount_Control
                 {
                     string _CTR = string.Format("{0:0.0000}", dc);
                     _CTR = _CTR.Substring(0, 1) + _CTR.Substring(2, 4);
-                    lock (InOut)
+                    lock (OutIn)
                         inData = MountCommand(string.Format("{0}{1}#", set_Custom_Tracking_Rate, _CTR), 1);
                 }
             }
@@ -1421,7 +1420,7 @@ namespace iOptron_Mount_Control
                 {
                     string _RAgr = string.Format("{0:0.00}", gr);
                     _RAgr = _RAgr.Substring(2, 2);
-                    lock (InOut)
+                    lock (OutIn)
                         inData = MountCommand(string.Format("{0}{1}{2}#", set_Guiding_Rate, _RAgr, cemDECguidingRate), 1);
                 }
             }
@@ -1446,7 +1445,7 @@ namespace iOptron_Mount_Control
                 {
                     string _DECgr = string.Format("{0:0.00}", gr);
                     _DECgr = _DECgr.Substring(2, 2);
-                    lock (InOut)
+                    lock (OutIn)
                         inData = MountCommand(string.Format("{0}{1}{2}#", set_Guiding_Rate, cemRAguidingRate, _DECgr), 1);
                 }
             }
@@ -1468,7 +1467,7 @@ namespace iOptron_Mount_Control
                 short os = Convert.ToInt16(userInput._TextEntered);
                 if ((os >= -720) && (os <= +780))
                 {
-                    lock (InOut)
+                    lock (OutIn)
                         inData = MountCommand(string.Format((os >= 0) ? "{0}+{1:000}#" : "{0}-{1:000}#", set_UTC_offset_Localtime, Math.Abs(os)), 1);
                 }
             }
@@ -1491,7 +1490,7 @@ namespace iOptron_Mount_Control
             {
                 _RA = Str2MilliSecRAstr(userInput2._TextEntered1);
                 _DEC = Str2MiliSecDegStr(userInput2._TextEntered2, 8);
-                lock(InOut)
+                lock(OutIn)
                     if (DoMountSlew(_RA, _DEC, 0) == 0)
                     {
                         ErrorForm _error_ = new ErrorForm();
@@ -1514,7 +1513,7 @@ namespace iOptron_Mount_Control
             {
                 _ALT = Str2MiliSecDegStr(userInput2._TextEntered1, 8);
                 _AZ = Str2MiliSecDegStr(userInput2._TextEntered2, 9);
-                lock(InOut)
+                lock(OutIn)
                     if (DoMountSlew(_AZ, _ALT, 1) == 0)
                     {
                         ErrorForm _error_ = new ErrorForm();
@@ -1553,7 +1552,7 @@ namespace iOptron_Mount_Control
             userInput2.ShowDialog();
             if (userInput2._FormStatus == true)
             {
-                lock (InOut)
+                lock (OutIn)
                 {
                     _LAT = Str2MiliSecDegStr(userInput2._TextEntered1, 8);
                     inData = MountCommand(set_Latitude + _LAT + "#", 1);
