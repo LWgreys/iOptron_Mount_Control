@@ -664,7 +664,7 @@ namespace iOptron_Mount_Control
             Days_dif = (_UTC - J2000).TotalDays; // get the number of days sense J2000 including decmal part
             UT = _UTC.Hour + _UTC.Minute / 60.0 + _UTC.Second / 3600.0; // convert adjusted UTC time to decimal hours
             LST = 100.4606184 + (_SDx_ * Days_dif) + _longitude_ + (15 * UT); // convert to degrees
-            LST %= 360; // adjusted until degrees is lessthan 360
+            LST %= 360; // adjusted until degrees is less than 360
             LST /= 15.0; // convert to decmal hours
             var h = (int)LST; // hour part
             LST -= (int)LST; // remove hour part

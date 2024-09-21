@@ -46,7 +46,8 @@ namespace iOptron_Mount_Control
 
             // search SIMBA for object
             HttpClient client = new HttpClient();
-            var uri = $"https://simbad.cds.unistra.fr/simbad/sim-script?script=format%20object%20%22%7E%7E%20%25COO(2%3BC%3BJ2000%3B2024)%22%0A{textboxObject.Text}";
+            var uri = $"https://simbad.cds.unistra.fr/simbad/sim-script?script=format%20object%20%22%7E%7E%20%25COO(2%3BC%3BJ2000)%22%0A{textboxObject.Text}";
+            // var uri = $"https://simbad.cds.unistra.fr/simbad/sim-script?script=format%20object%20%22%7E%7E%20%25COO(2%3BC%3BJ2000%3B2024)%22%0A{textboxObject.Text}";
             HttpResponseMessage response = await client.GetAsync(uri);
             // check if http client successful
             if (response.IsSuccessStatusCode)
