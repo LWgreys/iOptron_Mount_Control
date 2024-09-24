@@ -133,8 +133,8 @@ namespace iOptron_Mount_Control
         public static string cemHCfirmwareDate;
         public static string cemRAfirmwareDate;
         public static string cemDECfirmwareDate;
-        public static string cemLongitude;
-        public static string cemLatitude;
+        public static string cemLongitude = "00000000";
+        public static string cemLatitude = "00000000";
         public static byte cemGPSstatus;
         public static byte cemInMotion;
         public static byte cemTrackingRate;
@@ -175,6 +175,7 @@ namespace iOptron_Mount_Control
         public static bool cemAltitudeLimitChanged;
         public static bool cemRA_DEC_GuidingRateChanged;
         public static bool cemMaxSlewRateChanged;
+        public static bool mountTimeSet = false;
         public static string slewedObject = ""; // ................ slew2object name
         public static double LST_longitude; // .................... Used for LocalSiderealTime()
         const string NO_PORTS_MESSAGE = "No COM ports found";
@@ -198,6 +199,7 @@ namespace iOptron_Mount_Control
             GetListOfComPorts(); // get list of COM ports
             ComboBoxBaudRate.SelectedIndex = 0;
             _OtherData_ = 0;
+            slewedObject = "";
             timer1.Stop();
         }
 
@@ -247,8 +249,8 @@ namespace iOptron_Mount_Control
             timer1.Stop();
 
             int i, index;
-            string firmwareDate;
-            string inData;
+            string firmwareDate = "";
+            string inData = "";
 
             if (ButtonCOMPortConnect.Text == NO_PORTS_MESSAGE) // Exit program if no ports found
                 return;
@@ -362,7 +364,7 @@ namespace iOptron_Mount_Control
             cemMovingRate = Convert.ToByte(inData.Substring(20, 1));
             cemTimeSource = Convert.ToByte(inData.Substring(21, 1));
             cemHemisphere = Convert.ToByte(inData.Substring(22, 1));
-            LST_longitude = 0.0; // Convert.ToDouble(cemLongitude) / 360000.0;
+            LST_longitude = 0.0;
 
             // *** GPS status
             switch (cemGPSstatus)
@@ -560,13 +562,17 @@ namespace iOptron_Mount_Control
                     break;
                 default:
                     // set to computer UTC time if no HC or GPS
-                    SetToComputerTime();
-                    labelTimeSource.Text = "CPU";
+                    if (!mountTimeSet)
+                    {
+                        mountTimeSet = setMountDateTime(ON, "");
+                        // labelTimeSource.Text = "CPU";
+                        labelTimeSource.Text = "";
+                    }
                     break;
             }
 
             // *** Get Mount UTC time
-            if ((cemTimeSource == 2) || (cemTimeSource == 3) || (labelTimeSource.Text == "CPU"))
+            if ((cemTimeSource == 2) || (cemTimeSource == 3) || mountTimeSet)
             {
                 byte DLST;
                 double UTCtime, UTCoffset, MountTime, LocalTime, localJ2000;
@@ -805,15 +811,33 @@ namespace iOptron_Mount_Control
 
 
         // set mount time to computer time
-        public void SetToComputerTime()
+        public bool setMountDateTime(bool autoSet, string _dts)
         {
             string inData;
+            double jUTC;
 
-            DateTime utcdatetime = DateTime.UtcNow;
-            double jUTC = JD(utcdatetime);                                      // convert UTC DateTime to Julian date.time
-            ulong mountUTCtime = (ulong)((jUTC - JD_J2000) * miliSecondsInDay);    // convert Julian date.time to mount time
+            if (autoSet)
+            {
+                DateTime utcdatetime = DateTime.UtcNow;
+                jUTC = JD(utcdatetime);                                         // convert UTC DateTime to Julian date.time
+            }
+            else
+            {
+                int[] d;
+                byte n;
+
+                d = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};                   // split up the date & time string
+                string[] DTS = _dts.Split(' ', ':', '-', '/', '\\', '.');
+                n = 0;
+                foreach (string num in DTS)
+                    d[n++] = Convert.ToInt32(num);
+                jUTC = JD(d[0], d[1], d[2], d[3], d[4], d[5], 0);               // convert entered date time to Julian date.time
+            }
+
+            ulong mountUTCtime = (ulong)((jUTC - JD_J2000) * miliSecondsInDay); // convert Julian date.time to mount time
             lock (OutIn)
                 inData = MountCommand(string.Format("{0}{1:0000000000000}#", set_UTC_Time, mountUTCtime), 1);
+            return (inData == "1" ? true : false);
         }
 
 
@@ -860,12 +884,12 @@ namespace iOptron_Mount_Control
             return (int)(365.25 * (Y + 4716)) + (int)(30.6001 * (M + 1)) + D + B - 1524.5;
         }
 
-        /*
+        
         static public double JD(int year, int month, int day, int hour, int minute, int second, int millisecond)
         {
             return DateToJD(year, month, day, hour, minute, second, millisecond);
         }
-        */
+        
 
         static public double JD(DateTime date)
         {
@@ -1277,7 +1301,7 @@ namespace iOptron_Mount_Control
             byte n;
 
             d = new double[] { 0, 0, 0, 0, 0 };
-            string[] RA_Split = _str.Split(' ');
+            string[] RA_Split = _str.Split(' ', ':', '.');
             n = 0;
             foreach (string num in RA_Split)
                 d[n++] = Convert.ToDouble(num);
@@ -1453,6 +1477,23 @@ namespace iOptron_Mount_Control
             _OtherData_ = 0;
             this.ActiveControl = null;
         }
+        // ***** set the mount date & time *****
+        private void set_Date_Time_Click(object sender, EventArgs e)
+        {
+            FormUserInput2 userInput2 = new FormUserInput2();
+            userInput2._DialogLabel1 = "yyyy mm dd";
+            userInput2._DialogLabel2 = "hh mm ss";
+            userInput2.ShowDialog();
+            if (userInput2._FormStatus == true)
+            {
+                if (setMountDateTime(OFF, (userInput2._TextEntered1 + " " + userInput2._TextEntered2)))
+                    mountTimeSet = true;
+                else
+                    mountTimeSet = false;
+            }
+            this.ActiveControl = null;
+        }
+
 
         // ***** set the time zone offset *****
         private void UTC_Offset_Click(object sender, EventArgs e)
@@ -1531,7 +1572,7 @@ namespace iOptron_Mount_Control
             byte n;
 
             d = new double[] {0,0,0,0,0,0,0,0};
-            string[] _Split = _str.Split(' ');
+            string[] _Split = _str.Split(' ', ':', '.');
             n = 0;
             foreach (string num in _Split)
                 d[n++] = Convert.ToDouble(num);

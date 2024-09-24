@@ -286,6 +286,7 @@
             this.labelTimeUTC.Size = new System.Drawing.Size(75, 21);
             this.labelTimeUTC.TabIndex = 18;
             this.labelTimeUTC.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.labelTimeUTC.DoubleClick += new System.EventHandler(this.set_Date_Time_Click);
             // 
             // labelTimeLocal
             // 
@@ -300,6 +301,7 @@
             this.labelTimeLocal.Size = new System.Drawing.Size(75, 21);
             this.labelTimeLocal.TabIndex = 18;
             this.labelTimeLocal.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.labelTimeLocal.DoubleClick += new System.EventHandler(this.set_Date_Time_Click);
             // 
             // labelUTC_Offset
             // 
