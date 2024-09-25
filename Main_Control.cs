@@ -190,7 +190,7 @@ namespace iOptron_Mount_Control
         //****************************************************************************************************************************
         //****************************************************************************************************************************
 
-        // *** Main Control Form ***
+        // ***** Main Control Form *****
         public MainControlForm()
         {
             InitializeComponent();
@@ -204,7 +204,7 @@ namespace iOptron_Mount_Control
         }
 
 
-        // Get a list of COM ports
+        // ***** Get a list of COM ports *****
         public void GetListOfComPorts()
         {
             ComboBoxComPort.Items.Clear(); // Clear any existing entries
@@ -217,7 +217,7 @@ namespace iOptron_Mount_Control
         }
 
 
-        // *** Exit Button ***
+        // ***** Exit Application Button Click *****
         private void ButtonEXIT_Click(object sender, EventArgs e)
         {
             if (MountComPort.IsOpen)
@@ -226,16 +226,16 @@ namespace iOptron_Mount_Control
         }
 
 
-        // *** Select COM Port ***
+        // ***** Select COM Port *****
         private void ComboBoxComPort_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Set mount COM port
             labelComPort.Text = MountComPort.PortName = ComboBoxComPort.Text;
             ButtonCOMPortConnect.Enabled = ON;
             this.ActiveControl = null;
         }
 
 
+        // ***** Select Baud Rate *****
         private void ComboBoxBaudRate_SelectedIndexChanged(object sender, EventArgs e)
         {
             MountComPort.BaudRate = Convert.ToInt32(labelBaudRate.Text = ComboBoxBaudRate.Text);
@@ -243,7 +243,7 @@ namespace iOptron_Mount_Control
         }
 
 
-        // *** Connect to Mount and Check Model ***
+        // ***** Connect to Mount & Check Model *****
         private void ButtonCOMPortConnect_Click(object sender, EventArgs e)
         {
             timer1.Stop();
@@ -310,7 +310,7 @@ namespace iOptron_Mount_Control
         }
 
 
-        // ***** turn on or off group boxes
+        // ***** turn on or off group boxes *****
         public void groupBoxesState(bool onoff)
         {
             ButtonCOMPortConnect.Text = "Connect";
@@ -327,7 +327,7 @@ namespace iOptron_Mount_Control
         }
 
 
-        // ***** send Mount Command & return Response
+        // ***** send Mount Command & return Response *****
         public string MountCommand(string outString, int numberOfChar)
         {
             string inBuffer;
