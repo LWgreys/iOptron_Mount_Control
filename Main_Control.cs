@@ -666,7 +666,7 @@ namespace iOptron_Mount_Control
             DateTime J2000 = new DateTime(2000, 1, 1, 12, 0, 0); // J2000 datetime
             
             dUTC -= JD_J2000; // subtract Julian datetime of J2000 DateTime from the UTC DateTime 
-            _UTC = ((((DateTime.FromOADate(dUTC)).AddYears(100)).AddHours(12)).AddMinutes(3)).AddSeconds(56); // convert UTC DataTime to decimal datetime
+            _UTC = ((((DateTime.FromOADate(dUTC)).AddYears(100)).AddHours(12)).AddMinutes(3)).AddSeconds(56); // convert dUTC DataTime to decimal datetime
             Days_dif = (_UTC - J2000).TotalDays; // get the number of days sense J2000 including decmal part
             UT = _UTC.Hour + _UTC.Minute / 60.0 + _UTC.Second / 3600.0; // convert adjusted UTC time to decimal hours
             LST = 100.4606184 + (_SDx_ * Days_dif) + _longitude_ + (15 * UT); // convert to degrees
