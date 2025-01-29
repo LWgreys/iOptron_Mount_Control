@@ -112,6 +112,7 @@
             this.ComboBoxBaudRate = new System.Windows.Forms.ComboBox();
             this.labelBaudRate = new System.Windows.Forms.Label();
             this.labelComPort = new System.Windows.Forms.Label();
+            this.GPS_status = new System.Windows.Forms.Label();
             this.groupBoxMountGPS_Time.SuspendLayout();
             this.groupBoxMountPointingPosition.SuspendLayout();
             this.groupBoxSettings_Limits.SuspendLayout();
@@ -186,6 +187,7 @@
             // groupBoxMountGPS_Time
             // 
             this.groupBoxMountGPS_Time.BackColor = System.Drawing.Color.Black;
+            this.groupBoxMountGPS_Time.Controls.Add(this.GPS_status);
             this.groupBoxMountGPS_Time.Controls.Add(this.labelLST);
             this.groupBoxMountGPS_Time.Controls.Add(this.label15);
             this.groupBoxMountGPS_Time.Controls.Add(this.labelTimeSource);
@@ -1217,6 +1219,15 @@
             this.labelComPort.TabIndex = 22;
             this.labelComPort.Text = "COMx";
             // 
+            // GPS_status
+            // 
+            this.GPS_status.AutoSize = true;
+            this.GPS_status.Location = new System.Drawing.Point(204, 74);
+            this.GPS_status.Name = "GPS_status";
+            this.GPS_status.Size = new System.Drawing.Size(69, 15);
+            this.GPS_status.TabIndex = 22;
+            this.GPS_status.Text = "GPS Status";
+            // 
             // MainControlForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -1348,6 +1359,7 @@
         private System.Windows.Forms.ComboBox ComboBoxBaudRate;
         private System.Windows.Forms.Label labelBaudRate;
         private System.Windows.Forms.Label labelComPort;
+        private System.Windows.Forms.Label GPS_status;
     }
 }
 

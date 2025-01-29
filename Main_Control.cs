@@ -364,27 +364,31 @@ namespace iOptron_Mount_Control
             cemMovingRate = Convert.ToByte(inData.Substring(20, 1));
             cemTimeSource = Convert.ToByte(inData.Substring(21, 1));
             cemHemisphere = Convert.ToByte(inData.Substring(22, 1));
-            LST_longitude = 0.0;
+            // LST_longitude = 0.0;
+            LST_longitude = Convert.ToDouble(cemLongitude) / 360000.0;
+            if (cemLatitudeEastWest == "+")
+                cemLongitude = labelLongitude.Text = RetPostionString(Convert.ToDouble(cemLongitude), 0) + " E"; // convert string to double
+            else
+                cemLongitude = labelLongitude.Text = RetPostionString(Convert.ToDouble(cemLongitude), 0) + " W"; // convert string to double
+            if (cemHemisphere == 1)
+                cemLatitude = labelLatitude.Text = RetPostionString(Convert.ToDouble(cemLatitude), 3) + " N"; // convert string to double
+            else
+                cemLatitude = labelLatitude.Text = RetPostionString(Convert.ToDouble(cemLatitude), 3) + " S"; // convert string to double
 
             // *** GPS status
             switch (cemGPSstatus)
             {
                 case 2:
-                    LST_longitude = Convert.ToDouble(cemLongitude) / 360000.0;
-                    if (cemLatitudeEastWest == "+")
-                        cemLongitude = labelLongitude.Text = RetPostionString(Convert.ToDouble(cemLongitude), 0) + " E"; // convert string to double
-                    else
-                        cemLongitude = labelLongitude.Text = RetPostionString(Convert.ToDouble(cemLongitude), 0) + " W"; // convert string to double
-                    if (cemHemisphere == 1)
-                        cemLatitude = labelLatitude.Text = RetPostionString(Convert.ToDouble(cemLatitude), 3) + " N"; // convert string to double
-                    else
-                        cemLatitude = labelLatitude.Text = RetPostionString(Convert.ToDouble(cemLatitude), 3) + " S"; // convert string to double
+                    GPS_status.Text = "GPS: ON";
+                    //GPS_status.BackColor = Color.Green;
                     break;
                 case 1:
-                    labelLongitude.Text = labelLatitude.Text = "No Data Yet";
+                    GPS_status.Text = "GPS: No Data Yet";
+                    //GPS_status.BackColor = Color.Yellow;
                     break;
                 case 0:
-                    labelLongitude.Text = labelLatitude.Text = "Malfunction";
+                    GPS_status.Text = "GPS: Malfunction";
+                    //GPS_status.BackColor = Color.Red;
                     break;
             }
 
