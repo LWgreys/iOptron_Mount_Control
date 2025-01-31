@@ -1209,7 +1209,11 @@ namespace iOptron_Mount_Control
                     lock (OutIn)
                         StopPlaybackRecord();
                 lock (OutIn)
+                {
+                    inData = MountCommand(string.Format((cemHemisphere == 1) ? "{0}+{1:00}#" : "{0}-{1:00}#", set_Altitude_Limit, 0), 1);
+                    GetAltitudeLimit();
                     inData = MountCommand(mov_Parking_Position, 1);
+                }
                 cemMountParking = ON;
             }
         }
@@ -1220,7 +1224,14 @@ namespace iOptron_Mount_Control
             string inData;
 
             lock (OutIn)
+            {
+                if (cemTrackingOnOff == ON)
+                {
+                    cemTrackingOnOff = OFF;
+                    inData = MountCommand(set_Tracking_OFF, 1);     // tracking OFF
+                }
                 inData = MountCommand(slew_Stop, 1);
+            }
         }
 
         // ***** mount manual move north *****
