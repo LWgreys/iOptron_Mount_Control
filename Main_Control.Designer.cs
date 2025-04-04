@@ -36,6 +36,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBoxMountGPS_Time = new System.Windows.Forms.GroupBox();
+            this.GPS_status = new System.Windows.Forms.Label();
             this.labelLST = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.labelTimeSource = new System.Windows.Forms.Label();
@@ -112,7 +113,6 @@
             this.ComboBoxBaudRate = new System.Windows.Forms.ComboBox();
             this.labelBaudRate = new System.Windows.Forms.Label();
             this.labelComPort = new System.Windows.Forms.Label();
-            this.GPS_status = new System.Windows.Forms.Label();
             this.groupBoxMountGPS_Time.SuspendLayout();
             this.groupBoxMountPointingPosition.SuspendLayout();
             this.groupBoxSettings_Limits.SuspendLayout();
@@ -210,6 +210,15 @@
             this.groupBoxMountGPS_Time.TabIndex = 5;
             this.groupBoxMountGPS_Time.TabStop = false;
             this.groupBoxMountGPS_Time.Text = "Mount GPS and TIME";
+            // 
+            // GPS_status
+            // 
+            this.GPS_status.AutoSize = true;
+            this.GPS_status.Location = new System.Drawing.Point(204, 74);
+            this.GPS_status.Name = "GPS_status";
+            this.GPS_status.Size = new System.Drawing.Size(69, 15);
+            this.GPS_status.TabIndex = 22;
+            this.GPS_status.Text = "GPS Status";
             // 
             // labelLST
             // 
@@ -1219,15 +1228,6 @@
             this.labelComPort.TabIndex = 22;
             this.labelComPort.Text = "COMx";
             // 
-            // GPS_status
-            // 
-            this.GPS_status.AutoSize = true;
-            this.GPS_status.Location = new System.Drawing.Point(204, 74);
-            this.GPS_status.Name = "GPS_status";
-            this.GPS_status.Size = new System.Drawing.Size(69, 15);
-            this.GPS_status.TabIndex = 22;
-            this.GPS_status.Text = "GPS Status";
-            // 
             // MainControlForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -1256,7 +1256,6 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "MainControlForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "iOptron Mount";
             this.groupBoxMountGPS_Time.ResumeLayout(false);
             this.groupBoxMountGPS_Time.PerformLayout();
             this.groupBoxMountPointingPosition.ResumeLayout(false);

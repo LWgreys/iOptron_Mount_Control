@@ -25,12 +25,12 @@ using System.Runtime.InteropServices;
 using iOptron_Mount_Control;
 
 
-
 namespace iOptron_Mount_Control
 {
-
     public partial class MainControlForm : Form
     {
+        public const string _formtext_ = "iOprton Mount"; // main control form text
+
         //*** CEM Mount get command strings
         public const string get_CEM_Info = ":MountInfo#"; // returns "nnnn" = Mount
         public const string get_MB_HC_Firmware = ":FW1#"; // returns "YYMMDDYYMMDD#" first date mainboard, second date hand controller
@@ -194,7 +194,8 @@ namespace iOptron_Mount_Control
         public MainControlForm()
         {
             InitializeComponent();
-            
+
+            this.Text = _formtext_; // give form a name
             ButtonCOMPortConnect.Enabled = OFF; // Disable Button
             GetListOfComPorts(); // get list of COM ports
             ComboBoxBaudRate.SelectedIndex = 0;
@@ -399,6 +400,7 @@ namespace iOptron_Mount_Control
                     if ((cemPECenabled == ON) || (cemPECplaybackOnOff == ON) || (cemPECrecording == ON))
                         lock (OutIn)
                             StopPlaybackRecord();
+                    this.Text = _formtext_ + " - STOPPED";
                     buttonPeriodicErrorCorrection.BackColor = Color.Maroon;
                     buttonPeriodicErrorCorrection.Text = "PEC Tracking OFF";
                     labelMountZeroPosition.BackColor = Color.Maroon;
@@ -414,6 +416,7 @@ namespace iOptron_Mount_Control
                     cemMountParked = OFF;
                     break;
                 case 1: // tracking with periodic error correction disabled
+                    this.Text = _formtext_ + " - Tracking " + slewedObject;
                     cemPECplaybackOnOff = OFF;
                     buttonPeriodicErrorCorrection.BackColor = Color.Maroon;
                     buttonPeriodicErrorCorrection.Text = "PEC Tracking OFF";
@@ -430,6 +433,7 @@ namespace iOptron_Mount_Control
                     cemMountParked = OFF;
                     break;
                 case 2: // slewing
+                    this.Text = _formtext_ + (slewedObject == "" ? " - Slewing" : " - Slewing to " + slewedObject);
                     buttonPeriodicErrorCorrection.BackColor = Color.Maroon;
                     buttonPeriodicErrorCorrection.Text = "PEC Tracking OFF";
                     labelMountZeroPosition.BackColor = Color.Maroon;
@@ -454,6 +458,7 @@ namespace iOptron_Mount_Control
                     }
                     break;
                 case 3: // auto-guiding
+                    this.Text = _formtext_ + " - Auto Guiding " + slewedObject;
                     buttonPeriodicErrorCorrection.BackColor = Color.Maroon;
                     buttonPeriodicErrorCorrection.Text = "PEC Tracking OFF";
                     labelMountZeroPosition.BackColor = Color.Maroon;
@@ -469,6 +474,7 @@ namespace iOptron_Mount_Control
                     cemMountParked = OFF;
                     break;
                 case 4: // meridian flipping
+                    this.Text = _formtext_ + " - Meridian Flipping";
                     buttonPeriodicErrorCorrection.BackColor = Color.Maroon;
                     buttonPeriodicErrorCorrection.Text = "PEC Tracking OFF";
                     labelMountZeroPosition.BackColor = Color.Maroon;
@@ -486,11 +492,13 @@ namespace iOptron_Mount_Control
                 case 5: // tracking with periodic error correction enabled
                     if (cemPECrecording == ON)
                     {
+                        this.Text = _formtext_ + " - Recording Periodic Error Tracking";
                         buttonPeriodicErrorCorrection.BackColor = Color.OrangeRed;
                         buttonPeriodicErrorCorrection.Text = "Recording PEC";
                     }
                     if (cemPECdataComplete == ON)
                     {
+                        this.Text = _formtext_ + " - Periodic Error Tracking " + slewedObject;
                         buttonPeriodicErrorCorrection.BackColor = Color.Green;
                         buttonPeriodicErrorCorrection.Text = "PEC Tracking ON";
                     }
@@ -508,6 +516,7 @@ namespace iOptron_Mount_Control
                     cemMountParked = OFF;
                     break;
                 case 6: // parked
+                    this.Text = _formtext_ + " - Parked";
                     buttonPeriodicErrorCorrection.BackColor = Color.Maroon;
                     buttonPeriodicErrorCorrection.Text = "PEC Tracking OFF";
                     labelMountZeroPosition.BackColor = Color.Maroon;
@@ -523,6 +532,7 @@ namespace iOptron_Mount_Control
                     cemMountParked = ON;
                     break;
                 case 7: //stopped at zero position
+                    this.Text = _formtext_ + " - Stopped at Zero Psition";
                     if ((cemPECenabled == ON) || (cemPECplaybackOnOff == ON) || (cemPECrecording == ON))
                         lock (OutIn)
                             StopPlaybackRecord();
@@ -1302,6 +1312,7 @@ namespace iOptron_Mount_Control
                 lock (OutIn)
                     if (DoMountSlew(_RA, _DEC, 0) == 0)
                     {
+                        slewedObject = ""; // reset slewed object text
                         ErrorForm _error_ = new ErrorForm();
                         _error_.ErrorText = "ERROR: Cannot slew due to mount limits.";
                         _error_.ShowDialog();
