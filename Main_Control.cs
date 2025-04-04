@@ -401,6 +401,7 @@ namespace iOptron_Mount_Control
                         lock (OutIn)
                             StopPlaybackRecord();
                     this.Text = _formtext_ + " - STOPPED";
+                    slewedObject = "";
                     buttonPeriodicErrorCorrection.BackColor = Color.Maroon;
                     buttonPeriodicErrorCorrection.Text = "PEC Tracking OFF";
                     labelMountZeroPosition.BackColor = Color.Maroon;
@@ -517,6 +518,7 @@ namespace iOptron_Mount_Control
                     break;
                 case 6: // parked
                     this.Text = _formtext_ + " - Parked";
+                    slewedObject = "";
                     buttonPeriodicErrorCorrection.BackColor = Color.Maroon;
                     buttonPeriodicErrorCorrection.Text = "PEC Tracking OFF";
                     labelMountZeroPosition.BackColor = Color.Maroon;
@@ -533,6 +535,7 @@ namespace iOptron_Mount_Control
                     break;
                 case 7: //stopped at zero position
                     this.Text = _formtext_ + " - Stopped at Zero Psition";
+                    slewedObject = "";
                     if ((cemPECenabled == ON) || (cemPECplaybackOnOff == ON) || (cemPECrecording == ON))
                         lock (OutIn)
                             StopPlaybackRecord();
@@ -773,13 +776,13 @@ namespace iOptron_Mount_Control
             {
                 case 0:
                 case 3:
-                    return string.Format("{0:00} : {1:00} : {2:00}.{3:00}", _degrees, _minutes, _seconds, _decimal);
+                    return string.Format("{0:00} : {1:00} : {2:00}.{3:00}", _degrees, _minutes, _seconds, _decimal); // return degrees minutes seconds . decimal seconds
                 case 4:
                     return string.Format("{0:0}", _degrees);
                 case 1:
-                    return string.Format("{0:0}h {1:00}m {2:00}.{3:00}s", _degrees, _minutes, _seconds, _decimal);
+                    return string.Format("{0:0}h {1:00}m {2:00}.{3:00}s", _degrees, _minutes, _seconds, _decimal); // return hour minutes seconds decimal seconds
                 default:
-                    return string.Format("{0:0} : {1:00} : {2:00}", _degrees, _minutes, _seconds);
+                    return string.Format("{0:0} : {1:00} : {2:00}", _degrees, _minutes, _seconds); // return degrees minutes seconds
             }
         }
 

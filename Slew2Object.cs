@@ -95,9 +95,16 @@ namespace iOptron_Mount_Control
                 _DEC_of_Object = $"{t[3]} {t[4]} {t[5]}";
 
                 buttonSearchSIMBAD.Text = $"SLEW to {textboxObject.Text}";
-                MainControlForm.slewedObject = textboxObject.Text;
+                MainControlForm.slewedObject = textboxObject.Text.ToUpper();
             }
         }
+
+        /*
+        private void textboxObject_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            e.KeyChar = char.ToUpper(e.KeyChar);
+        }
+        */
 
         private void buttonCancelSlew_Click(object sender, EventArgs e)
         {
