@@ -113,6 +113,7 @@
             this.ComboBoxBaudRate = new System.Windows.Forms.ComboBox();
             this.labelBaudRate = new System.Windows.Forms.Label();
             this.labelComPort = new System.Windows.Forms.Label();
+            this.DomeComPort = new System.IO.Ports.SerialPort(this.components);
             this.groupBoxMountGPS_Time.SuspendLayout();
             this.groupBoxMountPointingPosition.SuspendLayout();
             this.groupBoxSettings_Limits.SuspendLayout();
@@ -250,9 +251,9 @@
             this.labelTimeSource.AutoSize = true;
             this.labelTimeSource.Location = new System.Drawing.Point(21, 25);
             this.labelTimeSource.Name = "labelTimeSource";
-            this.labelTimeSource.Size = new System.Drawing.Size(19, 15);
+            this.labelTimeSource.Size = new System.Drawing.Size(22, 15);
             this.labelTimeSource.TabIndex = 19;
-            this.labelTimeSource.Text = "....";
+            this.labelTimeSource.Text = ".....";
             // 
             // labelLongitude
             // 
@@ -1228,6 +1229,10 @@
             this.labelComPort.TabIndex = 22;
             this.labelComPort.Text = "COMx";
             // 
+            // DomeComPort
+            // 
+            this.DomeComPort.ReadTimeout = 1000;
+            // 
             // MainControlForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -1359,6 +1364,7 @@
         private System.Windows.Forms.Label labelBaudRate;
         private System.Windows.Forms.Label labelComPort;
         private System.Windows.Forms.Label GPS_status;
+        private System.IO.Ports.SerialPort DomeComPort;
     }
 }
 

@@ -23,6 +23,8 @@ using System.Xml.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using iOptron_Mount_Control;
+using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Double;
 
 
 namespace iOptron_Mount_Control
@@ -63,41 +65,41 @@ namespace iOptron_Mount_Control
         public const string getPeriodicErrorDataComplete = ":GPE#"; // returns "0"=incomplete PED, "1"=Completed PED, Available only equatorial mount without encoders
         public const string getPeriodicError_RecordStat = ":GPR#"; // returns "0"=PE recording Stopped, "1"=PE being Recorded, Available only equatorial mount without encoders
         //*** CEM Mount set command strings
-        public string set_Tracking_Rate = ":RT"; // +"0#" = Sidereal, +"1#" = Lunar, +"2#" = Solar, +"3#" = King, +"4#" = Custom
-        public string set_Moving_Rate = ":SR"; // +"1#" = 1x, +"2#" = 2x, +"3#" = 8x, +"4#" = 16x, +"5#" = 64x, +"6#" = 128x, +"7#" = 256x, +"8#" = 512x, +"9#" = MAX
+        public string set_Tracking_Rate = ":RT{0}#"; // {0} = "0" = Sidereal, "1" = Lunar, "2" = Solar, "3" = King, "4" = Custom
+        public string set_Moving_Rate = ":SR{0}#"; // {0} = "1" = 1x, "2" = 2x, "3" = 8x, "4" = 16x, "5" = 64x, "6" = 128x, "7" = 256x, "8" = 512x, "9" = MAX
         public string set_Guiding_Filter = ":SGF"; // +"0#" = OFF, +"1#" = ON // Available only equatorial mount with encoders
         //*** CEM Mount set command strings that are saved in mount after power cycle
-        public string set_UTC_offset_Localtime = ":SG"; // +"sMMM#" s=sign -or+, MMM=minutes
+        public string set_UTC_offset_Localtime = ":SG{0}{1}#"; // {0} = sign -or+, {1} = MMM=minutes
         public const string set_DayLightSavings_OFF = ":SDS0#"; // returns "1", set daylight savings OFF
         public const string set_DayLightSavings_ON = ":SDS1#"; // returns "1", set daylight savings ON
-        public string set_UTC_Time = ":SUT"; // +"XXXXXXXXXXXXX#" = Julian Date of current UTC Time in 1 milliseconds
-        public string set_Longitude = ":SLO:"; // +"sTTTTTTTT#" s=sign -West or +East, TTTTTTTT=arc-seconds 0.01 resolution
-        public string set_Latitude = ":SLA"; // +"sTTTTTTTT#" s=sign -South or +North, TTTTTTTT=arc-seconds 0.01 resolution
+        public string set_UTC_Time = ":SUT{0}#"; // {0{ = "XXXXXXXXXXXXX" = Julian Date of current UTC Time in 1 milliseconds
+        public string set_Longitude = ":SLO{0}#"; // {0} = "sTTTTTTTT" s=sign -West or +East, TTTTTTTT=arc-seconds 0.01 resolution
+        public string set_Latitude = ":SLA{0}#"; // {0} = "sTTTTTTTT" s=sign -South or +North, TTTTTTTT=arc-seconds 0.01 resolution
         public const string set_Hemisphere_South = ":SHE0#";// returns "1", Southern hemisphere
         public const string set_Hemisphere_North = ":SHE1#";// returns "1", Northern hemisphere
-        public string set_MAX_Slew_Rate = ":MSR"; // +"7#"=256x, +"8#"=512x, +"9#"=MAX
-        public string set_Altitude_Limit = ":SAL"; // +"snn#" s=sign -or+, nn=Degrees
-        public string set_Guiding_Rate = ":RG"; // +"nnnn#" first 2 digits set RA rate [.01 to .90], second 2 digits set DEC Rate [.01 to .99]
-        public string set_Meridian_Treatment = ":SMT"; // +"nnn#" first digit 0=Stop or 1=Flip at second 2 digits Degrees
+        public string set_MAX_Slew_Rate = ":MSR{0}#"; // {0} = 7 for 256x, 8 for 512x, 9 for MAX
+        public string set_Altitude_Limit = ":SAL{0}{1:00}#"; // {0} = - for Southern Hemisphere or + for Northern Hemisphere, {1:00} = Degrees
+        public string set_Guiding_Rate = ":RG{0:00}{1:00}#"; // {0:00} = RA rate [.01 to .90], {1:00} = DEC Rate [.01 to .99]
+        public string set_Meridian_Treatment = ":SMT{0}{1:00}#"; // {0} 0=Stop or 1=Flip {1:00} Degrees
         public const string reset_All_to_Defaults = ":RAS#"; // returns "1" Does NOT reset any date, time or time zone settings
         //*** CEM Mount Motion commands
-        public string slew_to_set_RA_DEC = ":MS"; // +"1#" slew normal previous set RA DEC position, +"2#"= slew counter weight up, 
+        public string slew_to_set_RA_DEC = ":MS{0}#"; // {0} = "1" slew normal previous set RA DEC position, "2" = slew counter weight up, 
                                                     // return "1" if command accepted, "0" if object below limit or exceeds mechanical limits
         public const string slew_to_set_Alt_Az = ":MSS#"; // Slew to previous set Altitude Azimuth postion,
                                                             // return "1" if command accepted, "0" if object below limit or exceeds mechanical limits
         public const string slew_Stop = ":Q#"; // stops all slewing operations, tracking will not be effected, returns "1"
         public const string set_Tracking_OFF = ":ST0#"; // returns "1", turns tracking OFF
         public const string set_Tracking_ON = ":ST1#"; // returns "1", turns tracking ON
-        public const string mov_Guiding_RA_Plus = ":ZS"; // +"XXXXX#"=milliseconds RA+ at current guiding rate
-        public const string mov_Guiding_RA_Minus = ":ZQ"; // +"XXXXX#"=milliseconds RA- at current guiding rate
-        public const string mov_Guiding_DEC_Plus = ":ZE"; // +"XXXXX#"=milliseconds DEC+ at current guiding rate
-        public const string mov_Guiding_DEC_Minus = ":ZC"; // +"XXXXX#"=milliseconds DEC- at current guiding rate
-
+        public const string mov_Guiding_RA_Plus = ":ZS{0}#"; // {0} = "XXXXX" milliseconds RA+ at current guiding rate
+        public const string mov_Guiding_RA_Minus = ":ZQ{0}#"; // {0} = "XXXXX" milliseconds RA- at current guiding rate
+        public const string mov_Guiding_DEC_Plus = ":ZE{0}#"; // {0} = "XXXXX" milliseconds DEC+ at current guiding rate
+        public const string mov_Guiding_DEC_Minus = ":ZC{0}#"; // {0} = "XXXXX" milliseconds DEC- at current guiding rate
         //*** The following commands are no longer used, supersede by above commands
-        public const string mov_Guiding_RA_Plus_old = ":Mw"; // +"XXXXX#"=milliseconds RA+ at current guiding rate
-        public const string mov_Guiding_RA_Minus_old = ":Me"; // +"XXXXX#"=milliseconds RA- at current guiding rate
-        public const string mov_Guiding_DEC_Plus_old = ":Mn"; // +"XXXXX#"=milliseconds DEC- at current guiding rate
-        public const string mov_Guiding_DEC_Minus_old = ":Ms"; // +"XXXXX#"=milliseconds DEC+ at current guiding rate
+        public const string mov_Guiding_RA_Plus_old = ":Mw{0}#"; // {0} = "XXXXX" milliseconds RA+ at current guiding rate
+        public const string mov_Guiding_RA_Minus_old = ":Me{0}#"; // {0} = "XXXXX" milliseconds RA- at current guiding rate
+        public const string mov_Guiding_DEC_Plus_old = ":Mn{0}#"; // {0} = "XXXXX" milliseconds DEC- at current guiding rate
+        public const string mov_Guiding_DEC_Minus_old = ":Ms{0}#"; // {0} = "XXXXX" milliseconds DEC+ at current guiding rate
+
         public const string mov_Parking_Position = ":MP1#"; // move to previous set parking position, return "1"
         public const string mov_Unpark = ":MP0#"; // unpark mount, returns "1"
         public const string slew_Zero_Position = ":MH#"; // slew to zero position immediately, returns "1"
@@ -106,7 +108,7 @@ namespace iOptron_Mount_Control
         public const string set_PE_Record_Start = ":SPR1#"; // returns "1", start Periodic Error Recording
         public const string set_Playback_PR_OFF = ":SPP0#"; // returns "1", disable Periodic Error Correction playback
         public const string set_Playback_PR_ON = ":SPP1#"; // returns "1", enable Periodic Error Correction playback
-        public const string set_Custom_Tracking_Rate = ":RR"; // +"nnnnn#"=0.1000 to 1.9000 no decimal, returns "1"
+        public const string set_Custom_Tracking_Rate = ":RR{0}#"; // {0} = "nnnnn#" = 0.1000 to 1.9000 no decimal, returns "1"
         public const string mov_Manual_DEC_Minus = ":mn#"; // start move manually DEC- direction until next stop command
         public const string mov_Manual_DEC_Plus = ":ms#"; // start move manually DEC+ direction until next stop command
         public const string mov_Manual_RA_Minus = ":me#"; // start move manually RA- direction until next stop command
@@ -116,13 +118,13 @@ namespace iOptron_Mount_Control
         //*** CEM Mount Position commands
         public const string Calibrate_Mount = ":CM#"; // Calibrate Mount, returns "1"
         public const string Query_Num_Positions = ":QAP#"; // returns "0#"= cannot slew, "1#"= can slew, "2#"= ?CWup slew 
-        public const string set_RA_Position = ":SRA"; // +"TTTTTTTTT#"= .01 arc-seconds to set defined RA, returns "1"
-        public const string set_DEC_Position = ":Sd"; // +"sTTTTTTTT#"= signed -+.01 arc-seconds to set defined DEC, returns "1"
-        public const string set_ALT_Position = ":Sa"; // +"sTTTTTTTT#"= signed -+.01 arc-seconds to set defined Altitude, returns "1"
-        public const string set_AZ_Position = ":Sz"; // +"sTTTTTTTT#"= .01 arc-seconds to set defined Azimuth, returns "1"
+        public const string set_RA_Position = ":SRA{0}#"; // {0} = "TTTTTTTTT" = .01 arc-seconds to set defined RA, returns "1"
+        public const string set_DEC_Position = ":Sd{0}#"; // {0} = "sTTTTTTTT" = signed -+.01 arc-seconds to set defined DEC, returns "1"
+        public const string set_ALT_Position = ":Sa{0}#"; // {0} = "sTTTTTTTT" = signed -+.01 arc-seconds to set defined Altitude, returns "1"
+        public const string set_AZ_Position = ":Sz{0}#"; // {0} = "TTTTTTTTT" .01 arc-seconds to set defined Azimuth, returns "1"
         public const string set_Zero_Position = ":SZP#"; // set current position as ZERO Position, returns "1"
-        public const string set_AZ_Park_Position = ":SPA"; // +"TTTTTTTTT#= .01 arc-seconds, returns "1"
-        public const string set_Alt_Park_Position = ":SPH"; // +"TTTTTTTTT#= .01 arc-seconds, returns "1"
+        public const string set_AZ_Park_Position = ":SPA{0:000000000}#"; // {0:000000000} = .01 arc-seconds, returns "1"
+        public const string set_Alt_Park_Position = ":SPH{0:000000000}#"; // {0:000000000} = .01 arc-seconds, returns "1"
 
         //*** CEM Mount Models
         public string[,] MountModel = { {"0026", "0027", "0028", "0029", "0040", "0041", "0043", "0044", "0070", "0071", "0120", "0121", "0122"},
@@ -178,6 +180,8 @@ namespace iOptron_Mount_Control
         public static bool mountTimeSet = false;
         public static string slewedObject = ""; // ................ slew2object name
         public static double LST_longitude; // .................... Used for LocalSiderealTime()
+        public static double currentDomePosition; // .............. Current Position from Dome Controler
+
         const string NO_PORTS_MESSAGE = "No COM ports found";
         static byte _OtherData_;
         const double miliSecondsInDay = 86400000.0; // ............ Number of milliseconds in a day
@@ -185,6 +189,15 @@ namespace iOptron_Mount_Control
         static readonly bool ON = true;
         static readonly bool OFF = false;
         static readonly object OutIn = new object();
+
+        //*** Dome and Telescope Configuration definitons
+        static readonly double DomeRadius = 1025.0; // ............ Radius of dome
+        static readonly double gemEWoffset = 0.0; // .............. East is +, West is -
+        static readonly double gemNSoffset = -38.0; // ............ North is +, South is -
+        static readonly double gemUDoffset = -38.0; // ............ Up is +, Down is -
+        static readonly double gemAxisOffset = 490.0; // .......... Radius to center of telescope
+        static readonly double SlavePrecision = 1.0; // ........... The amount of difference between current dome position and slave position
+
 
 
         //****************************************************************************************************************************
@@ -795,14 +808,14 @@ namespace iOptron_Mount_Control
 
             if (axisType == 0)
             {
-                inData = MountCommand(set_RA_Position + uRA_AZ + "#", 1);
-                inData = MountCommand(set_DEC_Position + sDEC_ALT + "#", 1);
+                inData = MountCommand(string.Format(set_RA_Position, uRA_AZ), 1);
+                inData = MountCommand(string.Format(set_DEC_Position, sDEC_ALT), 1);
                 inData = MountCommand(Query_Num_Positions, 2);
                 if (inData == "0#")
                     return 0;
-                inData = MountCommand(set_RA_Position + uRA_AZ + "#", 1);
-                inData = MountCommand(set_DEC_Position + sDEC_ALT + "#", 1);
-                inData = MountCommand(slew_to_set_RA_DEC + "1#", 1);
+                inData = MountCommand(string.Format(set_RA_Position, uRA_AZ), 1);
+                inData = MountCommand(string.Format(set_DEC_Position, sDEC_ALT), 1);
+                inData = MountCommand(string.Format(slew_to_set_RA_DEC, "1"), 1);
                 if (inData == "1")
                     return 1;
                 else
@@ -810,14 +823,14 @@ namespace iOptron_Mount_Control
             }
             if (axisType == 1)
             {
-                inData = MountCommand(set_AZ_Position + uRA_AZ + "#", 1);
-                inData = MountCommand(set_ALT_Position + sDEC_ALT + "#", 1);
+                inData = MountCommand(string.Format(set_AZ_Position, uRA_AZ), 1);
+                inData = MountCommand(string.Format(set_ALT_Position, sDEC_ALT), 1);
                 inData = MountCommand(Query_Num_Positions, 2);
                 if (inData == "0#")
                     return 0;
-                inData = MountCommand(set_AZ_Position + uRA_AZ + "#", 1);
-                inData = MountCommand(set_ALT_Position + sDEC_ALT + "#", 1);
-                inData = MountCommand(slew_to_set_RA_DEC + "1#", 1);
+                inData = MountCommand(string.Format(set_AZ_Position, uRA_AZ), 1);
+                inData = MountCommand(string.Format(set_ALT_Position, sDEC_ALT), 1);
+                inData = MountCommand(string.Format(slew_to_set_RA_DEC, "1"), 1);
                 if (inData == "1")
                     return 1;
                 else
@@ -853,7 +866,7 @@ namespace iOptron_Mount_Control
 
             ulong mountUTCtime = (ulong)((jUTC - JD_J2000) * miliSecondsInDay); // convert Julian date.time to mount time
             lock (OutIn)
-                inData = MountCommand(string.Format("{0}{1:0000000000000}#", set_UTC_Time, mountUTCtime), 1);
+                inData = MountCommand(string.Format(set_UTC_Time, mountUTCtime), 1);
             return (inData == "1" ? true : false);
         }
 
@@ -1027,9 +1040,9 @@ namespace iOptron_Mount_Control
             lock (OutIn)
             {
                 if (s == 0)
-                    inData = MountCommand(string.Format(cemMeridianFlipStatus ? "{0}0{1:00}#" : "{0}1{1:00}#", set_Meridian_Treatment, cemMeridianFlipDegrees), 1);
+                    inData = MountCommand(string.Format(set_Meridian_Treatment, cemMeridianFlipStatus ? "0" : "1", cemMeridianFlipDegrees), 1);
                 else
-                    inData = MountCommand(string.Format(cemMeridianFlipStatus ? "{0}1{1:00}#" : "{0}0{1:00}#", set_Meridian_Treatment, cemMeridianFlipDegrees), 1);
+                    inData = MountCommand(string.Format(set_Meridian_Treatment, cemMeridianFlipStatus ? "1" : "0", cemMeridianFlipDegrees), 1);
             }
         }
 
@@ -1039,9 +1052,9 @@ namespace iOptron_Mount_Control
         private void ComboBoxTrackingRate_SelectedIndexChanged(object sender, EventArgs e)
         {
             string inData;
-
+            
             cemTrackingRate = (byte)comboBoxTrackingRate.SelectedIndex;
-            inData = MountCommand((set_Tracking_Rate + cemTrackingRate + "#"), 1);
+            inData = MountCommand(string.Format(set_Tracking_Rate, cemTrackingRate), 1);
             if (cemTrackingRate == 4)
                 cemCustomTrackingRateChanged = true;
             timer1.Start();
@@ -1055,7 +1068,7 @@ namespace iOptron_Mount_Control
 
             cemMAXSlewingRate = (byte)comboBoxMaxSlewingRate.SelectedIndex;
             cemMAXSlewingRate += 7;
-            inData = MountCommand((set_MAX_Slew_Rate + cemMAXSlewingRate + "#"), 1);
+            inData = MountCommand(string.Format(set_MAX_Slew_Rate, cemMAXSlewingRate), 1);
             cemMaxSlewRateChanged = true;
             timer1.Start();
             this.ActiveControl = null;
@@ -1068,7 +1081,7 @@ namespace iOptron_Mount_Control
 
             cemMovingRate = (byte)comboBoxManualMovingRate.SelectedIndex;
             cemMovingRate += 1;
-            inData = MountCommand((set_Moving_Rate + cemMovingRate + "#"), 1);
+            inData = MountCommand(string.Format(set_Moving_Rate, cemMovingRate), 1);
             timer1.Start();
             this.ActiveControl = null;
         }
@@ -1223,7 +1236,7 @@ namespace iOptron_Mount_Control
                         StopPlaybackRecord();
                 lock (OutIn)
                 {
-                    inData = MountCommand(string.Format((cemHemisphere == 1) ? "{0}+{1:00}#" : "{0}-{1:00}#", set_Altitude_Limit, 0), 1);
+                    inData = MountCommand(string.Format(set_Altitude_Limit, (cemHemisphere == 1) ? "+" : "-", 0), 1);
                     GetAltitudeLimit();
                     inData = MountCommand(mov_Parking_Position, 1);
                 }
@@ -1337,6 +1350,25 @@ namespace iOptron_Mount_Control
             return string.Format("{0:000000000}", (d[2] / 3600.0 * 15.0) + (d[1] / 60.0 * 15.0) + (360.0 / 24.0 * d[0]) * 3600.0 * 100.0);
         }
 
+        // ***** convert string to millisecond string *****
+        private string Str2MiliSecDegStr(string _str, byte T) //*** T = 8 for DEC or 9 for RA number of digits returned
+        {
+            double _Deg;
+            double[] d;
+            byte n;
+
+            d = new double[] { 0, 0, 0, 0, 0, 0, 0, 0 };
+            string[] _Split = _str.Split(' ', ':', '.');
+            n = 0;
+            foreach (string num in _Split)
+                d[n++] = Convert.ToDouble(num);
+            _Deg = d[2] / 3600.0;
+            _Deg += d[1] / 60.0;
+            _Deg += Math.Abs(d[0]);
+            return string.Format(T == 8 ? (d[0] < 0.0 ? "{0:-00000000}" : "{0:+00000000}") : "{0:000000000}", _Deg * 3600.0 * 100.0);
+        }
+
+
         // ******************** User Data Entry **************************************************** User Data Entry ******************
 
         // ***** enter parking altitude degrees *****
@@ -1355,7 +1387,7 @@ namespace iOptron_Mount_Control
                 {
                     cemParkingAltitude = userInput._TextEntered;
                     lock (OutIn)
-                        inData = MountCommand(string.Format("{0}{1:000000000}#", set_Alt_Park_Position, bb * 360000), 1);
+                        inData = MountCommand(string.Format(set_Alt_Park_Position, bb * 360000), 1);
                 }
             }
             _OtherData_ = 0;
@@ -1379,7 +1411,7 @@ namespace iOptron_Mount_Control
                 {
                     cemParkingAzimuth = userInput._TextEntered;
                     lock (OutIn)
-                        inData = MountCommand(string.Format("{0}{1:000000000}#", set_AZ_Park_Position, bb * 360000), 1);
+                        inData = MountCommand(string.Format(set_AZ_Park_Position, bb * 360000), 1);
                 }
             }
             _OtherData_ = 0;
@@ -1424,7 +1456,7 @@ namespace iOptron_Mount_Control
                 {
                     cemAltitudeLimit = sb;
                     lock (OutIn)
-                        inData = MountCommand(string.Format((cemHemisphere == 1) ? "{0}+{1:00}#" : "{0}-{1:00}#", set_Altitude_Limit, sb), 1);
+                        inData = MountCommand(string.Format(set_Altitude_Limit, (cemHemisphere == 1) ? "+" : "-", sb), 1);
                 }
             }
             cemAltitudeLimitChanged = true;
@@ -1449,7 +1481,7 @@ namespace iOptron_Mount_Control
                     string _CTR = string.Format("{0:0.0000}", dc);
                     _CTR = _CTR.Substring(0, 1) + _CTR.Substring(2, 4);
                     lock (OutIn)
-                        inData = MountCommand(string.Format("{0}{1}#", set_Custom_Tracking_Rate, _CTR), 1);
+                        inData = MountCommand(string.Format(set_Custom_Tracking_Rate, _CTR), 1);
                 }
             }
             cemCustomTrackingRateChanged = true;
@@ -1474,7 +1506,7 @@ namespace iOptron_Mount_Control
                     string _RAgr = string.Format("{0:0.00}", gr);
                     _RAgr = _RAgr.Substring(2, 2);
                     lock (OutIn)
-                        inData = MountCommand(string.Format("{0}{1}{2}#", set_Guiding_Rate, _RAgr, cemDECguidingRate), 1);
+                        inData = MountCommand(string.Format(set_Guiding_Rate, _RAgr, cemDECguidingRate), 1);
                 }
             }
             cemRA_DEC_GuidingRateChanged = true;
@@ -1499,7 +1531,7 @@ namespace iOptron_Mount_Control
                     string _DECgr = string.Format("{0:0.00}", gr);
                     _DECgr = _DECgr.Substring(2, 2);
                     lock (OutIn)
-                        inData = MountCommand(string.Format("{0}{1}{2}#", set_Guiding_Rate, cemRAguidingRate, _DECgr), 1);
+                        inData = MountCommand(string.Format(set_Guiding_Rate, cemRAguidingRate, _DECgr), 1);
                 }
             }
             cemRA_DEC_GuidingRateChanged = true;
@@ -1538,7 +1570,7 @@ namespace iOptron_Mount_Control
                 if ((os >= -720) && (os <= +780))
                 {
                     lock (OutIn)
-                        inData = MountCommand(string.Format((os >= 0) ? "{0}+{1:000}#" : "{0}-{1:000}#", set_UTC_offset_Localtime, Math.Abs(os)), 1);
+                        inData = MountCommand(string.Format(set_UTC_offset_Localtime, (os >= 0) ? "+" : "-", Math.Abs(os)), 1);
                 }
             }
             this.ActiveControl = null;
@@ -1593,24 +1625,6 @@ namespace iOptron_Mount_Control
             }
         }
 
-        // ***** convert string to millisecond string *****
-        private string Str2MiliSecDegStr(string _str, byte T) //*** T = 8 for DEC or 9 for RA number of digits returned
-        {
-            double _Deg;
-            double[] d;
-            byte n;
-
-            d = new double[] {0,0,0,0,0,0,0,0};
-            string[] _Split = _str.Split(' ', ':', '.');
-            n = 0;
-            foreach (string num in _Split)
-                d[n++] = Convert.ToDouble(num);
-            _Deg = d[2] / 3600.0;
-            _Deg += d[1] / 60.0;
-            _Deg += Math.Abs(d[0]);
-            return string.Format(T == 8 ? (d[0] < 0.0 ? "{0:-00000000}" : "{0:+00000000}") : "{0:000000000}", _Deg * 3600.0 * 100.0);
-        }
-
         // ***** set latitude longitude position *****
         private void Set_Latitude_Longitude_Click(object sender, EventArgs e)
         {
@@ -1625,14 +1639,103 @@ namespace iOptron_Mount_Control
                 lock (OutIn)
                 {
                     _LAT = Str2MiliSecDegStr(userInput2._TextEntered1, 8);
-                    inData = MountCommand(set_Latitude + _LAT + "#", 1);
+                    inData = MountCommand(string.Format(set_Latitude, _LAT), 1);
                     _LOG = Str2MiliSecDegStr(userInput2._TextEntered2, 8);
-                    inData = MountCommand(set_Longitude + _LOG + "#", 1);
+                    inData = MountCommand(string.Format(set_Longitude, _LOG), 1);
                 }
             }
         }
 
 
-        //############################################################ WORK IN PROGRESS ################################################
+        //############################################################ WORK IN PROGRESS ########################################################
+
+        /*
+        How to synchronise your arduino dome slot with your GOTO telescope.
+
+        For successful automated astrophotography, the slot in the observatory dome must be synhronised with the telescope as it tracks the sky and performs slews. In most cases, use of ASCOM will mean that you do not have to worry about the calculation of the dome azimuth - this is all done for you after correct configuration. In some cases you may wish to implment your own code to perform this calculation. The problem is not as simple as it might first appear. One cannot simply set the dome slot azimuth to the pointing azimuth of the telescope. With a GEM mount the correct solution can appear unintuitive.
+
+        Take the following example:
+        Telescope pointing due south at the horizon. Scope on the east side of the pier. Putting the dome slit at 180 is not the correct solution. The scope is hanging out to one side. The required dome azimuth is more like 160 degrees - depending on various factors.
+
+        The "factors" are broadly......
+
+            First of all, introduce a COG, centre of gravity, of the mount, this is the intersection of the RA and DEC axis.
+            Also define the "origin" of the dome. The dome is a hemisphere. The origin is the middle of the sphere.
+            Immediately we notice the COG of the mount is never going to be at the origin of the dome unless your building is very well designed. There will be a fixed x,y,z offset. We will say that x = north+ and y = east+. Z is up/down
+            Next the radius of the dome is a factor. In my case it is not a fixed radius.
+            The optical axis of the telescope will not pass through this COG. There will be an Optical-COG offset. PRobably in the order of 100-300mm 
+
+        Taking the above case, even with x=y=z=0 the COG-Optical (COGO) will mean the dome azimuth has to be a bit further east than 180. If x=y=z=COGO then the azimuth would be 180. This is now aparently a more complex problem but the solution is straightfoward using the proper mathematics.
+
+        Be warned : Some of the solutions I have seen on the internet are horrendously over complicated and try and do the whole thing with trigonometry.
+
+        With vectors, the solution is a joy.
+
+            First we define c, the origin, centre of the dome. (0,0,0)
+            Next we have the vector to the mount cog, this never changes. (x1,y1,z1).
+            Now we need to find the intersection of the Dec-optical (DOI) relative to (x1,y1,z1), we call this (x2,y2,z2). This does move around. If we say gemAxisOffset is the COG-optical length, we imediately see that the DOI perscribes parts of a sphere around (x1,y1,z1) with radius gemAxisOffset. So we simply use the standard 3d polar to cartesian conversion from any geometry text book. Note that the DOI point will not reach all parts of the sphere.
+
+            In our case, θ is hour angle and φ is latitude - all assuming we are on a polar aligned mount!
+            We add (x1,y1,z1) to (x2,y2,z2) whic gives us a vector, o, which is the DOI point relative to the dome origin.
+            Now we define unit vector , l, which is the direction the telescope is pointing. Here we can just use the alt and azimuth from the telescope.
+            Now we have the components of a classic problem from the world of ray-tracing. Calculation of the intersection of a line and a sphere.
+            This gives d, the distance along the unit vector l where the line intersects the sphere.
+            Then we simply add all the vectors together, (x3,y3,z3) = c + o + (l * d)
+            Finally with a standard Cartesian to Polar conversion, Dome Azimuith = Π / 2 - Atan2(y2, x2);
+            For changes to the mount sideofpier we simply negate (x2,y2,z2) before adding to (x1,y1,z1)
+            In my case, the radius of my dome is not constant with elevation. It is more box shaped. However Acos(z / domeR ) gives the elevation of the intersection, and one can simply iterate the above algorithm for a different radius. 
+
+        For practical programming, the Math.net programming library makes this into a few simple lines of code.
+
+        Sample C# code
+
+        */
+
+        public DomeAltAz Get(double HourAngle, double pierside, double ALT, double AZ)
+        {
+            double inc = Math.PI / 2 - ALT;
+            double az = Math.PI / 2 - AZ;
+
+            //origin of dome, 0,0,0
+            var c = new DenseVector(new double[] { 0, 0, 0 });
+
+            //setup the intersection of RA And DEC axis which is constant.
+            var cog = new DenseVector(new double[] { gemEWoffset, gemNSoffset, gemUDoffset });
+
+            //now work out the cogo point, intersection of optical axis and dec axis, i.e. the bit that moves
+            var cogtoO = new DenseVector(new double[] {
+                pierside * gemAxisOffset * Math.Cos(HourAngle), //x
+	            pierside * -gemAxisOffset * Math.Sin(Convert.ToDouble(cemLatitude) / 360000.0) * Math.Sin(HourAngle),  //y
+	            pierside * gemAxisOffset * Math.Cos(Convert.ToDouble(cemLatitude) / 360000.0) * Math.Sin(HourAngle)  //z
+            });
+            var o = cog + cogtoO;
+
+            double xm, ym, zm;
+            //3d cartesian coordinates  or unit vector for the actual OTA pointing direction
+            xm = Math.Sin(inc) * Math.Cos(az);
+            ym = Math.Sin(inc) * Math.Sin(az);
+            zm = Math.Cos(inc);
+            var l = new DenseVector(new double[] { xm, ym, zm });
+            l = (DenseVector)l.Normalize(2);
+
+
+            //do the actual equation 
+            var underRoot = Math.Sqrt(l.DotProduct(o - c)) - Math.Sqrt((o - c).Norm(2)) + Math.Sqrt(DomeRadius);
+            var d = -l.DotProduct(o - c) + Math.Sqrt(underRoot);
+
+            var s = c + o + (l * d);
+
+            var domealtaz = new DomeAltAz();
+
+            domealtaz.DomeAzimuth = Math.PI / 2 - Math.Atan2(s[1], s[0]);
+            if (domealtaz.DomeAzimuth < 0) domealtaz.DomeAzimuth += 2 * Math.PI;
+
+            domealtaz.DomeAltitude = Math.PI / 2 - Math.Acos(s[2] / DomeRadius);
+            domealtaz.cogtoO = cogtoO;
+
+            return domealtaz;
+        }
+
+
     }
 }
