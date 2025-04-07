@@ -20,6 +20,8 @@ I did find a few issues with the CEM firmware and have written iOptron support a
 
 Future addins:
 
+3. Add in Dome Sync and Dome Controler. - This is for NexDome observatories
+
 4. Make the program ASCOM compatible. - This feature may take awhile because I have to write an ASCOM driver for it.
 
 
