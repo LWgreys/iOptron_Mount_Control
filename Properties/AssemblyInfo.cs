@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("iOptron_Mount_Control")]
-[assembly: AssemblyCopyright("Copyright ©  2023 by Lawrence Widacki")]
+[assembly: AssemblyCopyright("Copyright ©  2025 by Lawrence Widacki")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

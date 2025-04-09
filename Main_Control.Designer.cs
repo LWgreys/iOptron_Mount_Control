@@ -98,6 +98,7 @@
             this.buttonMoveLeft = new System.Windows.Forms.Button();
             this.buttonMoveUp = new System.Windows.Forms.Button();
             this.groupBoxMountTracking = new System.Windows.Forms.GroupBox();
+            this.DomeCtrlOnOff = new System.Windows.Forms.Button();
             this.buttonPeriodicErrorCorrection = new System.Windows.Forms.Button();
             this.buttonTrackingOnOff = new System.Windows.Forms.Button();
             this.ButtonEXIT = new System.Windows.Forms.Button();
@@ -113,7 +114,6 @@
             this.ComboBoxBaudRate = new System.Windows.Forms.ComboBox();
             this.labelBaudRate = new System.Windows.Forms.Label();
             this.labelComPort = new System.Windows.Forms.Label();
-            this.DomeComPort = new System.IO.Ports.SerialPort(this.components);
             this.groupBoxMountGPS_Time.SuspendLayout();
             this.groupBoxMountPointingPosition.SuspendLayout();
             this.groupBoxSettings_Limits.SuspendLayout();
@@ -1036,6 +1036,7 @@
             // groupBoxMountTracking
             // 
             this.groupBoxMountTracking.BackColor = System.Drawing.Color.Black;
+            this.groupBoxMountTracking.Controls.Add(this.DomeCtrlOnOff);
             this.groupBoxMountTracking.Controls.Add(this.buttonResetPEC);
             this.groupBoxMountTracking.Controls.Add(this.buttonPeriodicErrorCorrection);
             this.groupBoxMountTracking.Controls.Add(this.buttonTrackingOnOff);
@@ -1047,6 +1048,20 @@
             this.groupBoxMountTracking.TabIndex = 16;
             this.groupBoxMountTracking.TabStop = false;
             this.groupBoxMountTracking.Text = "Mount Tracking";
+            // 
+            // DomeCtrlOnOff
+            // 
+            this.DomeCtrlOnOff.BackColor = System.Drawing.Color.Maroon;
+            this.DomeCtrlOnOff.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.DomeCtrlOnOff.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Red;
+            this.DomeCtrlOnOff.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.DomeCtrlOnOff.Location = new System.Drawing.Point(138, 59);
+            this.DomeCtrlOnOff.Name = "DomeCtrlOnOff";
+            this.DomeCtrlOnOff.Size = new System.Drawing.Size(121, 25);
+            this.DomeCtrlOnOff.TabIndex = 23;
+            this.DomeCtrlOnOff.Text = "Dome  OFF";
+            this.DomeCtrlOnOff.UseVisualStyleBackColor = false;
+            this.DomeCtrlOnOff.Click += new System.EventHandler(this.DomeCtrlOnOff_Click);
             // 
             // buttonPeriodicErrorCorrection
             // 
@@ -1229,10 +1244,6 @@
             this.labelComPort.TabIndex = 22;
             this.labelComPort.Text = "COMx";
             // 
-            // DomeComPort
-            // 
-            this.DomeComPort.ReadTimeout = 1000;
-            // 
             // MainControlForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -1364,7 +1375,7 @@
         private System.Windows.Forms.Label labelBaudRate;
         private System.Windows.Forms.Label labelComPort;
         private System.Windows.Forms.Label GPS_status;
-        private System.IO.Ports.SerialPort DomeComPort;
+        private System.Windows.Forms.Button DomeCtrlOnOff;
     }
 }
 

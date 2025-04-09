@@ -27,6 +27,7 @@ using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 
 
+
 namespace iOptron_Mount_Control
 {
     public partial class MainControlForm : Form
@@ -35,96 +36,100 @@ namespace iOptron_Mount_Control
 
         //*** CEM Mount get command strings
         public const string get_CEM_Info = ":MountInfo#"; // returns "nnnn" = Mount
-        public const string get_MB_HC_Firmware = ":FW1#"; // returns "YYMMDDYYMMDD#" first date mainboard, second date hand controller
-        public const string get_RA_DEC_Firmware = ":FW2#"; // returns "YYMMDDYYMMDD#" first data RA board, second date DEC board
-        public const string get_Loc_Stat = ":GLS#"; // returns "sTTTTTTTTTTTTTTTTnnnnnn#" s=sign -or+ first 8 Ts=Longitude in .01 arcsecound,
-                                                    // second 8 Ts=Latitude in .01 arc-seconds,
-                                                    // first n=0 GPS malfunction, n=1 GPS not received valid data, n=2 GPS valid data received
-                                                    // second n=0 Stopped at Non-Zero Position, n=1 Tracking no PEC, n=2 Slewing, n=3 Auto Guiding, n=4 Meridian Flipping, n=5 Tracking with PEC, n=6 Parked, n=7 Stopped at Zero position
-                                                    // third n=0 Sidereal Rate, n=1 Lunar Rate, n=2 Solar Rate, n=3 King Rate, n=4 Custom Rate
-                                                    // forth n= Moving Speed by Arrow, 1= 1x, 2= 2x, 3= 8x, 4= 16x, 5= 64x, 6= 128x, 7= 256x, 8= 512x, 9= MAX
-                                                    // fifth n= The Source of Time, 1= From RS-232 port or Ethernet port, 2= From Hand Controller, 3= From GPS
-                                                    // sixth n= Hemisphere, 0= Southern, 1= Northern
-        public const string get_UTC_Time = ":GUT#"; // returns "sMMMnXXXXXXXXXXXXX#" sMMM= UTC Offset for local time,
-                                                    // n= Day Light Savings 0=OFF 1=ON,
-                                                    // 13 digits XXXXXXXXXXXXX= Julian Date of current UTC Time
-        public const string get_RA_DEC_Pos = ":GEP#"; // returns "sTTTTTTTTTTTTTTTTnn#" sTTTTTTTT= signed current DEC Position in .01 arc-seconds,
-                                                      // second TTTTTTTT= current RA Position in .01 arc-seconds, 
-                                                      // first n=0 for Pier East, n=1 for Pier West , n=2 for indeterminate Pier Position,
-                                                      // second n=0 counterweight up, n=1 counterweight normal
-        public const string get_Alt_Az_Pos = ":GAC#"; //returns "sTTTTTTTTTTTTTTTTT#" sTTTTTTTT= signed Current Altitude in .01 arc-seconds
-                                                      // second 9 digits TTTTTTTTT= current Azimuth in .01 arc-seconds of 360 degrees
-        public const string get_Tracking_Rate = ":GTR#"; // returns "nnnnn#" = Current Custom Tracking Rate 0.1000 to 1.9000
-        public const string get_Park_Pos = ":GPC#"; // returns "TTTTTTTTTTTTTTTTT#" first 8 digits = Parking Altitude in .01 arc-seconds
-                                                    // second 9 Digits = Parking Azimuth in .01 arc-seconds of 360 degrees
-        public const string get_MAX_Slew_Rate = ":GSR#"; // returns Slew Rate "7#"=256x, "8#"=512x, "9#"=MAX
-        public const string get_Alt_Limit = ":GAL#"; // returns "snn#" = Altitude Limit signed degrees
-        public const string get_RA_DEC_Guide_Rate = ":AG#"; // returns "nnnn#" first 2 digits = RA Guiding Rate, second 2 digits = DEC Guiding Rate
-        public const string get_Meridian_Treatment = ":GMT#"; // returns "nnn#" first digit 0=Stop at Meridian, 1=Flip at second 2 digits degrees 0 to 10
-        public const string get_Guiding_Filter_RA = ":GGF#"; // returns RA AutoGuiding "0"=Off "1"=ON, Available only equatorial mount with encoders
-        public const string getPeriodicErrorDataComplete = ":GPE#"; // returns "0"=incomplete PED, "1"=Completed PED, Available only equatorial mount without encoders
-        public const string getPeriodicError_RecordStat = ":GPR#"; // returns "0"=PE recording Stopped, "1"=PE being Recorded, Available only equatorial mount without encoders
-        //*** CEM Mount set command strings
-        public string set_Tracking_Rate = ":RT{0}#"; // {0} = "0" = Sidereal, "1" = Lunar, "2" = Solar, "3" = King, "4" = Custom
-        public string set_Moving_Rate = ":SR{0}#"; // {0} = "1" = 1x, "2" = 2x, "3" = 8x, "4" = 16x, "5" = 64x, "6" = 128x, "7" = 256x, "8" = 512x, "9" = MAX
-        public string set_Guiding_Filter = ":SGF"; // +"0#" = OFF, +"1#" = ON // Available only equatorial mount with encoders
-        //*** CEM Mount set command strings that are saved in mount after power cycle
-        public string set_UTC_offset_Localtime = ":SG{0}{1}#"; // {0} = sign -or+, {1} = MMM=minutes
-        public const string set_DayLightSavings_OFF = ":SDS0#"; // returns "1", set daylight savings OFF
-        public const string set_DayLightSavings_ON = ":SDS1#"; // returns "1", set daylight savings ON
-        public string set_UTC_Time = ":SUT{0}#"; // {0{ = "XXXXXXXXXXXXX" = Julian Date of current UTC Time in 1 milliseconds
-        public string set_Longitude = ":SLO{0}#"; // {0} = "sTTTTTTTT" s=sign -West or +East, TTTTTTTT=arc-seconds 0.01 resolution
-        public string set_Latitude = ":SLA{0}#"; // {0} = "sTTTTTTTT" s=sign -South or +North, TTTTTTTT=arc-seconds 0.01 resolution
-        public const string set_Hemisphere_South = ":SHE0#";// returns "1", Southern hemisphere
-        public const string set_Hemisphere_North = ":SHE1#";// returns "1", Northern hemisphere
-        public string set_MAX_Slew_Rate = ":MSR{0}#"; // {0} = 7 for 256x, 8 for 512x, 9 for MAX
-        public string set_Altitude_Limit = ":SAL{0}{1:00}#"; // {0} = - for Southern Hemisphere or + for Northern Hemisphere, {1:00} = Degrees
-        public string set_Guiding_Rate = ":RG{0:00}{1:00}#"; // {0:00} = RA rate [.01 to .90], {1:00} = DEC Rate [.01 to .99]
-        public string set_Meridian_Treatment = ":SMT{0}{1:00}#"; // {0} 0=Stop or 1=Flip {1:00} Degrees
-        public const string reset_All_to_Defaults = ":RAS#"; // returns "1" Does NOT reset any date, time or time zone settings
-        //*** CEM Mount Motion commands
-        public string slew_to_set_RA_DEC = ":MS{0}#"; // {0} = "1" slew normal previous set RA DEC position, "2" = slew counter weight up, 
-                                                    // return "1" if command accepted, "0" if object below limit or exceeds mechanical limits
-        public const string slew_to_set_Alt_Az = ":MSS#"; // Slew to previous set Altitude Azimuth postion,
-                                                            // return "1" if command accepted, "0" if object below limit or exceeds mechanical limits
-        public const string slew_Stop = ":Q#"; // stops all slewing operations, tracking will not be effected, returns "1"
-        public const string set_Tracking_OFF = ":ST0#"; // returns "1", turns tracking OFF
-        public const string set_Tracking_ON = ":ST1#"; // returns "1", turns tracking ON
-        public const string mov_Guiding_RA_Plus = ":ZS{0}#"; // {0} = "XXXXX" milliseconds RA+ at current guiding rate
-        public const string mov_Guiding_RA_Minus = ":ZQ{0}#"; // {0} = "XXXXX" milliseconds RA- at current guiding rate
-        public const string mov_Guiding_DEC_Plus = ":ZE{0}#"; // {0} = "XXXXX" milliseconds DEC+ at current guiding rate
-        public const string mov_Guiding_DEC_Minus = ":ZC{0}#"; // {0} = "XXXXX" milliseconds DEC- at current guiding rate
-        //*** The following commands are no longer used, supersede by above commands
-        public const string mov_Guiding_RA_Plus_old = ":Mw{0}#"; // {0} = "XXXXX" milliseconds RA+ at current guiding rate
-        public const string mov_Guiding_RA_Minus_old = ":Me{0}#"; // {0} = "XXXXX" milliseconds RA- at current guiding rate
-        public const string mov_Guiding_DEC_Plus_old = ":Mn{0}#"; // {0} = "XXXXX" milliseconds DEC- at current guiding rate
-        public const string mov_Guiding_DEC_Minus_old = ":Ms{0}#"; // {0} = "XXXXX" milliseconds DEC+ at current guiding rate
+	    public const string get_MB_HC_Firmware = ":FW1#"; // returns "YYMMDDYYMMDD#" first date mainboard, second date hand controller
+	    public const string get_RA_DEC_Firmware = ":FW2#"; // returns "YYMMDDYYMMDD#" first data RA board, second date DEC board
+	    public const string get_Loc_Stat = ":GLS#"; // returns "sTTTTTTTTTTTTTTTTnnnnnn#" s=sign -or+ first 8 Ts=Longitude in .01 arcsecound,
+												    // second 8 Ts=Latitude in .01 arc-seconds,
+												    // first n=0 GPS malfunction, n=1 GPS not received valid data, n=2 GPS valid data received
+												    // second n=0 Stopped at Non-Zero Position, n=1 Tracking no PEC, n=2 Slewing, n=3 Auto Guiding, n=4 Meridian Flipping, n=5 Tracking with PEC, n=6 Parked, n=7 Stopped at Zero position
+												    // third n=0 Sidereal Rate, n=1 Lunar Rate, n=2 Solar Rate, n=3 King Rate, n=4 Custom Rate
+												    // forth n= Moving Speed by Arrow, 1= 1x, 2= 2x, 3= 8x, 4= 16x, 5= 64x, 6= 128x, 7= 256x, 8= 512x, 9= MAX
+												    // fifth n= The Source of Time, 1= From RS-232 port or Ethernet port, 2= From Hand Controller, 3= From GPS
+												    // sixth n= Hemisphere, 0= Southern, 1= Northern
+	    public const string get_UTC_Time = ":GUT#"; // returns "sMMMnXXXXXXXXXXXXX#" sMMM= UTC Offset for local time,
+												    // n= Day Light Savings 0=OFF 1=ON,
+												    // 13 digits XXXXXXXXXXXXX= Julian Date of current UTC Time
+	    public const string get_RA_DEC_Pos = ":GEP#"; // returns "sTTTTTTTTTTTTTTTTnn#" sTTTTTTTT= signed current DEC Position in .01 arc-seconds,
+												      // second TTTTTTTT= current RA Position in .01 arc-seconds, 
+												      // first n=0 for Pier East, n=1 for Pier West , n=2 for indeterminate Pier Position,
+												      // second n=0 counterweight up, n=1 counterweight normal
+	    public const string get_Alt_Az_Pos = ":GAC#"; //returns "sTTTTTTTTTTTTTTTTT#" sTTTTTTTT= signed Current Altitude in .01 arc-seconds
+												      // second 9 digits TTTTTTTTT= current Azimuth in .01 arc-seconds of 360 degrees
+	    public const string get_Tracking_Rate = ":GTR#"; // returns "nnnnn#" = Current Custom Tracking Rate 0.1000 to 1.9000
+	    public const string get_Park_Pos = ":GPC#"; // returns "TTTTTTTTTTTTTTTTT#" first 8 digits = Parking Altitude in .01 arc-seconds
+												    // second 9 Digits = Parking Azimuth in .01 arc-seconds of 360 degrees
+	    public const string get_MAX_Slew_Rate = ":GSR#"; // returns Slew Rate "7#"=256x, "8#"=512x, "9#"=MAX
+	    public const string get_Alt_Limit = ":GAL#"; // returns "snn#" = Altitude Limit signed degrees
+	    public const string get_RA_DEC_Guide_Rate = ":AG#"; // returns "nnnn#" first 2 digits = RA Guiding Rate, second 2 digits = DEC Guiding Rate
+	    public const string get_Meridian_Treatment = ":GMT#"; // returns "nnn#" first digit 0=Stop at Meridian, 1=Flip at second 2 digits degrees 0 to 10
+	    public const string get_Guiding_Filter_RA = ":GGF#"; // returns RA AutoGuiding "0"=Off "1"=ON, Available only equatorial mount with encoders
+	    public const string getPeriodicErrorDataComplete = ":GPE#"; // returns "0"=incomplete PED, "1"=Completed PED, Available only equatorial mount without encoders
+	    public const string getPeriodicError_RecordStat = ":GPR#"; // returns "0"=PE recording Stopped, "1"=PE being Recorded, Available only equatorial mount without encoders
 
-        public const string mov_Parking_Position = ":MP1#"; // move to previous set parking position, return "1"
-        public const string mov_Unpark = ":MP0#"; // unpark mount, returns "1"
-        public const string slew_Zero_Position = ":MH#"; // slew to zero position immediately, returns "1"
-        public const string search_Zero_Position = ":MSH#"; // returns "1", available only for CEM120, CEM70, Gem45, CEM40
-        public const string set_PE_Record_Stop = ":SPR0#"; // returns "1", stop Periodic Error Recording
-        public const string set_PE_Record_Start = ":SPR1#"; // returns "1", start Periodic Error Recording
-        public const string set_Playback_PR_OFF = ":SPP0#"; // returns "1", disable Periodic Error Correction playback
-        public const string set_Playback_PR_ON = ":SPP1#"; // returns "1", enable Periodic Error Correction playback
-        public const string set_Custom_Tracking_Rate = ":RR{0}#"; // {0} = "nnnnn#" = 0.1000 to 1.9000 no decimal, returns "1"
-        public const string mov_Manual_DEC_Minus = ":mn#"; // start move manually DEC- direction until next stop command
-        public const string mov_Manual_DEC_Plus = ":ms#"; // start move manually DEC+ direction until next stop command
-        public const string mov_Manual_RA_Minus = ":me#"; // start move manually RA- direction until next stop command
-        public const string mov_Manual_RA_Plus = ":mw#"; // start move manually RA+ direction until next stop command
-        public const string mov_Manual_RA_Stop = ":qR#"; // stop moving manually RA only, returns "1"
-        public const string mov_Manual_DEC_Stop = ":qD#"; // stop moving manually DEC only, returns "1"
-        //*** CEM Mount Position commands
-        public const string Calibrate_Mount = ":CM#"; // Calibrate Mount, returns "1"
-        public const string Query_Num_Positions = ":QAP#"; // returns "0#"= cannot slew, "1#"= can slew, "2#"= ?CWup slew 
-        public const string set_RA_Position = ":SRA{0}#"; // {0} = "TTTTTTTTT" = .01 arc-seconds to set defined RA, returns "1"
-        public const string set_DEC_Position = ":Sd{0}#"; // {0} = "sTTTTTTTT" = signed -+.01 arc-seconds to set defined DEC, returns "1"
-        public const string set_ALT_Position = ":Sa{0}#"; // {0} = "sTTTTTTTT" = signed -+.01 arc-seconds to set defined Altitude, returns "1"
-        public const string set_AZ_Position = ":Sz{0}#"; // {0} = "TTTTTTTTT" .01 arc-seconds to set defined Azimuth, returns "1"
-        public const string set_Zero_Position = ":SZP#"; // set current position as ZERO Position, returns "1"
-        public const string set_AZ_Park_Position = ":SPA{0:000000000}#"; // {0:000000000} = .01 arc-seconds, returns "1"
-        public const string set_Alt_Park_Position = ":SPH{0:000000000}#"; // {0:000000000} = .01 arc-seconds, returns "1"
+	    //*** CEM Mount set command strings
+	    public string set_Tracking_Rate = ":RT{0}#"; // {0} = "0" = Sidereal, "1" = Lunar, "2" = Solar, "3" = King, "4" = Custom
+	    public string set_Moving_Rate = ":SR{0}#"; // {0} = "1" = 1x, "2" = 2x, "3" = 8x, "4" = 16x, "5" = 64x, "6" = 128x, "7" = 256x, "8" = 512x, "9" = MAX
+	    public string set_Guiding_Filter = ":SGF"; // +"0#" = OFF, +"1#" = ON // Available only equatorial mount with encoders
+
+	    //*** CEM Mount set command strings that are saved in mount after power cycle
+	    public string set_UTC_offset_Localtime = ":SG{0}{1}#"; // {0} = sign -or+, {1} = MMM=minutes
+	    public const string set_DayLightSavings_OFF = ":SDS0#"; // returns "1", set daylight savings OFF
+	    public const string set_DayLightSavings_ON = ":SDS1#"; // returns "1", set daylight savings ON
+	    public string set_UTC_Time = ":SUT{0}#"; // {0{ = "XXXXXXXXXXXXX" = Julian Date of current UTC Time in 1 milliseconds
+	    public string set_Longitude = ":SLO{0}#"; // {0} = "sTTTTTTTT" s=sign -West or +East, TTTTTTTT=arc-seconds 0.01 resolution
+	    public string set_Latitude = ":SLA{0}#"; // {0} = "sTTTTTTTT" s=sign -South or +North, TTTTTTTT=arc-seconds 0.01 resolution
+	    public const string set_Hemisphere_South = ":SHE0#";// returns "1", Southern hemisphere
+	    public const string set_Hemisphere_North = ":SHE1#";// returns "1", Northern hemisphere
+	    public string set_MAX_Slew_Rate = ":MSR{0}#"; // {0} = 7 for 256x, 8 for 512x, 9 for MAX
+	    public string set_Altitude_Limit = ":SAL{0}{1:00}#"; // {0} = - for Southern Hemisphere or + for Northern Hemisphere, {1:00} = Degrees
+	    public string set_Guiding_Rate = ":RG{0:00}{1:00}#"; // {0:00} = RA rate [.01 to .90], {1:00} = DEC Rate [.01 to .99]
+	    public string set_Meridian_Treatment = ":SMT{0}{1:00}#"; // {0} 0=Stop or 1=Flip {1:00} Degrees
+	    public const string reset_All_to_Defaults = ":RAS#"; // returns "1" Does NOT reset any date, time or time zone settings
+
+	    //*** CEM Mount Motion commands
+	    public string slew_to_set_RA_DEC = ":MS{0}#"; // {0} = "1" slew normal previous set RA DEC position, "2" = slew counter weight up, 
+												    // return "1" if command accepted, "0" if object below limit or exceeds mechanical limits
+	    public const string slew_to_set_Alt_Az = ":MSS#"; // Slew to previous set Altitude Azimuth postion,
+														    // return "1" if command accepted, "0" if object below limit or exceeds mechanical limits
+	    public const string slew_Stop = ":Q#"; // stops all slewing operations, tracking will not be effected, returns "1"
+	    public const string set_Tracking_OFF = ":ST0#"; // returns "1", turns tracking OFF
+	    public const string set_Tracking_ON = ":ST1#"; // returns "1", turns tracking ON
+	    public const string mov_Guiding_RA_Plus = ":ZS{0}#"; // {0} = "XXXXX" milliseconds RA+ at current guiding rate
+	    public const string mov_Guiding_RA_Minus = ":ZQ{0}#"; // {0} = "XXXXX" milliseconds RA- at current guiding rate
+	    public const string mov_Guiding_DEC_Plus = ":ZE{0}#"; // {0} = "XXXXX" milliseconds DEC+ at current guiding rate
+	    public const string mov_Guiding_DEC_Minus = ":ZC{0}#"; // {0} = "XXXXX" milliseconds DEC- at current guiding rate
+	    //*** The following commands are no longer used, supersede by above commands
+	    public const string mov_Guiding_RA_Plus_old = ":Mw{0}#"; // {0} = "XXXXX" milliseconds RA+ at current guiding rate
+	    public const string mov_Guiding_RA_Minus_old = ":Me{0}#"; // {0} = "XXXXX" milliseconds RA- at current guiding rate
+	    public const string mov_Guiding_DEC_Plus_old = ":Mn{0}#"; // {0} = "XXXXX" milliseconds DEC- at current guiding rate
+	    public const string mov_Guiding_DEC_Minus_old = ":Ms{0}#"; // {0} = "XXXXX" milliseconds DEC+ at current guiding rate
+
+	    public const string mov_Parking_Position = ":MP1#"; // move to previous set parking position, return "1"
+	    public const string mov_Unpark = ":MP0#"; // unpark mount, returns "1"
+	    public const string slew_Zero_Position = ":MH#"; // slew to zero position immediately, returns "1"
+	    public const string search_Zero_Position = ":MSH#"; // returns "1", available only for CEM120, CEM70, Gem45, CEM40
+	    public const string set_PE_Record_Stop = ":SPR0#"; // returns "1", stop Periodic Error Recording
+	    public const string set_PE_Record_Start = ":SPR1#"; // returns "1", start Periodic Error Recording
+	    public const string set_Playback_PR_OFF = ":SPP0#"; // returns "1", disable Periodic Error Correction playback
+	    public const string set_Playback_PR_ON = ":SPP1#"; // returns "1", enable Periodic Error Correction playback
+	    public const string set_Custom_Tracking_Rate = ":RR{0}#"; // {0} = "nnnnn#" = 0.1000 to 1.9000 no decimal, returns "1"
+	    public const string mov_Manual_DEC_Minus = ":mn#"; // start move manually DEC- direction until next stop command
+	    public const string mov_Manual_DEC_Plus = ":ms#"; // start move manually DEC+ direction until next stop command
+	    public const string mov_Manual_RA_Minus = ":me#"; // start move manually RA- direction until next stop command
+	    public const string mov_Manual_RA_Plus = ":mw#"; // start move manually RA+ direction until next stop command
+	    public const string mov_Manual_RA_Stop = ":qR#"; // stop moving manually RA only, returns "1"
+	    public const string mov_Manual_DEC_Stop = ":qD#"; // stop moving manually DEC only, returns "1"
+
+	    //*** CEM Mount Position commands
+	    public const string Calibrate_Mount = ":CM#"; // Calibrate Mount, returns "1"
+	    public const string Query_Num_Positions = ":QAP#"; // returns "0#"= cannot slew, "1#"= can slew, "2#"= ?CWup slew 
+	    public const string set_RA_Position = ":SRA{0}#"; // {0} = "TTTTTTTTT" = .01 arc-seconds to set defined RA, returns "1"
+	    public const string set_DEC_Position = ":Sd{0}#"; // {0} = "sTTTTTTTT" = signed -+.01 arc-seconds to set defined DEC, returns "1"
+	    public const string set_ALT_Position = ":Sa{0}#"; // {0} = "sTTTTTTTT" = signed -+.01 arc-seconds to set defined Altitude, returns "1"
+	    public const string set_AZ_Position = ":Sz{0}#"; // {0} = "TTTTTTTTT" .01 arc-seconds to set defined Azimuth, returns "1"
+	    public const string set_Zero_Position = ":SZP#"; // set current position as ZERO Position, returns "1"
+	    public const string set_AZ_Park_Position = ":SPA{0:000000000}#"; // {0:000000000} = .01 arc-seconds, returns "1"
+	    public const string set_Alt_Park_Position = ":SPH{0:000000000}#"; // {0:000000000} = .01 arc-seconds, returns "1"
 
         //*** CEM Mount Models
         public string[,] MountModel = { {"0026", "0027", "0028", "0029", "0040", "0041", "0043", "0044", "0070", "0071", "0120", "0121", "0122"},
@@ -1646,6 +1651,14 @@ namespace iOptron_Mount_Control
             }
         }
 
+        //**** Dome Controller Form *****
+        private void DomeCtrlOnOff_Click(object sender, EventArgs e)
+        {
+            
+
+
+        }
+
 
         //############################################################ WORK IN PROGRESS ########################################################
 
@@ -1735,7 +1748,6 @@ namespace iOptron_Mount_Control
 
             return domealtaz;
         }
-
 
     }
 }
