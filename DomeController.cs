@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
@@ -14,53 +15,44 @@ namespace iOptron_Mount_Control
 {
     public partial class DomeController : Form
     {
+        //***** Beaver Control Commands *****
+        //***** The responce format is = !the command sent 123#
+        public const string echo = "!seletek echo#";                // Confirm whether the board is alive -- Returns 0 if it is
+        public const string powerOK = "!seletek powok#";            // Checks if power is OK -- Returns 0 if OK else null not OK
+        public const string reboot = "!seletek reboot#";            // Reboot the board -- Returns 0
+        public const string getsernum = "!seletek getsernum#";      // Get serial number of board -- Returns the boards serial number
+        public const string gotoAZ = "!dome gotoaz {0}#";           // Goto azimuth position -- Returns 0
+        public const string getAZ = "!dome getaz#";                 // Get current azimuth -- Returns 0 to 360 degrees
+        public const string setAZ = "!dome setaz {0}#";             // Set the current azimuth to degrees -- Returns nothing
+        public const string shutterstatus = "!dome shutterstatus#"; // Returns the shutter status -- 0 = Open, 1 = Closed 2 = Opening, 3 = Closing, 4 = Error
+        public const string gohome = "!dome gohome#";               // Move dome to Home position -- Returns 0
+        public const string gopark = "1dome gopark#";               // Goto park postion -- Returns 0
+        public const string athome = "!dome athome#";               // At home position? -- Returns 0 = No, 1 = Yes
+        public const string atpark = "!dome atpark#";               // At park position? -- Returns 0 = No, 1 = Yes
+        public const string status = "!dome status#";               // Get dome itwise status -- Returns bit status
+                                                                            // bit 0 = Whether dome is moving
+                                                                            // bit 1 = Whether the shutter is moving
+                                                                            // bit 2 = Whether the rotator calibration has failed
+                                                                            // bit 3 = Whether there is an error in the shutter
+                                                                            // bit 4 = Whethe there is communication error between dome & shutter
+                                                                            // bit 5 = Status of weather switch -- 0 unsafe, 1 safe
+                                                                            // bit 6 = Status of the RG-x switch
+                                                                            // bit 7 = Whether the shutter is fully closed
+                                                                            // bit 8 = Whether the shutter is fully open
+                                                                            // bit 9 = Wheterr the shutter is opening
+                                                                            // bit 10 = Whether the shutter is closing
+                                                                            // bit 11 = Whether the rotator is at home
+                                                                            // bit 12 = Whether the rotator is at park
+        public const string clearerrs = "!dome clearerrs#";         // Clears the last detected error -- Returns 0
+        public const string abort = "!dome abort#";                 // Abort both dome move and shutter move
+        public const string autocalrot = "!dome autocalrot#";       // Dome rotater calibrate -- Returns 0
+        public const string autocalshutter = "!dome autocalshutter#";   // Dome shutter calibrate -- Returns 0
+        public const string sendtoshutter = "!dome sendtoshutter {0}#"; // Send command to shutter board -- Returns 0
+        public const string setpark = "!dome setpark#";             // Set rotator park to current position -- Returns 0
 
-        //*** NexDome Responses
-        public const string RotatorStatusReply = ":SER,";
-        public const string ShutterStatusReply = ":SES,";
-        public const string BatteryVoltageNotification = ":BV";
 
-        //*** NexDome Command Codes
-        public const string CommandPrefix = "@";
-        public const string RequestRotatorStatus = "@SRR";
-        public const string RequestShutterStatus = "@SRS";
-        public const string CmdHardStopShutter = "SWS";
-        public const string CmdHardStopRotator = "SWR";
-        public const string CmdOpenShutter = "OPS";
-        public const string CmdCloseShutter = "CLS";
-        public const string CmdSaveShutterSettings = "@ZWS";
-        public const string CmdSaveRotatorSettings = "@ZWR";
-        public const string CmdSetHomeSensorAzimuthTemplate = "@HWR,{0:D}";
-        public const string CmdGetRotatorVersion = "@FRR";
-        public const string CmdGetShutterVersion = "@FRS";
-        public const string CmdSetMotorSpeedTemplate = "@VW{0},{1:0000}";
-        public const string CmdSetRampTimeTemplate = "@AW{0},{1:0000}";
-        public const string CmdSetLowBatteryVoltsThreshold = "@BWS,{0:0000}";
-        /// <summary>
-        ///     Format string used with <see cref="string.Format(string,object)" /> for building a "GoTo Azimuth" command.
-        ///     Format Gxxx, 3 digits packed with leading zeroes as necessary.
-        ///     <seealso cref="string.Format(string,object)" />
-        ///     Response is a series of Pxxx position update packets, followed by a GINF status packet when
-        ///     movement has ceased.
-        /// </summary>
-        public const string CmdGotoAzimuthTemplate = "GAR,{0:000}";
-        /// <summary>
-        ///     Format string used with <see cref="string.Format(string,object)" /> for building a "GoTo Step-position" command.
-        ///     Format GSR, 6 digits packed with leading zeroes as necessary.
-        ///     <seealso cref="string.Format(string,object)" />
-        /// </summary>
-        public const string CmdGotoStepPositionTemplate = "GSR,{0:000000}";
-        /// <summary>
-        ///     Command to move the DomeComPortComboBox to the home position.
-        ///     Response is a series of Pxxx position update packets, followed by a SER status packet.
-        /// </summary>
-        public const string CmdGotoHome = "GHR";
-        /// <summary>
-        ///     Format string used with <see cref="string.Format(string,object)" /> for building a "Sync Azimuth" command.
-        ///     Format Gxxx, 3 digits packed with leading zeroes as necessary.
-        ///     <seealso cref="string.Format(string,object)" />
-        /// </summary>
-        public const string CmdSyncAzimuthTemplate = "PWR,{0:000}";
+
+
 
 
         public DomeController()
@@ -70,20 +62,20 @@ namespace iOptron_Mount_Control
             DomeConnectbutton.Enabled = false;
         }
 
-        // ***** Get a list of COM ports *****
+        //***** Get a list of COM ports *****
         public void GetListOfComPorts()
         {
             DomeComPortComboBox.Items.Clear(); // Clear any existing entries
             DomeComPortComboBox.Items.AddRange(SerialPort.GetPortNames()); // Get Available ComPorts using System.IO because it's static
             if (DomeComPortComboBox.Items.Count == 0)
             {
-                return;
+                return; //*** Return if no COM port exist
             }
             DomeConnectbutton.Enabled = true;
         }
 
         //***** Select COM Port *****
-        private void DomeComboBoxComPort_SelectedIndexChanged(object sender, EventArgs e)
+        private void DomeComPortComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             DomeSerialPort.PortName = DomeComPortComboBox.Text;
             DomeConnectbutton.Enabled = true;
@@ -93,24 +85,83 @@ namespace iOptron_Mount_Control
         //***** Connect to DomeComPortComboBox *****
         private void DomeConnectbutton_Click(object sender, EventArgs e)
         {
-            if (DomeSerialPort.IsOpen == false)
+            try //*** Check selected COM port in use
             {
-                DomeSerialPort.Open();
-                DomeSerialPort.DiscardOutBuffer();
-                DomeSerialPort.DiscardInBuffer();
-                DomeComPortComboBox.Enabled = false;
+                if (DomeSerialPort.IsOpen == false) //*** If not connected to COM port then connect
+                {
+                    DomeSerialPort.Open();
+                    DomeSerialPort.DiscardOutBuffer();
+                    DomeSerialPort.DiscardInBuffer();
+                    DomeComPortComboBox.Enabled = false;
+                }
+                else
+                {   //*** else disconnect COM port
+                    DomeSerialPort.DiscardInBuffer(); 
+                    DomeSerialPort.DiscardOutBuffer();
+                    DomeSerialPort.Close();
+                    DomeComPortComboBox.Enabled = true;
+                    return;
+                }
             }
-            else
-            {       
-                DomeSerialPort.Close();
-                DomeSerialPort.DiscardInBuffer();
-                DomeSerialPort.DiscardOutBuffer();
-                DomeComPortComboBox.Enabled = true;
+            catch (System.UnauthorizedAccessException) //*** Return error COM port in use
+            {
+                ErrorForm _error_ = new ErrorForm();
+                _error_.ErrorText = "This COM Port is in use.\nChoose the correct COM Port!";
+                _error_.ShowDialog();
                 return;
             }
 
+            //*** Get dome info and status
+
         }
 
+        private void DomeControllerExitButton(object sender, EventArgs e)
+        {
+            if (DomeSerialPort.IsOpen == true)
+            {
+                // *** Close the shutter if Open ***
 
+                // *** Flush COM port buffers and Close port ***
+                DomeSerialPort.DiscardInBuffer();
+                DomeSerialPort.DiscardOutBuffer();
+                DomeSerialPort.Close();
+            }
+            Close();
+        }
+
+        private void ShutterOpenCloseButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void incDegreesCCWbutton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void incDegreesCWbutton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void SyncDome_button_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void GotoDomeAzimith_DoubleClick(object sender, EventArgs e)
+        {
+
+        }
+
+        private void buttonParkDome_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void buttonHomeDome_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

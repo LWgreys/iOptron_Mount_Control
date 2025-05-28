@@ -31,9 +31,21 @@
             this.components = new System.ComponentModel.Container();
             this.label1 = new System.Windows.Forms.Label();
             this.DomeConnectbutton = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.ExitButton = new System.Windows.Forms.Button();
             this.DomeComPortComboBox = new System.Windows.Forms.ComboBox();
             this.DomeSerialPort = new System.IO.Ports.SerialPort(this.components);
+            this.ShutterOpenCloseButton = new System.Windows.Forms.Button();
+            this.DomeAzimith = new System.Windows.Forms.Label();
+            this.AllStopButton = new System.Windows.Forms.Button();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.incDegreesCCWbutton = new System.Windows.Forms.Button();
+            this.DegreesToInc = new System.Windows.Forms.ComboBox();
+            this.incDegreesCWbutton = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.buttonParkDome = new System.Windows.Forms.Button();
+            this.buttonHomeDome = new System.Windows.Forms.Button();
+            this.SyncDome_button = new System.Windows.Forms.Button();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -41,7 +53,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(14, 23);
+            this.label1.Location = new System.Drawing.Point(12, 20);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(64, 16);
             this.label1.TabIndex = 0;
@@ -53,7 +65,7 @@
             this.DomeConnectbutton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
             this.DomeConnectbutton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.DomeConnectbutton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.DomeConnectbutton.Location = new System.Drawing.Point(168, 15);
+            this.DomeConnectbutton.Location = new System.Drawing.Point(156, 12);
             this.DomeConnectbutton.Name = "DomeConnectbutton";
             this.DomeConnectbutton.Size = new System.Drawing.Size(135, 32);
             this.DomeConnectbutton.TabIndex = 2;
@@ -61,22 +73,21 @@
             this.DomeConnectbutton.UseVisualStyleBackColor = false;
             this.DomeConnectbutton.Click += new System.EventHandler(this.DomeConnectbutton_Click);
             // 
-            // groupBox1
+            // ExitButton
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.ExitButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.BackColor = System.Drawing.Color.Black;
-            this.groupBox1.Controls.Add(this.DomeComPortComboBox);
-            this.groupBox1.Controls.Add(this.DomeConnectbutton);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.ForeColor = System.Drawing.Color.Yellow;
-            this.groupBox1.Location = new System.Drawing.Point(12, 12);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(468, 148);
-            this.groupBox1.TabIndex = 3;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Dome Controller";
+            this.ExitButton.BackColor = System.Drawing.Color.DarkRed;
+            this.ExitButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.ExitButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ExitButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ExitButton.Location = new System.Drawing.Point(298, 12);
+            this.ExitButton.Name = "ExitButton";
+            this.ExitButton.Size = new System.Drawing.Size(135, 32);
+            this.ExitButton.TabIndex = 4;
+            this.ExitButton.Text = "EXIT";
+            this.ExitButton.UseVisualStyleBackColor = false;
+            this.ExitButton.Click += new System.EventHandler(this.DomeControllerExitButton);
             // 
             // DomeComPortComboBox
             // 
@@ -85,11 +96,187 @@
             this.DomeComPortComboBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.DomeComPortComboBox.ForeColor = System.Drawing.Color.Yellow;
             this.DomeComPortComboBox.FormattingEnabled = true;
-            this.DomeComPortComboBox.Location = new System.Drawing.Point(84, 20);
+            this.DomeComPortComboBox.Location = new System.Drawing.Point(82, 17);
             this.DomeComPortComboBox.Name = "DomeComPortComboBox";
             this.DomeComPortComboBox.Size = new System.Drawing.Size(68, 24);
             this.DomeComPortComboBox.TabIndex = 3;
             this.DomeComPortComboBox.Text = "COM";
+            this.DomeComPortComboBox.SelectedIndexChanged += new System.EventHandler(this.DomeComPortComboBox_SelectedIndexChanged);
+            // 
+            // ShutterOpenCloseButton
+            // 
+            this.ShutterOpenCloseButton.BackColor = System.Drawing.Color.DarkRed;
+            this.ShutterOpenCloseButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.ShutterOpenCloseButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ShutterOpenCloseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ShutterOpenCloseButton.Location = new System.Drawing.Point(6, 20);
+            this.ShutterOpenCloseButton.Name = "ShutterOpenCloseButton";
+            this.ShutterOpenCloseButton.Size = new System.Drawing.Size(124, 32);
+            this.ShutterOpenCloseButton.TabIndex = 5;
+            this.ShutterOpenCloseButton.Text = "Open Shutter";
+            this.ShutterOpenCloseButton.UseVisualStyleBackColor = false;
+            this.ShutterOpenCloseButton.Click += new System.EventHandler(this.ShutterOpenCloseButton_Click);
+            // 
+            // DomeAzimith
+            // 
+            this.DomeAzimith.BackColor = System.Drawing.Color.Black;
+            this.DomeAzimith.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.DomeAzimith.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.DomeAzimith.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.DomeAzimith.Location = new System.Drawing.Point(138, 20);
+            this.DomeAzimith.MinimumSize = new System.Drawing.Size(2, 32);
+            this.DomeAzimith.Name = "DomeAzimith";
+            this.DomeAzimith.Size = new System.Drawing.Size(144, 32);
+            this.DomeAzimith.TabIndex = 6;
+            this.DomeAzimith.Text = "Dome Azimith  000°";
+            this.DomeAzimith.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.DomeAzimith.DoubleClick += new System.EventHandler(this.GotoDomeAzimith_DoubleClick);
+            // 
+            // AllStopButton
+            // 
+            this.AllStopButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.AllStopButton.BackColor = System.Drawing.Color.Red;
+            this.AllStopButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.AllStopButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.AllStopButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.AllStopButton.Location = new System.Drawing.Point(290, 20);
+            this.AllStopButton.Name = "AllStopButton";
+            this.AllStopButton.Size = new System.Drawing.Size(124, 32);
+            this.AllStopButton.TabIndex = 7;
+            this.AllStopButton.Text = "ALL STOP";
+            this.AllStopButton.UseVisualStyleBackColor = false;
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.progressBar1.BackColor = System.Drawing.Color.Maroon;
+            this.progressBar1.ForeColor = System.Drawing.Color.OrangeRed;
+            this.progressBar1.Location = new System.Drawing.Point(6, 139);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(408, 10);
+            this.progressBar1.Step = 1;
+            this.progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.progressBar1.TabIndex = 8;
+            // 
+            // incDegreesCCWbutton
+            // 
+            this.incDegreesCCWbutton.BackColor = System.Drawing.Color.Maroon;
+            this.incDegreesCCWbutton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.incDegreesCCWbutton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.incDegreesCCWbutton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.incDegreesCCWbutton.Location = new System.Drawing.Point(22, 58);
+            this.incDegreesCCWbutton.Name = "incDegreesCCWbutton";
+            this.incDegreesCCWbutton.Size = new System.Drawing.Size(107, 32);
+            this.incDegreesCCWbutton.TabIndex = 9;
+            this.incDegreesCCWbutton.Text = "Rotate CCW";
+            this.incDegreesCCWbutton.UseVisualStyleBackColor = false;
+            this.incDegreesCCWbutton.Click += new System.EventHandler(this.incDegreesCCWbutton_Click);
+            // 
+            // DegreesToInc
+            // 
+            this.DegreesToInc.BackColor = System.Drawing.Color.Black;
+            this.DegreesToInc.Font = new System.Drawing.Font("Lucida Console", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.DegreesToInc.ForeColor = System.Drawing.Color.Yellow;
+            this.DegreesToInc.FormattingEnabled = true;
+            this.DegreesToInc.Items.AddRange(new object[] {
+            "  1°",
+            "  5°",
+            " 10°",
+            " 30°",
+            " 45°",
+            " 90°",
+            "120°",
+            "180°"});
+            this.DegreesToInc.Location = new System.Drawing.Point(177, 64);
+            this.DegreesToInc.Name = "DegreesToInc";
+            this.DegreesToInc.Size = new System.Drawing.Size(65, 23);
+            this.DegreesToInc.TabIndex = 10;
+            // 
+            // incDegreesCWbutton
+            // 
+            this.incDegreesCWbutton.BackColor = System.Drawing.Color.Maroon;
+            this.incDegreesCWbutton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.incDegreesCWbutton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.incDegreesCWbutton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.incDegreesCWbutton.Location = new System.Drawing.Point(290, 58);
+            this.incDegreesCWbutton.Name = "incDegreesCWbutton";
+            this.incDegreesCWbutton.Size = new System.Drawing.Size(107, 32);
+            this.incDegreesCWbutton.TabIndex = 11;
+            this.incDegreesCWbutton.Text = "Rotate CW";
+            this.incDegreesCWbutton.UseVisualStyleBackColor = false;
+            this.incDegreesCWbutton.Click += new System.EventHandler(this.incDegreesCWbutton_Click);
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.BackColor = System.Drawing.Color.Black;
+            this.groupBox1.Controls.Add(this.buttonParkDome);
+            this.groupBox1.Controls.Add(this.buttonHomeDome);
+            this.groupBox1.Controls.Add(this.SyncDome_button);
+            this.groupBox1.Controls.Add(this.progressBar1);
+            this.groupBox1.Controls.Add(this.incDegreesCWbutton);
+            this.groupBox1.Controls.Add(this.DomeAzimith);
+            this.groupBox1.Controls.Add(this.DegreesToInc);
+            this.groupBox1.Controls.Add(this.ShutterOpenCloseButton);
+            this.groupBox1.Controls.Add(this.incDegreesCCWbutton);
+            this.groupBox1.Controls.Add(this.AllStopButton);
+            this.groupBox1.ForeColor = System.Drawing.Color.Yellow;
+            this.groupBox1.Location = new System.Drawing.Point(12, 54);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(420, 160);
+            this.groupBox1.TabIndex = 12;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Dome Controller";
+            // 
+            // buttonParkDome
+            // 
+            this.buttonParkDome.BackColor = System.Drawing.Color.DarkRed;
+            this.buttonParkDome.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.buttonParkDome.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonParkDome.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonParkDome.Location = new System.Drawing.Point(148, 96);
+            this.buttonParkDome.Name = "buttonParkDome";
+            this.buttonParkDome.Size = new System.Drawing.Size(123, 32);
+            this.buttonParkDome.TabIndex = 14;
+            this.buttonParkDome.Text = "Park Dome";
+            this.buttonParkDome.UseVisualStyleBackColor = false;
+            this.buttonParkDome.Click += new System.EventHandler(this.buttonParkDome_Click);
+            // 
+            // buttonHomeDome
+            // 
+            this.buttonHomeDome.BackColor = System.Drawing.Color.DarkRed;
+            this.buttonHomeDome.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.buttonHomeDome.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonHomeDome.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonHomeDome.Location = new System.Drawing.Point(6, 96);
+            this.buttonHomeDome.Name = "buttonHomeDome";
+            this.buttonHomeDome.Size = new System.Drawing.Size(124, 32);
+            this.buttonHomeDome.TabIndex = 13;
+            this.buttonHomeDome.Text = "Home Dome";
+            this.buttonHomeDome.UseVisualStyleBackColor = false;
+            this.buttonHomeDome.Click += new System.EventHandler(this.buttonHomeDome_Click);
+            // 
+            // SyncDome_button
+            // 
+            this.SyncDome_button.BackColor = System.Drawing.Color.DarkRed;
+            this.SyncDome_button.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.SyncDome_button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.SyncDome_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SyncDome_button.Location = new System.Drawing.Point(290, 96);
+            this.SyncDome_button.Name = "SyncDome_button";
+            this.SyncDome_button.Size = new System.Drawing.Size(124, 32);
+            this.SyncDome_button.TabIndex = 12;
+            this.SyncDome_button.Text = "Sync Dome";
+            this.SyncDome_button.UseVisualStyleBackColor = false;
+            this.SyncDome_button.Click += new System.EventHandler(this.SyncDome_button_Click);
+            // 
+            // timer1
+            // 
+            this.timer1.Interval = 500;
             // 
             // DomeController
             // 
@@ -97,9 +284,13 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoValidate = System.Windows.Forms.AutoValidate.EnableAllowFocusChange;
             this.BackColor = System.Drawing.Color.Red;
-            this.ClientSize = new System.Drawing.Size(492, 172);
+            this.ClientSize = new System.Drawing.Size(444, 226);
             this.ControlBox = false;
             this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.ExitButton);
+            this.Controls.Add(this.DomeComPortComboBox);
+            this.Controls.Add(this.DomeConnectbutton);
+            this.Controls.Add(this.label1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ForeColor = System.Drawing.Color.Yellow;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -107,19 +298,31 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "DomeController";
+            this.Text = "Dome Controller";
             this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.IO.Ports.SerialPort DomeSerialPortComboBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button DomeConnectbutton;
-        private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.ComboBox DomeComPortComboBox;
         private System.IO.Ports.SerialPort DomeSerialPort;
+        private System.Windows.Forms.Button ExitButton;
+        private System.Windows.Forms.Button ShutterOpenCloseButton;
+        private System.Windows.Forms.Label DomeAzimith;
+        private System.Windows.Forms.Button AllStopButton;
+        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.Button incDegreesCCWbutton;
+        private System.Windows.Forms.ComboBox DegreesToInc;
+        private System.Windows.Forms.Button incDegreesCWbutton;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button SyncDome_button;
+        private System.Windows.Forms.Button buttonParkDome;
+        private System.Windows.Forms.Button buttonHomeDome;
+        private System.Windows.Forms.Timer timer1;
     }
 }

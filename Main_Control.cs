@@ -281,6 +281,7 @@ namespace iOptron_Mount_Control
                 MountComPort.DiscardInBuffer();
                 buttonResetPEC.Enabled = OFF;
                 groupBoxesState(ON);
+                // return; //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  For Debuging Purpose Only - prevents timer running >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
             }
             else
             {
@@ -367,7 +368,7 @@ namespace iOptron_Mount_Control
 
         // this part of code runs every 1 second once the program is connect to a mount 
         //********** TIMER 1 ***************************************************************************** TIMER 1 *******************
-        public void GetMountData(Object myObject, EventArgs myEventArgs)
+        public void GetSendMountData(Object myObject, EventArgs myEventArgs)
         {
             string inData;
 
@@ -582,7 +583,7 @@ namespace iOptron_Mount_Control
 
             // *** Moving rate
             comboBoxManualMovingRate.SelectedIndex = cemMovingRate - 1;
-            
+
             // *** show were source of time coming from
             switch (cemTimeSource)
             {
@@ -683,9 +684,24 @@ namespace iOptron_Mount_Control
                 buttonResetPEC.Enabled = ON;
             else
                 buttonResetPEC.Enabled = OFF;
-            
+
             // *** get other data
-            GetOtherData(_OtherData_);
+            // GetOtherData(_OtherData_);
+            if ((_OtherData_ != 1) && (cemTrackingRate == 4) && (cemCustomTrackingRateChanged == true))
+                GetCostumTrackingRate();
+            if ((_OtherData_ != 2) && (cemParkingPositionChanged == true))
+                GetParkingPostion();
+            if ((_OtherData_ != 3) && (cemMaxSlewRateChanged == true))
+                GetMaximumSlewingRate();
+            if ((_OtherData_ != 4) && (cemAltitudeLimitChanged == true))
+                GetAltitudeLimit();
+            if ((_OtherData_ != 5) && (cemRA_DEC_GuidingRateChanged == true))
+                GetRA_DEC_GuidingRates();
+            if ((_OtherData_ != 6) && (cemMeridianTreatmentChanged == true))
+                GetMeridainTreatment();
+            //if (_OtherData_ != 7)
+            //    GetStatusOfAutoGuidingFilterRA();
+
         }
         //***************** END TIMER 1 ******************************************************************** END TIME 1 **************/
 
@@ -1017,6 +1033,7 @@ namespace iOptron_Mount_Control
             }
         }
 
+        /*
         public void GetOtherData(byte b) //********** Entry point to get other data ** b = what data not to get due to button press
         {
             if ((b != 1) && (cemTrackingRate == 4) && (cemCustomTrackingRateChanged == true))
@@ -1034,6 +1051,7 @@ namespace iOptron_Mount_Control
             //if (b != 7)
             //    GetStatusOfAutoGuidingFilterRA();
         }
+        */
 
 
         //****************** Set Other Data *********************************************************** Set Other Data ***************
@@ -1654,9 +1672,10 @@ namespace iOptron_Mount_Control
         //**** Dome Controller Form *****
         private void DomeCtrlOnOff_Click(object sender, EventArgs e)
         {
-            
+            DomeController domeController = new DomeController();
 
-
+            DomeCtrlOnOffButton.Enabled = false;
+            domeController.Show();
         }
 
 

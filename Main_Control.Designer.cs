@@ -98,7 +98,7 @@
             this.buttonMoveLeft = new System.Windows.Forms.Button();
             this.buttonMoveUp = new System.Windows.Forms.Button();
             this.groupBoxMountTracking = new System.Windows.Forms.GroupBox();
-            this.DomeCtrlOnOff = new System.Windows.Forms.Button();
+            this.DomeCtrlOnOffButton = new System.Windows.Forms.Button();
             this.buttonPeriodicErrorCorrection = new System.Windows.Forms.Button();
             this.buttonTrackingOnOff = new System.Windows.Forms.Button();
             this.ButtonEXIT = new System.Windows.Forms.Button();
@@ -815,9 +815,9 @@
             this.buttonSetNewZeroPosition.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
             this.buttonSetNewZeroPosition.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Red;
             this.buttonSetNewZeroPosition.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonSetNewZeroPosition.Location = new System.Drawing.Point(6, 59);
+            this.buttonSetNewZeroPosition.Location = new System.Drawing.Point(8, 59);
             this.buttonSetNewZeroPosition.Name = "buttonSetNewZeroPosition";
-            this.buttonSetNewZeroPosition.Size = new System.Drawing.Size(125, 29);
+            this.buttonSetNewZeroPosition.Size = new System.Drawing.Size(121, 29);
             this.buttonSetNewZeroPosition.TabIndex = 2;
             this.buttonSetNewZeroPosition.Text = "Set New Zero Pos.";
             this.buttonSetNewZeroPosition.UseVisualStyleBackColor = false;
@@ -831,7 +831,7 @@
             this.buttonGotoZeroPosition.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonGotoZeroPosition.Location = new System.Drawing.Point(138, 24);
             this.buttonGotoZeroPosition.Name = "buttonGotoZeroPosition";
-            this.buttonGotoZeroPosition.Size = new System.Drawing.Size(125, 29);
+            this.buttonGotoZeroPosition.Size = new System.Drawing.Size(121, 29);
             this.buttonGotoZeroPosition.TabIndex = 1;
             this.buttonGotoZeroPosition.Text = "Goto Zero Position";
             this.buttonGotoZeroPosition.UseVisualStyleBackColor = false;
@@ -845,7 +845,7 @@
             this.buttonSearchMountZero.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonSearchMountZero.Location = new System.Drawing.Point(137, 59);
             this.buttonSearchMountZero.Name = "buttonSearchMountZero";
-            this.buttonSearchMountZero.Size = new System.Drawing.Size(125, 29);
+            this.buttonSearchMountZero.Size = new System.Drawing.Size(122, 29);
             this.buttonSearchMountZero.TabIndex = 0;
             this.buttonSearchMountZero.Text = "Search Zero Pos.";
             this.buttonSearchMountZero.UseVisualStyleBackColor = false;
@@ -1036,7 +1036,7 @@
             // groupBoxMountTracking
             // 
             this.groupBoxMountTracking.BackColor = System.Drawing.Color.Black;
-            this.groupBoxMountTracking.Controls.Add(this.DomeCtrlOnOff);
+            this.groupBoxMountTracking.Controls.Add(this.DomeCtrlOnOffButton);
             this.groupBoxMountTracking.Controls.Add(this.buttonResetPEC);
             this.groupBoxMountTracking.Controls.Add(this.buttonPeriodicErrorCorrection);
             this.groupBoxMountTracking.Controls.Add(this.buttonTrackingOnOff);
@@ -1049,19 +1049,20 @@
             this.groupBoxMountTracking.TabStop = false;
             this.groupBoxMountTracking.Text = "Mount Tracking";
             // 
-            // DomeCtrlOnOff
+            // DomeCtrlOnOffButton
             // 
-            this.DomeCtrlOnOff.BackColor = System.Drawing.Color.Maroon;
-            this.DomeCtrlOnOff.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
-            this.DomeCtrlOnOff.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Red;
-            this.DomeCtrlOnOff.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.DomeCtrlOnOff.Location = new System.Drawing.Point(138, 59);
-            this.DomeCtrlOnOff.Name = "DomeCtrlOnOff";
-            this.DomeCtrlOnOff.Size = new System.Drawing.Size(121, 25);
-            this.DomeCtrlOnOff.TabIndex = 23;
-            this.DomeCtrlOnOff.Text = "Dome  OFF";
-            this.DomeCtrlOnOff.UseVisualStyleBackColor = false;
-            this.DomeCtrlOnOff.Click += new System.EventHandler(this.DomeCtrlOnOff_Click);
+            this.DomeCtrlOnOffButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.DomeCtrlOnOffButton.BackColor = System.Drawing.Color.Maroon;
+            this.DomeCtrlOnOffButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.DomeCtrlOnOffButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Red;
+            this.DomeCtrlOnOffButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.DomeCtrlOnOffButton.Location = new System.Drawing.Point(139, 59);
+            this.DomeCtrlOnOffButton.Name = "DomeCtrlOnOffButton";
+            this.DomeCtrlOnOffButton.Size = new System.Drawing.Size(121, 25);
+            this.DomeCtrlOnOffButton.TabIndex = 23;
+            this.DomeCtrlOnOffButton.Text = "Dome  Controller";
+            this.DomeCtrlOnOffButton.UseVisualStyleBackColor = false;
+            this.DomeCtrlOnOffButton.Click += new System.EventHandler(this.DomeCtrlOnOff_Click);
             // 
             // buttonPeriodicErrorCorrection
             // 
@@ -1188,7 +1189,7 @@
             // timer1
             // 
             this.timer1.Interval = 1000;
-            this.timer1.Tick += new System.EventHandler(this.GetMountData);
+            this.timer1.Tick += new System.EventHandler(this.GetSendMountData);
             // 
             // buttonSlewToObject
             // 
@@ -1272,6 +1273,7 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "MainControlForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Mount Controller";
             this.groupBoxMountGPS_Time.ResumeLayout(false);
             this.groupBoxMountGPS_Time.PerformLayout();
             this.groupBoxMountPointingPosition.ResumeLayout(false);
@@ -1375,7 +1377,7 @@
         private System.Windows.Forms.Label labelBaudRate;
         private System.Windows.Forms.Label labelComPort;
         private System.Windows.Forms.Label GPS_status;
-        private System.Windows.Forms.Button DomeCtrlOnOff;
+        private System.Windows.Forms.Button DomeCtrlOnOffButton;
     }
 }
 
