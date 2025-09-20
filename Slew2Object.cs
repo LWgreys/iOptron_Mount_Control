@@ -99,13 +99,7 @@ namespace iOptron_Mount_Control
             }
         }
 
-        /*
-        private void textboxObject_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            e.KeyChar = char.ToUpper(e.KeyChar);
-        }
-        */
-
+        
         private void buttonCancelSlew_Click(object sender, EventArgs e)
         {
             _FormStatus = false;

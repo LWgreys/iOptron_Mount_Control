@@ -187,20 +187,24 @@ namespace iOptron_Mount_Control
         public static double LST_longitude; // .................... Used for LocalSiderealTime()
         public static double currentDomePosition; // .............. Current Position from Dome Controler
 
-        const string NO_PORTS_MESSAGE = "No COM ports found";
-        static byte _OtherData_;
-        const double miliSecondsInDay = 86400000.0; // ............ Number of milliseconds in a day
-        const double JD_J2000 = 2451545.0; // ..................... Julian date time 2000-01-01 12:00.00 noon
+        public const string NO_PORTS_MESSAGE = "No COM ports found";
+        public static byte _OtherData_;
+        public const double miliSecondsInDay = 86400000.0; // ..... Number of milliseconds in a day
+        public const double JD_J2000 = 2451545.0; // .............. Julian date time 2000-01-01 12:00.00 noon
+        public static DateTime J2000; // .......................... J2000 datetime
+        public static double Tropical_year = 365.2421875; // ...... = 365 days 5 hours 48 minutes 45 seconds
+        public static double _SDx_ = 360.0 / Tropical_year; // .... SD multiplyer
+
         static readonly bool ON = true;
         static readonly bool OFF = false;
         static readonly object OutIn = new object();
 
         //*** Dome and Telescope Configuration definitons
-        static readonly double DomeRadius = 1025.0; // ............ Radius of dome
-        static readonly double gemEWoffset = 0.0; // .............. East is +, West is -
-        static readonly double gemNSoffset = -38.0; // ............ North is +, South is -
-        static readonly double gemUDoffset = -38.0; // ............ Up is +, Down is -
-        static readonly double gemAxisOffset = 490.0; // .......... Radius to center of telescope
+        static readonly double DomeRadius = 1025.0; // ............ Radius of dome in millimeters
+        static readonly double gemEWoffset = 0.0; // .............. East is +, West is - , in millimeters
+        static readonly double gemNSoffset = -38.0; // ............ North is +, South is - , in millimeters
+        static readonly double gemUDoffset = -38.0; // ............ Up is +, Down is - , in millimeters
+        static readonly double gemAxisOffset = 490.0; // .......... Radius to center of telescope in millimeters
         static readonly double SlavePrecision = 1.0; // ........... The amount of difference between current dome position and slave position
 
 
@@ -219,7 +223,8 @@ namespace iOptron_Mount_Control
             ComboBoxBaudRate.SelectedIndex = 0;
             _OtherData_ = 0;
             slewedObject = "";
-            timer1.Stop();
+            J2000 = new DateTime(2000, 1, 1, 12, 0, 0); // J2000 datetime
+            timerMount.Stop();
         }
 
 
@@ -265,7 +270,7 @@ namespace iOptron_Mount_Control
         // ***** Connect to Mount & Check Model *****
         private void ButtonCOMPortConnect_Click(object sender, EventArgs e)
         {
-            timer1.Stop();
+            timerMount.Stop();
 
             int i, index;
             string firmwareDate = "";
@@ -274,21 +279,33 @@ namespace iOptron_Mount_Control
             if (ButtonCOMPortConnect.Text == NO_PORTS_MESSAGE) // Exit program if no ports found
                 return;
 
-            if (MountComPort.IsOpen == false)
+            try
             {
-                MountComPort.Open(); // Open mount COM port if not already open
-                MountComPort.DiscardOutBuffer();
-                MountComPort.DiscardInBuffer();
-                buttonResetPEC.Enabled = OFF;
-                groupBoxesState(ON);
-                // return; //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  For Debuging Purpose Only - prevents timer running >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                if (MountComPort.IsOpen == false)
+                {
+                    MountComPort.Open(); // Open mount COM port if not already open
+                    MountComPort.DiscardOutBuffer();
+                    MountComPort.DiscardInBuffer();
+                    buttonResetPEC.Enabled = OFF;
+                    groupBoxesState(ON);
+                }
+                else
+                {
+                    MountComPort.DiscardOutBuffer();
+                    MountComPort.DiscardInBuffer();
+                    MountComPort.Close();
+                    groupBoxesState(OFF);
+                    return;
+                }
             }
-            else
+            catch (System.UnauthorizedAccessException) //*** Return error COM port in use
             {
-                MountComPort.Close();
-                groupBoxesState(OFF);
+                ErrorForm _error_ = new ErrorForm();
+                _error_.ErrorText = "This COM Port is in use.\nChoose the correct COM Port!";
+                _error_.ShowDialog();
                 return;
             }
+             //return; //---------------------------------------------- For debuging only with not connecting to mount
 
             // Get mount model number
             inData = MountCommand(get_CEM_Info, 4);
@@ -326,7 +343,7 @@ namespace iOptron_Mount_Control
             cemRA_DEC_GuidingRateChanged = true;
             cemMaxSlewRateChanged = true;
 
-            timer1.Start();
+            timerMount.Start();
         }
 
 
@@ -362,11 +379,13 @@ namespace iOptron_Mount_Control
             for (i = 0; i != numberOfChar; i++)
                 buffer[i] = (byte)MountComPort.ReadByte();
             inBuffer = UTF8Encoding.UTF8.GetString(buffer);
+            MountComPort.DiscardInBuffer();
+            MountComPort.DiscardOutBuffer();
             return inBuffer;
         }
 
 
-        // this part of code runs every 1 second once the program is connect to a mount 
+        // this part of code runs every 1 second once connected to the mount 
         //********** TIMER 1 ***************************************************************************** TIMER 1 *******************
         public void GetSendMountData(Object myObject, EventArgs myEventArgs)
         {
@@ -384,8 +403,9 @@ namespace iOptron_Mount_Control
             cemMovingRate = Convert.ToByte(inData.Substring(20, 1));
             cemTimeSource = Convert.ToByte(inData.Substring(21, 1));
             cemHemisphere = Convert.ToByte(inData.Substring(22, 1));
-            // LST_longitude = 0.0;
+            // Convert mount Longitude to use with Local Sidereal Time
             LST_longitude = Convert.ToDouble(cemLongitude) / 360000.0;
+            // Set the East or West and North or South and convert to postion for output
             if (cemLatitudeEastWest == "+")
                 cemLongitude = labelLongitude.Text = RetPostionString(Convert.ToDouble(cemLongitude), 0) + " E"; // convert string to double
             else
@@ -395,7 +415,7 @@ namespace iOptron_Mount_Control
             else
                 cemLatitude = labelLatitude.Text = RetPostionString(Convert.ToDouble(cemLatitude), 3) + " S"; // convert string to double
 
-            // *** GPS status
+            // *** Check GPS status
             switch (cemGPSstatus)
             {
                 case 2:
@@ -615,24 +635,23 @@ namespace iOptron_Mount_Control
 
                 lock (OutIn)
                     inData = MountCommand(get_UTC_Time, 19);
-                // convert mount time to UTC time
                 cemUTCoffset = labelUTC_Offset.Text = inData.Substring(0, 4);
                 UTCoffset = Convert.ToDouble(cemUTCoffset);
                 DLST = Convert.ToByte(inData.Substring(4, 1));
                 cemMountTime = inData.Substring(5, 13);
                 MountTime = Convert.ToDouble(cemMountTime);
                 cemDaylightTime = checkBoxDayLightSavingsOnOff.Checked = (DLST == 1) ? ON : OFF;
-                UTCtime = (MountTime / miliSecondsInDay) + JD_J2000;     // convert Mount Time to UTC time
-                lock (OutIn)
-                    labelLST.Text = LocalSiderealTime(UTCtime, LST_longitude);
-                UTCtime -= (int)UTCtime;                        // get the time part
+                UTCtime = (MountTime / miliSecondsInDay);
+                labelLST.Text = LocalSiderealTime(UTCtime, LST_longitude); // get & output local sidereal time
+                UTCtime += JD_J2000;// convert Mount Time to UTC time
+                UTCtime -= (int)UTCtime; // get the time part
                 cemUTCtime = labelTimeUTC.Text = RetTimeString(UTCtime);
                 // convert mount time to Local time
                 LocalTime = MountTime / miliSecondsInDay;
                 localJ2000 = JD_J2000 - (1.0 - ((1440.0 + ((DLST == 1) ? (UTCoffset - -60.0) : UTCoffset)) / 1440.0)); // 1440 = minutes in 24 hours
                 LocalTime += localJ2000;
                 LocalTime -= (int)LocalTime;
-                labelTimeLocal.Text = RetTimeString(LocalTime);
+                labelTimeLocal.Text = RetTimeString(LocalTime); // output local time
             }
 
             // *** get RA and DEC position
@@ -686,7 +705,6 @@ namespace iOptron_Mount_Control
                 buttonResetPEC.Enabled = OFF;
 
             // *** get other data
-            // GetOtherData(_OtherData_);
             if ((_OtherData_ != 1) && (cemTrackingRate == 4) && (cemCustomTrackingRateChanged == true))
                 GetCostumTrackingRate();
             if ((_OtherData_ != 2) && (cemParkingPositionChanged == true))
@@ -712,11 +730,10 @@ namespace iOptron_Mount_Control
             // varibles for Local Sidereal Time
             DateTime _UTC;
             double Days_dif, UT, LST;
-            double Tropical_year = 365.2421875; // = 365 days 5 hours 48 minutes 45 seconds
-            double _SDx_ = 360.0 / Tropical_year; // SD multiplyer
-            DateTime J2000 = new DateTime(2000, 1, 1, 12, 0, 0); // J2000 datetime
+            //double Tropical_year = 365.2421875; // = 365 days 5 hours 48 minutes 45 seconds
+            //double _SDx_ = 360.0 / Tropical_year; // SD multiplyer
             
-            dUTC -= JD_J2000; // subtract Julian datetime of J2000 DateTime from the UTC DateTime 
+            // dUTC -= JD_J2000; // subtract Julian datetime of J2000 from the UTC DateTime 
             _UTC = ((((DateTime.FromOADate(dUTC)).AddYears(100)).AddHours(12)).AddMinutes(3)).AddSeconds(56); // convert dUTC DataTime to decimal datetime
             Days_dif = (_UTC - J2000).TotalDays; // get the number of days sense J2000 including decmal part
             UT = _UTC.Hour + _UTC.Minute / 60.0 + _UTC.Second / 3600.0; // convert adjusted UTC time to decimal hours
@@ -793,11 +810,13 @@ namespace iOptron_Mount_Control
         {
             int _degrees, _minutes, _seconds, _decimal;
 
-            pdd = Math.Abs(pdd /= 360000.0);
+            // pdd = Math.Abs(pdd /= 360000.0);
+            pdd = pdd /= 360000.0;
             if (_rf == 3)
                 pdd -= 90;
             _degrees = (int)pdd;
-            pdd -= (int)pdd;
+            // pdd -= (int)pdd;
+            pdd = Math.Abs(pdd - (int)pdd);
             pdd *= 60.0;
             _minutes = (int)pdd;
             pdd -= (int)pdd;
@@ -916,8 +935,7 @@ namespace iOptron_Mount_Control
                         return false;
                     else
                         // Any date in the range 10/5/1582 to 10/14/1582 is invalid 
-                        throw new ArgumentOutOfRangeException(
-                            "This date is not valid as it does not exist in either the Julian or the Gregorian calendars.");
+                        throw new ArgumentOutOfRangeException("This date is not valid as it does not exist in either the Julian or the Gregorian calendars.");
                 }
             }
         }
@@ -1033,26 +1051,6 @@ namespace iOptron_Mount_Control
             }
         }
 
-        /*
-        public void GetOtherData(byte b) //********** Entry point to get other data ** b = what data not to get due to button press
-        {
-            if ((b != 1) && (cemTrackingRate == 4) && (cemCustomTrackingRateChanged == true))
-                GetCostumTrackingRate();
-            if ((b != 2) && (cemParkingPositionChanged == true))
-                GetParkingPostion();
-            if ((b != 3) && (cemMaxSlewRateChanged == true))
-                GetMaximumSlewingRate();
-            if ((b != 4) && (cemAltitudeLimitChanged == true))
-                GetAltitudeLimit();
-            if ((b != 5) && (cemRA_DEC_GuidingRateChanged == true))
-                GetRA_DEC_GuidingRates();
-            if ((b != 6) && (cemMeridianTreatmentChanged == true))
-                GetMeridainTreatment();
-            //if (b != 7)
-            //    GetStatusOfAutoGuidingFilterRA();
-        }
-        */
-
 
         //****************** Set Other Data *********************************************************** Set Other Data ***************
         // set meridian treatment, s=0 for OnOff treatment
@@ -1080,7 +1078,7 @@ namespace iOptron_Mount_Control
             inData = MountCommand(string.Format(set_Tracking_Rate, cemTrackingRate), 1);
             if (cemTrackingRate == 4)
                 cemCustomTrackingRateChanged = true;
-            timer1.Start();
+            timerMount.Start();
             this.ActiveControl = null;
         }
 
@@ -1093,7 +1091,7 @@ namespace iOptron_Mount_Control
             cemMAXSlewingRate += 7;
             inData = MountCommand(string.Format(set_MAX_Slew_Rate, cemMAXSlewingRate), 1);
             cemMaxSlewRateChanged = true;
-            timer1.Start();
+            timerMount.Start();
             this.ActiveControl = null;
         }
 
@@ -1105,13 +1103,13 @@ namespace iOptron_Mount_Control
             cemMovingRate = (byte)comboBoxManualMovingRate.SelectedIndex;
             cemMovingRate += 1;
             inData = MountCommand(string.Format(set_Moving_Rate, cemMovingRate), 1);
-            timer1.Start();
+            timerMount.Start();
             this.ActiveControl = null;
         }
 
         private void ComboBox_StopTimer_DropDown(object sender, EventArgs e)
         {
-            timer1.Stop();
+            timerMount.Stop();
         }
 
 
@@ -1337,7 +1335,7 @@ namespace iOptron_Mount_Control
                 inData = MountCommand(mov_Manual_RA_Stop, 1);
         }
 
-        // ***** slew to object *****
+        // ***** slew to object *********************************************************************** slew to object ****************************************
         private void SlewToObject_Click(object sender, EventArgs e)
         {
             string _RA, _DEC;
@@ -1370,7 +1368,8 @@ namespace iOptron_Mount_Control
             n = 0;
             foreach (string num in RA_Split)
                 d[n++] = Convert.ToDouble(num);
-            return string.Format("{0:000000000}", (d[2] / 3600.0 * 15.0) + (d[1] / 60.0 * 15.0) + (360.0 / 24.0 * d[0]) * 3600.0 * 100.0);
+            // return string.Format("{0:000000000}", (d[2] / 3600.0 * 15.0) + (d[1] / 60.0 * 15.0) + (360.0 / 24.0 * d[0]) * 3600.0 * 100.0);
+            return string.Format("{0:000000000}", ((d[2] / 3600.0 * 15.0) + (d[1] / 60.0 * 15.0) + (360.0 / 24.0 * d[0]) * 3600.0 * 100.0) * _SDx_) ;
         }
 
         // ***** convert string to millisecond string *****
@@ -1684,20 +1683,27 @@ namespace iOptron_Mount_Control
         /*
         How to synchronise your arduino dome slot with your GOTO telescope.
 
-        For successful automated astrophotography, the slot in the observatory dome must be synhronised with the telescope as it tracks the sky and performs slews. In most cases, use of ASCOM will mean that you do not have to worry about the calculation of the dome azimuth - this is all done for you after correct configuration. In some cases you may wish to implment your own code to perform this calculation. The problem is not as simple as it might first appear. One cannot simply set the dome slot azimuth to the pointing azimuth of the telescope. With a GEM mount the correct solution can appear unintuitive.
+        For successful automated astrophotography, the slot in the observatory dome must be synhronised with the telescope as it tracks the sky
+        and performs slews. In most cases, use of ASCOM will mean that you do not have to worry about the calculation of the dome azimuth - this 
+        is all done for you after correct configuration. In some cases you may wish to implment your own code to perform this calculation. The 
+        problem is not as simple as it might first appear. One cannot simply set the dome slot azimuth to the pointing azimuth of the telescope. 
+        With a GEM mount the correct solution can appear unintuitive.
 
         Take the following example:
-        Telescope pointing due south at the horizon. Scope on the east side of the pier. Putting the dome slit at 180 is not the correct solution. The scope is hanging out to one side. The required dome azimuth is more like 160 degrees - depending on various factors.
+        Telescope pointing due south at the horizon. Scope on the east side of the pier. Putting the dome slit at 180 is not the correct solution. 
+        The scope is hanging out to one side. The required dome azimuth is more like 160 degrees - depending on various factors.
 
         The "factors" are broadly......
 
             First of all, introduce a COG, centre of gravity, of the mount, this is the intersection of the RA and DEC axis.
             Also define the "origin" of the dome. The dome is a hemisphere. The origin is the middle of the sphere.
-            Immediately we notice the COG of the mount is never going to be at the origin of the dome unless your building is very well designed. There will be a fixed x,y,z offset. We will say that x = north+ and y = east+. Z is up/down
+            Immediately we notice the COG of the mount is never going to be at the origin of the dome unless your building is very well designed. 
+            There will be a fixed x,y,z offset. We will say that x = north+ and y = east+. Z is up/down
             Next the radius of the dome is a factor. In my case it is not a fixed radius.
             The optical axis of the telescope will not pass through this COG. There will be an Optical-COG offset. PRobably in the order of 100-300mm 
 
-        Taking the above case, even with x=y=z=0 the COG-Optical (COGO) will mean the dome azimuth has to be a bit further east than 180. If x=y=z=COGO then the azimuth would be 180. This is now aparently a more complex problem but the solution is straightfoward using the proper mathematics.
+        Taking the above case, even with x=y=z=0 the COG-Optical (COGO) will mean the dome azimuth has to be a bit further east than 180. 
+        If x=y=z=COGO then the azimuth would be 180. This is now aparently a more complex problem but the solution is straightfoward using the proper mathematics.
 
         Be warned : Some of the solutions I have seen on the internet are horrendously over complicated and try and do the whole thing with trigonometry.
 
@@ -1705,7 +1711,9 @@ namespace iOptron_Mount_Control
 
             First we define c, the origin, centre of the dome. (0,0,0)
             Next we have the vector to the mount cog, this never changes. (x1,y1,z1).
-            Now we need to find the intersection of the Dec-optical (DOI) relative to (x1,y1,z1), we call this (x2,y2,z2). This does move around. If we say gemAxisOffset is the COG-optical length, we imediately see that the DOI perscribes parts of a sphere around (x1,y1,z1) with radius gemAxisOffset. So we simply use the standard 3d polar to cartesian conversion from any geometry text book. Note that the DOI point will not reach all parts of the sphere.
+            Now we need to find the intersection of the Dec-optical (DOI) relative to (x1,y1,z1), we call this (x2,y2,z2). This does move around. 
+        If we say gemAxisOffset is the COG-optical length, we imediately see that the DOI perscribes parts of a sphere around (x1,y1,z1) with radius gemAxisOffset. 
+        So we simply use the standard 3d polar to cartesian conversion from any geometry text book. Note that the DOI point will not reach all parts of the sphere.
 
             In our case, θ is hour angle and φ is latitude - all assuming we are on a polar aligned mount!
             We add (x1,y1,z1) to (x2,y2,z2) whic gives us a vector, o, which is the DOI point relative to the dome origin.
@@ -1715,7 +1723,8 @@ namespace iOptron_Mount_Control
             Then we simply add all the vectors together, (x3,y3,z3) = c + o + (l * d)
             Finally with a standard Cartesian to Polar conversion, Dome Azimuith = Π / 2 - Atan2(y2, x2);
             For changes to the mount sideofpier we simply negate (x2,y2,z2) before adding to (x1,y1,z1)
-            In my case, the radius of my dome is not constant with elevation. It is more box shaped. However Acos(z / domeR ) gives the elevation of the intersection, and one can simply iterate the above algorithm for a different radius. 
+            In my case, the radius of my dome is not constant with elevation. It is more box shaped. However Acos(z / domeR ) gives the elevation of the 
+            intersection, and one can simply iterate the above algorithm for a different radius. 
 
         For practical programming, the Math.net programming library makes this into a few simple lines of code.
 

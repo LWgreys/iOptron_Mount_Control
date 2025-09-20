@@ -109,7 +109,7 @@
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.MountComPort = new System.IO.Ports.SerialPort(this.components);
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.timerMount = new System.Windows.Forms.Timer(this.components);
             this.buttonSlewToObject = new System.Windows.Forms.Button();
             this.ComboBoxBaudRate = new System.Windows.Forms.ComboBox();
             this.labelBaudRate = new System.Windows.Forms.Label();
@@ -1186,10 +1186,10 @@
             this.MountComPort.WriteBufferSize = 1024;
             this.MountComPort.WriteTimeout = 1000;
             // 
-            // timer1
+            // timerMount
             // 
-            this.timer1.Interval = 1000;
-            this.timer1.Tick += new System.EventHandler(this.GetSendMountData);
+            this.timerMount.Interval = 1000;
+            this.timerMount.Tick += new System.EventHandler(this.GetSendMountData);
             // 
             // buttonSlewToObject
             // 
@@ -1349,7 +1349,7 @@
         private System.Windows.Forms.TextBox textBox4;
         private System.Windows.Forms.TextBox textBox1;
         private System.IO.Ports.SerialPort MountComPort;
-        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Timer timerMount;
         private System.Windows.Forms.Label labelPierEAST;
         private System.Windows.Forms.Label labelPierWEST;
         private System.Windows.Forms.Label label14;
