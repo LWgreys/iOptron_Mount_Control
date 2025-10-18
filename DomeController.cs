@@ -96,6 +96,22 @@ namespace iOptron_Mount_Control
         public int DomePositionCurrent;
         public int DomePositionLast;
         public int DomePositionNew;
+        public string status_DomeCommand;
+
+        // Other public Variables
+        public uint status_DomeMoving;
+        public uint status_ShutterMoving;
+        public uint status_RotatorError;
+        public uint status_ShutterError;
+        public uint status_CommunicationError;
+        public uint status_Weather;
+        public uint status_RainSensor;
+        public uint status_ShutterOpen;
+        public uint status_ShutterClose;
+        public uint status_ShutterOpening;
+        public uint status_ShutterClosing;
+        public uint status_DomeAtPark;
+        public uint status_DomeAtHome;
 
 
 
@@ -213,7 +229,7 @@ namespace iOptron_Mount_Control
             inbuffer = UTF8Encoding.UTF8.GetString(buffer);
             i = inbuffer.LastIndexOf(":") + 1;
             j = i - inbuffer.LastIndexOf("#") - 1;
-            if (j - i <= 0)
+            if ((j - i) <= 0)
             {
                 return null; // Return null string if no responce or error
             }
@@ -221,117 +237,178 @@ namespace iOptron_Mount_Control
         }
 
 
-        //***** Dome Timer ============================================================================================= Dome Timer *****
+        //===== Dome Timer ===================================================================== Dome Timer ====================================
         private void timerDome_Tick(object sender, EventArgs e)
         {
-            uint bit_status, uStatus;
+            uint uStatus;
             string dome_status;
+            bool tictoc = false;
 
             // Get dome azimuth
             dome_status = DomeCommand(domegetaz);
-            this.DomeAzimith.Text = "Dome Azimith " + dome_status + "°";
+            DomeAzimith.Text = "Dome Azimith " + dome_status + "°";
             DomePositionCurrent = Convert.ToInt32(dome_status);
 
             // Get dome status
-            dome_status = DomeCommand(domestatus);
-            if (dome_status != null)
+            uStatus = Convert.ToUInt32(DomeCommand(domestatus));
+
+            status_DomeMoving = uStatus & bit0_DomeMoving;
+            status_ShutterMoving = uStatus & bit1_ShutterMoving;
+            status_RotatorError = uStatus & bit2_RotatorError;
+            status_ShutterError = uStatus & bit3_ShutterError;
+            status_CommunicationError = uStatus & bit4_CommunicationError;
+            status_Weather = uStatus & bit5_WeatherStatus;
+            status_RainSensor = uStatus & bit6_RG_Status;
+            status_ShutterOpen = uStatus & bit7_ShutterOpen;
+            status_ShutterClose = uStatus & bit8_ShutterClose;
+            status_ShutterOpening = uStatus & bit9_ShutterOpening;
+            status_ShutterClosing = uStatus & bit10_ShutterClosing;
+            status_DomeAtPark = uStatus & bit11_DomeAtHome;
+            status_DomeAtHome = uStatus & bit12_DomeAtPark;
+
+            // Is dome moving
+            if (status_DomeMoving != 0)
             {
-                uStatus = Convert.ToUInt16(dome_status);
-                // Is dome moving
-                bit_status = uStatus & bit0_DomeMoving;
-                if (bit_status != 0)
-                {
-                    DomeAzimith.BackColor = Color.Yellow;
-                    DomeAzimith.ForeColor = Color.Black;
-                    ProgressBarUpdate();
+                DomeAzimith.BackColor = Color.Yellow;
+                DomeAzimith.ForeColor = Color.Black;
+                ProgressBarUpdate();
+            }
+            else
+            {
+                DomeAzimith.BackColor = Color.Black;
+                DomeAzimith.ForeColor = Color.Yellow;
+                ProgressBarUpdate();
+            }
 
-                }
-                else
-                {
-                    DomeAzimith.BackColor = Color.Black;
-                    DomeAzimith.ForeColor = Color.Yellow;
-                    ProgressBarUpdate();
-
-                }
-                // Is shutter moving
-                bit_status = uStatus & bit1_ShutterMoving;
-                if (bit_status != 0)
+            // Is shutter moving
+            if (status_ShutterMoving != 0)
+            {
+                if (tictoc)
                 {
                     ShutterOpenCloseButton.BackColor = Color.Yellow;
                     ShutterOpenCloseButton.ForeColor = Color.Black;
-
-                }
-                // Is there a rotator error
-                bit_status = uStatus & bit2_RotatorError;
-                if (bit_status != 0)
+                } else
                 {
-
+                    ShutterOpenCloseButton.BackColor = Color.Black;
+                    ShutterOpenCloseButton.ForeColor = Color.Yellow;
                 }
-                // Is there a shutter error
-                bit_status = uStatus & bit3_ShutterError;
-                if (bit_status != 0)
+            }
+            else
+            {
+                ShutterOpenCloseButton.BackColor = Color.DarkRed;
+                ShutterOpenCloseButton.ForeColor = Color.Yellow;
+            }
+
+            // Is there a rotator error
+            if (status_RotatorError != 0)
+            {
+                DomeAzimith.Text = "Dome ERROR";
+                if (tictoc)
+                    DomeAzimith.BackColor = Color.Red;
+                else
+                    DomeAzimith.BackColor = Color.Black;
+            }
+            else
+            {
+                DomeAzimith.BackColor = Color.Black;
+            }
+                
+            // Is there a shutter error
+            if (status_ShutterError != 0)
+            {
+                ShutterOpenCloseButton.Text = "Shutter ERROR";
+                if (tictoc)
+                    ShutterOpenCloseButton.BackColor = Color.Red;
+                else
+                    ShutterOpenCloseButton.BackColor = Color.DarkRed;
+            }
+                
+            // Is there a communication error between dome and shutter
+            if (status_CommunicationError != 0)
+            {
+                if (tictoc)
+                    groupBox1.BackColor = Color.Red;
+                else
+                    groupBox1.BackColor = Color.Black;
+            }
+                
+            // Weather status
+            if (status_Weather != 0)
+            {
+
+            }
+                
+            // RG Rain Sensor status
+            if (status_RainSensor != 0)
+            {
+                if (tictoc)
                 {
-
+                    buttonRainSensor.BackColor = Color.Red;
+                    buttonRainSensor.ForeColor = Color.White;
                 }
-                // Is there a communication error between dome and shutter
-                bit_status = uStatus & bit4_CommunicationError;
-                if (bit_status != 0)
+                else
                 {
-
+                    buttonRainSensor.BackColor = Color.Yellow;
+                    buttonRainSensor.ForeColor = Color.Black;
                 }
-                // Weather status
-                bit_status = uStatus & bit5_WeatherStatus;
-                if (bit_status != 0)
-                {
-
-                }
-                // RG status
-                bit_status = uStatus & bit6_RG_Status;
-                if (bit_status != 0)
-                {
-
-                }
-                // Is shutter fully open
-                bit_status = uStatus & bit7_ShutterOpen;
-                if (bit_status != 0)
-                {
-
-                }
-                // Is shutter fully closed
-                bit_status = uStatus & bit8_ShutterClose;
-                if (bit_status != 0)
-                {
-
-                }
-                // Is shutter opening
-                bit_status = uStatus & bit9_ShutterOpening;
-                if (bit_status != 0)
-                {
-
-                }
-                // Is shutter closing
-                bit_status = uStatus & bit10_ShutterClosing;
-                if (bit_status != 0)
-                {
-
-                }
-                // Is dome at home position
-                bit_status = uStatus & bit11_DomeAtHome;
-                if (bit_status != 0)
-                {
-
-                }
-                // Is dome at park position
-                bit_status = uStatus & bit12_DomeAtPark;
-                if (bit_status != 0)
-                {
-
-                }
+                // *** Close shutter
+                DomeCommand(domecloseshutter);
+            }
+                
+            // Is shutter fully open
+            if (status_ShutterOpen != 0)
+            {
+                ShutterOpenCloseButton.BackColor = Color.Red;
+                ShutterOpenCloseButton.ForeColor = Color.Yellow;
+                ShutterOpenCloseButton.Text = "Close Shutter";
+            }
+                
+            // Is shutter fully closed
+            if (status_ShutterClose != 0)
+            {
+                ShutterOpenCloseButton.BackColor = Color.Green;
+                ShutterOpenCloseButton.ForeColor = Color.Yellow;
+                ShutterOpenCloseButton.Text = "Open Shutter";
+            }
+                
+            // Is shutter opening
+            if (status_ShutterOpening != 0)
+            {
+                ShutterOpenCloseButton.Text = "Opening";
+            }
+                
+            // Is shutter closing
+            if (status_ShutterClosing != 0)
+            {
+                ShutterOpenCloseButton.Text = "Closing";
+            }
+                
+            // Is dome at home position
+            if (status_DomeAtHome != 0)
+            {
+                buttonHomeDome.BackColor = Color.Green;
+            } 
+            else
+            {
+                buttonHomeDome.BackColor = Color.DarkRed;
+            }
+                
+            // Is dome at park position
+            if (status_DomeAtPark != 0)
+            {
+                buttonParkDome.BackColor = Color.Green;
+            }
+            else
+            {
+                buttonParkDome.BackColor = Color.DarkRed;
             }
 
 
+            // Flip flop ticker
+            tictoc = (tictoc ? false : true);
+
         }
-        //***** End Of Dome Timer =============================================================================== End Of Dome Timer *****
+        //===== End Of Dome Timer ============================================================ End Of Dome Timer =================================
 
 
         //***** Exit dome controler button
@@ -344,6 +421,8 @@ namespace iOptron_Mount_Control
                 // Close the shutter if open & park the dome
                 DomeCommand(domecloseshutter);
                 DomeCommand(domegopark);
+                // -------------------------------------------------May need some status check here
+
                 // Flush COM port buffers and Close port
                 DomeSerialPort.DiscardInBuffer();
                 DomeSerialPort.DiscardOutBuffer();
@@ -382,7 +461,20 @@ namespace iOptron_Mount_Control
 
         private void ShutterOpenCloseButton_Click(object sender, EventArgs e)
         {
-
+            if (status_ShutterMoving == 0)
+            {
+                if ((status_ShutterOpen & status_ShutterClose) != 0)
+                {
+                    DomeCommand(domecloseshutter);
+                }
+                else
+                {
+                    if (status_ShutterClose == bit8_ShutterClose)
+                        DomeCommand(domeopenshutter);
+                    else if (status_ShutterOpen == bit7_ShutterOpen)
+                        DomeCommand(domecloseshutter);
+                }
+            }
         }
 
         private void incDegreesCCWbutton_Click(object sender, EventArgs e)
